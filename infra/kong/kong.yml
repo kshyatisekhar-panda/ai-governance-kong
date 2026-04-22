@@ -1,0 +1,62 @@
+_format_version: "3.0"
+
+services:
+  - name: ai-gateway
+    url: http://host.docker.internal:8000
+    routes:
+      - name: ai-chat
+        paths:
+          - /ai/chat
+        methods:
+          - POST
+          - OPTIONS
+        strip_path: false
+      - name: admin-routes
+        paths:
+          - /admin
+        methods:
+          - GET
+        strip_path: false
+      - name: health
+        paths:
+          - /health
+        methods:
+          - GET
+        strip_path: false
+
+plugins:
+  - name: rate-limiting
+    config:
+      minute: 60
+      hour: 1000
+      policy: local
+
+  - name: key-auth
+    config:
+      key_names:
+        - x-api-key
+
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - OPTIONS
+      headers:
+        - "*"
+      credentials: false
+
+consumers:
+  - username: engineering
+    keyauth_credentials:
+      - key: eng-key-2024
+      - key: chat-key-2024
+  - username: data-science
+    keyauth_credentials:
+      - key: ds-key-2024
+      - key: scheduler-key-2024
+  - username: marketing
+    keyauth_credentials:
+      - key: mkt-key-2024

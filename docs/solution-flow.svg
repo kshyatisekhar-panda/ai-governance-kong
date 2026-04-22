@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 620" width="700" height="620">
+
+  <!-- Background -->
+  <rect width="700" height="620" fill="#0f1219" rx="16"/>
+
+  <!-- Title -->
+  <text x="350" y="35" text-anchor="middle" fill="#fff" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">
+    Enterprise AI Gateway and Governance
+  </text>
+  <text x="350" y="52" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="10">
+    Atlas Copco | Kong | 2Hero
+  </text>
+
+  <!-- Apps / Users -->
+  <rect x="225" y="70" width="250" height="40" rx="8" fill="#1a1f35" stroke="#3a4265"/>
+  <text x="350" y="95" text-anchor="middle" fill="#64ffda" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">
+    Apps / Users
+  </text>
+
+  <!-- Arrow: Apps to Gateway -->
+  <line x1="350" y1="110" x2="350" y2="135" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="350,140 344,132 356,132" fill="#64ffda"/>
+
+  <!-- Gateway -->
+  <rect x="130" y="145" width="440" height="50" rx="10" fill="#003d66" stroke="#00a86b" stroke-width="2"/>
+  <text x="350" y="168" text-anchor="middle" fill="#00e68a" font-family="Segoe UI, sans-serif" font-size="14" font-weight="700">
+    Kong AI / Custom API Gateway
+  </text>
+  <text x="350" y="185" text-anchor="middle" fill="#66d9a0" font-family="Segoe UI, sans-serif" font-size="9">
+    (Node.js / Java / Python)
+  </text>
+
+  <!-- Arrow: Gateway to Plugins -->
+  <line x1="350" y1="195" x2="350" y2="220" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="350,225 344,217 356,217" fill="#64ffda"/>
+
+  <!-- Plugins / Middleware -->
+  <rect x="130" y="230" width="440" height="140" rx="10" fill="#1a2340" stroke="#2a3a6a"/>
+  <text x="350" y="258" text-anchor="middle" fill="#fff" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">
+    Plugins / Middleware
+  </text>
+  <text x="350" y="285" text-anchor="middle" fill="#ff5252" font-family="Segoe UI, sans-serif" font-size="11">
+    🛡️  PII / IP Blocking
+  </text>
+  <text x="350" y="310" text-anchor="middle" fill="#ffc107" font-family="Segoe UI, sans-serif" font-size="11">
+    💰  Cost Tracker + Budget Caps
+  </text>
+  <text x="350" y="335" text-anchor="middle" fill="#9c64ff" font-family="Segoe UI, sans-serif" font-size="11">
+    🔀  Smart Model Router
+  </text>
+  <text x="350" y="360" text-anchor="middle" fill="#64b5f6" font-family="Segoe UI, sans-serif" font-size="11">
+    📋  Request Logger
+  </text>
+
+  <!-- Arrow: Plugins to Delta Lake -->
+  <line x1="240" y1="370" x2="240" y2="410" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="240,415 234,407 246,407" fill="#64ffda"/>
+  <text x="240" y="428" text-anchor="middle" fill="#5a7aaa" font-family="Segoe UI, sans-serif" font-size="8">
+    LOGS
+  </text>
+
+  <!-- Arrow: Plugins to Model Serving -->
+  <line x1="460" y1="370" x2="460" y2="410" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="460,415 454,407 466,407" fill="#64ffda"/>
+  <text x="460" y="428" text-anchor="middle" fill="#5a7aaa" font-family="Segoe UI, sans-serif" font-size="8">
+    AI REQUEST
+  </text>
+
+  <!-- Delta Lake -->
+  <rect x="130" y="435" width="220" height="45" rx="8" fill="#1a2535" stroke="#2a5080"/>
+  <text x="240" y="462" text-anchor="middle" fill="#42a5f5" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">
+    🔷  Delta Lake
+  </text>
+
+  <!-- Model Serving -->
+  <rect x="360" y="435" width="210" height="45" rx="8" fill="#2a1520" stroke="#6b2a4a"/>
+  <text x="465" y="462" text-anchor="middle" fill="#ff6f61" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">
+    🤖  Model Serving
+  </text>
+
+  <!-- Arrow: Delta Lake to Dashboard -->
+  <line x1="240" y1="480" x2="240" y2="510" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="240,515 234,507 246,507" fill="#64ffda"/>
+
+  <!-- Dashboard -->
+  <rect x="80" y="520" width="540" height="48" rx="8" fill="#35200a" stroke="#8a5a20"/>
+  <text x="350" y="541" text-anchor="middle" fill="#ffab40" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">
+    📊  Databricks SQL / Custom Dashboard
+  </text>
+  <text x="350" y="558" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="9">
+    Usage · Costs · Blocked Requests · Routing Stats
+  </text>
+
+  <!-- Footer -->
+  <text x="350" y="600" text-anchor="middle" fill="#4a5a7a" font-family="Segoe UI, sans-serif" font-size="10">
+    Enterprise AI Gateway and Governance PoC
+  </text>
+
+</svg>

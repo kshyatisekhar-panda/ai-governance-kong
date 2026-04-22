@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" width="900" height="520">
+  <rect width="900" height="520" fill="#0f1219" rx="16"/>
+
+  <!-- Title -->
+  <text x="450" y="38" text-anchor="middle" fill="#fff" font-family="Segoe UI, sans-serif" font-size="20" font-weight="700">AI Governance Gateway</text>
+
+  <!-- Apps -->
+  <rect x="340" y="60" width="220" height="50" rx="10" fill="#1a1f35" stroke="#3a4265"/>
+  <text x="450" y="90" text-anchor="middle" fill="#64ffda" font-family="Segoe UI, sans-serif" font-size="14" font-weight="600">Apps / Users</text>
+
+  <!-- Arrow -->
+  <line x1="450" y1="110" x2="450" y2="145" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="450,150 444,140 456,140" fill="#64ffda"/>
+
+  <!-- Kong -->
+  <rect x="290" y="155" width="320" height="55" rx="12" fill="#003d66" stroke="#00a86b" stroke-width="2"/>
+  <text x="450" y="180" text-anchor="middle" fill="#00e68a" font-family="Segoe UI, sans-serif" font-size="18" font-weight="700">Kong Gateway</text>
+  <text x="450" y="198" text-anchor="middle" fill="#66d9a0" font-family="Segoe UI, sans-serif" font-size="11">Intercept · Enforce · Route · Log</text>
+
+  <!-- Plugins row -->
+  <rect x="60" y="240" width="185" height="42" rx="8" fill="#1a2340" stroke="#ff5252" stroke-width="1"/>
+  <text x="152" y="260" text-anchor="middle" fill="#ff5252" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">🛡️ PII / IP Blocking</text>
+  <text x="152" y="275" text-anchor="middle" fill="#7a8ab5" font-family="Segoe UI, sans-serif" font-size="9">Scan &amp; block sensitive data</text>
+
+  <rect x="260" y="240" width="175" height="42" rx="8" fill="#1a2340" stroke="#ffc107" stroke-width="1"/>
+  <text x="348" y="260" text-anchor="middle" fill="#ffc107" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">💰 Cost Tracker</text>
+  <text x="348" y="275" text-anchor="middle" fill="#7a8ab5" font-family="Segoe UI, sans-serif" font-size="9">Tokens &amp; budget caps</text>
+
+  <rect x="450" y="240" width="175" height="42" rx="8" fill="#1a2340" stroke="#64b5f6" stroke-width="1"/>
+  <text x="538" y="260" text-anchor="middle" fill="#64b5f6" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">📋 Request Logger</text>
+  <text x="538" y="275" text-anchor="middle" fill="#7a8ab5" font-family="Segoe UI, sans-serif" font-size="9">Audit trail to Delta Lake</text>
+
+  <rect x="640" y="240" width="195" height="42" rx="8" fill="#1a2340" stroke="#9c64ff" stroke-width="1"/>
+  <text x="738" y="260" text-anchor="middle" fill="#9c64ff" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">🔀 Smart Router</text>
+  <text x="738" y="275" text-anchor="middle" fill="#7a8ab5" font-family="Segoe UI, sans-serif" font-size="9">Route by complexity</text>
+
+  <!-- Two arrows down -->
+  <line x1="300" y1="282" x2="300" y2="330" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="300,335 294,325 306,325" fill="#64ffda"/>
+  <text x="300" y="350" text-anchor="middle" fill="#5a7aaa" font-family="Segoe UI, sans-serif" font-size="9">LOGS</text>
+
+  <line x1="650" y1="282" x2="650" y2="330" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="650,335 644,325 656,325" fill="#64ffda"/>
+  <text x="650" y="350" text-anchor="middle" fill="#5a7aaa" font-family="Segoe UI, sans-serif" font-size="9">AI REQUESTS</text>
+
+  <!-- FastAPI + Delta Lake + Dashboard (left) -->
+  <rect x="155" y="360" width="290" height="50" rx="10" fill="#1a2535" stroke="#2a5080"/>
+  <text x="300" y="383" text-anchor="middle" fill="#42a5f5" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">FastAPI → Delta Lake</text>
+  <text x="300" y="400" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="10">Logs, costs, audit trail</text>
+
+  <line x1="300" y1="410" x2="300" y2="440" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="300,445 294,435 306,435" fill="#64ffda"/>
+
+  <rect x="155" y="450" width="290" height="50" rx="10" fill="#35200a" stroke="#8a5a20"/>
+  <text x="300" y="473" text-anchor="middle" fill="#ffab40" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">📊 Databricks SQL Dashboards</text>
+  <text x="300" y="490" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="10">Usage · Costs · Blocked · Routing</text>
+
+  <!-- Databricks Model Serving (right) -->
+  <rect x="505" y="360" width="290" height="50" rx="10" fill="#2a1520" stroke="#6b2a4a"/>
+  <text x="650" y="383" text-anchor="middle" fill="#ff6f61" font-family="Segoe UI, sans-serif" font-size="13" font-weight="600">🤖 Databricks Model Serving</text>
+  <text x="650" y="400" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="10">LLM Endpoints</text>
+
+  <line x1="590" y1="410" x2="590" y2="440" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="590,445 584,435 596,435" fill="#64ffda"/>
+  <line x1="710" y1="410" x2="710" y2="440" stroke="#64ffda" stroke-width="2"/>
+  <polygon points="710,445 704,435 716,435" fill="#64ffda"/>
+
+  <rect x="530" y="450" width="120" height="45" rx="8" fill="#1a2525" stroke="#3a5a5a"/>
+  <text x="590" y="473" text-anchor="middle" fill="#4caf50" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">🟢 Small</text>
+  <text x="590" y="488" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="9">Fast · Cheap</text>
+
+  <rect x="660" y="450" width="120" height="45" rx="8" fill="#201a2a" stroke="#5a3a7a"/>
+  <text x="720" y="473" text-anchor="middle" fill="#7c4dff" font-family="Segoe UI, sans-serif" font-size="12" font-weight="600">🔵 Large</text>
+  <text x="720" y="488" text-anchor="middle" fill="#8892b0" font-family="Segoe UI, sans-serif" font-size="9">Powerful · Complex</text>
+
+</svg>

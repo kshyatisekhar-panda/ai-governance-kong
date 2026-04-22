@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Data Grid | Atlas Copco</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f1219; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; padding: 24px; }
+    h1 { color: #fff; font-size: 22px; margin-bottom: 4px; }
+    .subtitle { color: #8892b0; font-size: 13px; margin-bottom: 24px; }
+
+    .nav { display: flex; gap: 12px; margin-bottom: 24px; }
+    .nav a { color: #64ffda; text-decoration: none; font-size: 13px; padding: 6px 14px; border: 1px solid #2a3050; border-radius: 8px; }
+    .nav a:hover, .nav a.active { background: #1a1f35; border-color: #64ffda; }
+
+    .filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+    select, input { background: #1a1f35; border: 1px solid #2a3050; color: #fff; padding: 8px 12px; border-radius: 8px; font-size: 13px; }
+    select:focus, input:focus { border-color: #64ffda; outline: none; }
+    .filter-label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+    .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .clear-btn { background: none; border: 1px solid #ff5252; color: #ff5252; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; }
+    .clear-btn:hover { background: rgba(255,82,82,0.1); }
+
+    .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .summary-card { background: #1a1f35; border: 1px solid #2a3050; border-radius: 12px; padding: 16px; }
+    .summary-card .label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+    .summary-card .value { font-size: 24px; font-weight: 700; margin-top: 6px; }
+    .summary-card .value.blue { color: #64b5f6; }
+    .summary-card .value.green { color: #00e68a; }
+    .summary-card .value.yellow { color: #ffc107; }
+    .summary-card .value.purple { color: #9c64ff; }
+
+    .panel { background: #1a1f35; border: 1px solid #2a3050; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+    .panel h2 { font-size: 16px; margin-bottom: 16px; color: #fff; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; padding: 10px 8px; border-bottom: 1px solid #2a3050; cursor: pointer; }
+    th:hover { color: #64ffda; }
+    td { padding: 10px 8px; border-bottom: 1px solid #1a2040; font-size: 13px; }
+    tr:hover { background: rgba(100,255,218,0.03); }
+    .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+    .badge.compressors { background: rgba(100,181,246,0.15); color: #64b5f6; }
+    .badge.vacuum { background: rgba(156,100,255,0.15); color: #9c64ff; }
+    .badge.power-tools { background: rgba(255,193,7,0.15); color: #ffc107; }
+    .badge.mining { background: rgba(255,82,82,0.15); color: #ff5252; }
+    .region { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+    .region.europe { background: rgba(100,181,246,0.1); color: #64b5f6; }
+    .region.asia { background: rgba(255,193,7,0.1); color: #ffc107; }
+    .region.americas { background: rgba(0,230,138,0.1); color: #00e68a; }
+
+    .ask-ai { display: flex; gap: 8px; margin-bottom: 24px; }
+    .ask-ai input { flex: 1; }
+    .ask-ai button { background: #003d66; color: #64ffda; border: 1px solid #00a86b; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; }
+    .ai-response { background: #1a2340; border: 1px solid #2a3a6a; border-radius: 10px; padding: 16px; margin-bottom: 24px; font-size: 14px; line-height: 1.6; display: none; white-space: pre-wrap; }
+    .ai-response .meta { font-size: 10px; color: #5a7aaa; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>Sales Data Grid</h1>
+  <div class="subtitle">Atlas Copco | Enterprise Data Explorer</div>
+
+  <div class="nav">
+    <a href="/">Dashboard</a>
+    <a href="/chat.html">Chat</a>
+    <a href="/monitor.html">Monitor</a>
+    <a href="/data-grid.html" class="active">Data Grid</a>
+  </div>
+
+  <div class="ask-ai">
+    <input type="text" id="ai-input" placeholder="Ask AI about this data... (e.g. Which product has the highest growth?)" onkeydown="if(event.key==='Enter')askAI()"/>
+    <button onclick="askAI()">Ask AI</button>
+  </div>
+  <div class="ai-response" id="ai-response"></div>
+
+  <div class="summary-grid">
+    <div class="summary-card"><div class="label">Total Records</div><div class="value blue" id="total-records">0</div></div>
+    <div class="summary-card"><div class="label">Total Revenue</div><div class="value green" id="total-revenue">$0</div></div>
+    <div class="summary-card"><div class="label">Total Units Sold</div><div class="value yellow" id="total-units">0</div></div>
+    <div class="summary-card"><div class="label">Avg Revenue/Record</div><div class="value purple" id="avg-revenue">$0</div></div>
+  </div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Business Area</span>
+      <select id="filter-businessArea" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Category</span>
+      <select id="filter-category" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Product</span>
+      <select id="filter-product" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Brand</span>
+      <select id="filter-brand" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Region</span>
+      <select id="filter-region" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Month</span>
+      <select id="filter-month" onchange="loadData()"><option value="">All</option></select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">&nbsp;</span>
+      <button class="clear-btn" onclick="clearFilters()">Clear Filters</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Sales Records</h2>
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('month')">Month</th>
+          <th onclick="sortBy('businessArea')">Business Area</th>
+          <th onclick="sortBy('category')">Category</th>
+          <th onclick="sortBy('product')">Product</th>
+          <th onclick="sortBy('brand')">Brand</th>
+          <th onclick="sortBy('region')">Region</th>
+          <th onclick="sortBy('unitsSold')">Units Sold</th>
+          <th onclick="sortBy('revenue')">Revenue</th>
+        </tr>
+      </thead>
+      <tbody id="data-table"></tbody>
+    </table>
+  </div>
+
+  <script>
+    const API = "http://localhost:8000";
+    let currentData = [];
+    let sortField = "revenue";
+    let sortDir = -1;
+
+    function categoryClass(cat) {
+      return cat.toLowerCase().replace(/\s+/g, "-");
+    }
+
+    function formatCurrency(n) {
+      return "$" + n.toLocaleString();
+    }
+
+    async function loadFilters() {
+      const res = await fetch(`${API}/api/filters`);
+      const f = await res.json();
+
+      const populate = (id, items) => {
+        const el = document.getElementById(id);
+        const current = el.value;
+        el.innerHTML = '<option value="">All</option>' + items.map(i => `<option value="${i}">${i}</option>`).join("");
+        el.value = current;
+      };
+
+      populate("filter-businessArea", f.businessAreas);
+      populate("filter-category", f.categories);
+      populate("filter-product", f.products);
+      populate("filter-brand", f.brands);
+      populate("filter-region", f.regions);
+      populate("filter-month", f.months);
+    }
+
+    async function loadData() {
+      const businessArea = document.getElementById("filter-businessArea").value;
+      const category = document.getElementById("filter-category").value;
+      const product = document.getElementById("filter-product").value;
+      const brand = document.getElementById("filter-brand").value;
+      const region = document.getElementById("filter-region").value;
+      const month = document.getElementById("filter-month").value;
+
+      const params = new URLSearchParams();
+      if (businessArea) params.set("businessArea", businessArea);
+      if (category) params.set("category", category);
+      if (product) params.set("product", product);
+      if (brand) params.set("brand", brand);
+      if (region) params.set("region", region);
+      if (month) params.set("month", month);
+
+      const res = await fetch(`${API}/api/sales?${params}`);
+      const { data, total, totalRevenue, totalUnits } = await res.json();
+
+      currentData = data;
+
+      document.getElementById("total-records").textContent = total;
+      document.getElementById("total-revenue").textContent = formatCurrency(totalRevenue);
+      document.getElementById("total-units").textContent = totalUnits.toLocaleString();
+      document.getElementById("avg-revenue").textContent = total > 0 ? formatCurrency(Math.round(totalRevenue / total)) : "$0";
+
+      renderTable();
+    }
+
+    function renderTable() {
+      const sorted = [...currentData].sort((a, b) => {
+        const aVal = a[sortField];
+        const bVal = b[sortField];
+        if (typeof aVal === "number") return (aVal - bVal) * sortDir;
+        return String(aVal).localeCompare(String(bVal)) * sortDir;
+      });
+
+      document.getElementById("data-table").innerHTML = sorted.map(r => `
+        <tr>
+          <td>${r.month}</td>
+          <td>${r.businessArea}</td>
+          <td><span class="badge ${categoryClass(r.category)}">${r.category}</span></td>
+          <td>${r.product}</td>
+          <td>${r.brand}</td>
+          <td><span class="region ${r.region.toLowerCase()}">${r.region}</span></td>
+          <td>${r.unitsSold.toLocaleString()}</td>
+          <td>${formatCurrency(r.revenue)}</td>
+        </tr>
+      `).join("") || '<tr><td colspan="8" style="text-align:center;color:#5a7aaa;">No matching records</td></tr>';
+    }
+
+    function sortBy(field) {
+      if (sortField === field) {
+        sortDir *= -1;
+      } else {
+        sortField = field;
+        sortDir = -1;
+      }
+      renderTable();
+    }
+
+    function clearFilters() {
+      document.getElementById("filter-businessArea").value = "";
+      document.getElementById("filter-category").value = "";
+      document.getElementById("filter-product").value = "";
+      document.getElementById("filter-brand").value = "";
+      document.getElementById("filter-region").value = "";
+      document.getElementById("filter-month").value = "";
+      loadData();
+    }
+
+    async function askAI() {
+      const input = document.getElementById("ai-input");
+      const text = input.value.trim();
+      if (!text) return;
+
+      const responseDiv = document.getElementById("ai-response");
+      responseDiv.style.display = "block";
+      responseDiv.innerHTML = "Thinking...";
+
+      try {
+        const res = await fetch(`${API}/ai/chat`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-api-key": "eng-key-2024" },
+          body: JSON.stringify({ messages: [{ role: "user", content: text }] }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          const msg = data.choices?.[0]?.message?.content || "No response";
+          const gw = data.gateway || {};
+          const source = gw.data_source ? `Data source: ${gw.data_source}` : "General";
+          responseDiv.innerHTML = `${msg}<div class="meta">Model: ${gw.model_routed} | Cost: $${gw.cost_usd?.toFixed(4)} | ${source}</div>`;
+        } else {
+          responseDiv.innerHTML = `Blocked: ${data.message || data.error}`;
+        }
+      } catch (e) {
+        responseDiv.innerHTML = "Failed to reach gateway.";
+      }
+    }
+
+    loadFilters();
+    loadData();
+  </script>
+</body>
+</html>
