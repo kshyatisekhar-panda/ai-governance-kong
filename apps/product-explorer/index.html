@@ -130,7 +130,7 @@
   </div>
 
   <script>
-    const API = "http://localhost:8000";
+    const API = ['localhost','127.0.0.1','0.0.0.0'].includes(location.hostname) ? 'http://localhost:8000' : '';
     let currentData = [];
     let sortField = "revenue";
     let sortDir = -1;
