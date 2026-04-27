@@ -5,8 +5,8 @@ RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt
 WORKDIR /app
 
 # Install gateway dependencies
-COPY gateway/package.json gateway/package-lock.json ./gateway/
-RUN cd gateway && npm ci --omit=dev
+COPY gateway/package.json ./gateway/
+RUN cd gateway && npm install
 
 # Install apps dependencies
 COPY apps/package.json ./apps/
