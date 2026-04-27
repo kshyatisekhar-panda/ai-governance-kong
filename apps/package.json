@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "scripts": {
     "build": "tsc -p dashboard/shared/tsconfig.json",
-    "start": "npm run build && npx serve . -l 3000 --cors"
+    "start": "npm run build && serve . -l ${PORT:-3000} --cors"
+  },
+  "dependencies": {
+    "serve": "^14.2.6"
   },
   "devDependencies": {
     "typescript": "^5.4.0"
