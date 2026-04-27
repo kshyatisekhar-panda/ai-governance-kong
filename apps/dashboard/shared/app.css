@@ -1,0 +1,228 @@
+/*
+ * AI-Governed Customer Service Hub — global UI consistency layer.
+ *
+ * Each page already loads Tailwind with the same theme config, so this file
+ * only patches structural and typographic inconsistencies that the static
+ * mockups left behind. Loaded BEFORE Tailwind via cdn so that Tailwind
+ * utilities still win on specificity, but the design tokens are forced.
+ */
+
+:root {
+  --app-sidebar-width: 264px;
+  --app-topbar-height: 56px;
+  --app-color-surface: #faf9fd;
+  --app-color-surface-low: #f4f3f7;
+  --app-color-surface-high: #e9e7eb;
+  --app-color-on-surface: #1a1b1e;
+  --app-color-on-surface-variant: #44474e;
+  --app-color-outline: #74777f;
+  --app-color-outline-variant: #c4c6cf;
+  --app-color-primary: #000a1e;
+  --app-color-primary-on: #ffffff;
+  --app-color-secondary: #515f74;
+  --app-color-secondary-container: #d5e3fc;
+  --app-color-on-secondary-container: #57657a;
+}
+
+html, body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-feature-settings: "ss01" 1, "cv11" 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--app-color-surface);
+  color: var(--app-color-on-surface);
+}
+
+/* Material Symbols default weight; some pages override locally. */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  vertical-align: middle;
+}
+
+/* Canonical layout chrome injected by layout.js. */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: var(--app-color-surface);
+}
+
+.app-sidebar {
+  width: var(--app-sidebar-width);
+  min-width: var(--app-sidebar-width);
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--app-color-outline-variant);
+  background: var(--app-color-surface);
+  padding: 16px 12px;
+  z-index: 40;
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 8px 16px 8px;
+  border-bottom: 1px solid var(--app-color-outline-variant);
+  margin-bottom: 12px;
+}
+.app-sidebar__brand-icon {
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: 8px;
+  background: var(--app-color-primary);
+  color: var(--app-color-primary-on);
+  display: flex; align-items: center; justify-content: center;
+}
+.app-sidebar__brand-icon .material-symbols-outlined {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'opsz' 20;
+  font-size: 20px;
+}
+.app-sidebar__brand-name {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--app-color-on-surface);
+}
+.app-sidebar__brand-sub {
+  font-size: 11px;
+  color: var(--app-color-on-surface-variant);
+  margin-top: 2px;
+}
+
+.app-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+}
+.app-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--app-color-on-surface);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 120ms ease, color 120ms ease;
+}
+.app-sidebar__link:hover {
+  background: var(--app-color-surface-high);
+}
+.app-sidebar__link[aria-current="page"] {
+  background: var(--app-color-secondary-container);
+  color: var(--app-color-on-secondary-container);
+}
+.app-sidebar__link .material-symbols-outlined {
+  font-size: 18px;
+  color: inherit;
+}
+
+.app-sidebar__footer {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--app-color-outline-variant);
+  font-size: 11px;
+  color: var(--app-color-on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-sidebar__status-dot {
+  width: 8px; height: 8px; border-radius: 999px;
+  background: #cbd5e1;
+}
+.app-sidebar__status-dot.is-online { background: #22c55e; }
+.app-sidebar__status-dot.is-offline { background: #ef4444; }
+
+.app-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-topbar {
+  height: var(--app-topbar-height);
+  min-height: var(--app-topbar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  border-bottom: 1px solid var(--app-color-outline-variant);
+  background: var(--app-color-surface);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.app-topbar__title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--app-color-on-surface);
+}
+.app-topbar__sub {
+  font-size: 12px;
+  color: var(--app-color-on-surface-variant);
+  margin-left: 12px;
+}
+.app-topbar__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--app-color-surface-high);
+  border: 1px solid var(--app-color-outline-variant);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 600;
+  color: var(--app-color-on-surface-variant);
+}
+.app-topbar__pill .dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: #94a3b8;
+}
+.app-topbar__pill.is-online .dot { background: #22c55e; }
+.app-topbar__pill.is-offline .dot { background: #ef4444; }
+
+.app-page {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  background: var(--app-color-surface);
+}
+
+/* Hide anything the old Stitch chrome left behind that we don't want. */
+[data-app-strip],
+.app-old-sidebar,
+.app-old-topbar { display: none !important; }
+
+/* Tame default placeholder dimming so inputs read consistently. */
+input::placeholder, textarea::placeholder { opacity: 0.55; }
+
+/* Form controls: keep hover/focus tidy across pages. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--app-color-primary);
+  outline-offset: 2px;
+}
+
+/* Lists/tables: consistent caption-row styling. */
+table thead th {
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--app-color-on-surface-variant);
+  font-weight: 600;
+}
+table tbody td {
+  font-size: 13px;
+}

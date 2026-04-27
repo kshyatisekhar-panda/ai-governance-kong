@@ -1,4 +1,5 @@
 import type { BlockResult, BudgetStatus, ModelTier } from "../types.js";
+import { db } from "../services/logger.js";
 
 interface ModelPricing {
   inputPer1k: number;
@@ -11,15 +12,20 @@ const PRICING: Readonly<Record<ModelTier, ModelPricing>> = {
 };
 
 const TEAM_BUDGETS: Readonly<Record<string, number>> = {
-  engineering: 100.0,
-  "data-science": 200.0,
-  marketing: 50.0,
+  "Compressor Technique": 150.0,
+  "Vacuum Technique": 200.0,
+  "Power Technique": 100.0,
+  "Industrial Technique": 120.0,
 };
 
 const PRECISION = 1_000_000;
 
-// In-memory spend tracking (resets on restart, fine for PoC)
-const teamSpend = new Map<string, number>();
+const spendQuery = db.prepare(`
+  SELECT COALESCE(SUM(cost_usd), 0) AS spent
+  FROM request_logs
+  WHERE team = ?
+    AND timestamp >= datetime('now', 'start of month')
+`);
 
 export function calculateCost(
   model: ModelTier,
@@ -33,11 +39,16 @@ export function calculateCost(
   return Math.round(cost * PRECISION) / PRECISION;
 }
 
+function getMonthlySpend(team: string): number {
+  const row = spendQuery.get(team) as { spent: number } | undefined;
+  return row?.spent ?? 0;
+}
+
 export function checkBudget(team: string): BlockResult | null {
   const limit = TEAM_BUDGETS[team];
   if (limit === undefined) return null;
 
-  const spent = teamSpend.get(team) ?? 0;
+  const spent = getMonthlySpend(team);
   if (spent >= limit) {
     return {
       reason: "budget_exceeded",
@@ -49,13 +60,15 @@ export function checkBudget(team: string): BlockResult | null {
   return null;
 }
 
-export function recordSpend(team: string, cost: number): void {
-  teamSpend.set(team, (teamSpend.get(team) ?? 0) + cost);
+export function recordSpend(_team: string, _cost: number): void {
+  // No-op: spend is now computed from the database.
+  // The logRequest call in chat.ts writes cost_usd to request_logs,
+  // and getMonthlySpend reads it back. No in-memory tracking needed.
 }
 
 export function getAllBudgets(): BudgetStatus[] {
   return Object.entries(TEAM_BUDGETS).map(([team, limit]) => {
-    const spent = teamSpend.get(team) ?? 0;
+    const spent = getMonthlySpend(team);
     return {
       team,
       spent,

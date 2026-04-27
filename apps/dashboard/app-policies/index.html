@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<link rel="stylesheet" href="../shared/app.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>App Policies | AI Governance Gateway</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface": "#faf9fd", "on-surface": "#1a1b1e", "surface-variant": "#e3e2e6",
+        "on-surface-variant": "#44474e", "primary": "#000a1e", "on-primary": "#ffffff",
+        "primary-container": "#002147", "secondary-container": "#d5e3fc",
+        "on-secondary-container": "#57657a", "outline": "#74777f",
+        "outline-variant": "#c4c6cf", "error": "#ba1a1a", "surface-container": "#efedf1",
+        "surface-container-low": "#f4f3f7", "surface-container-high": "#e9e7eb",
+        "surface-dim": "#dad9dd", "background": "#faf9fd",
+      },
+      fontFamily: { "body-md": ["Inter"], "h1": ["Inter"], "h2": ["Inter"], "label-sm": ["Inter"], "caption": ["Inter"] },
+      fontSize: {
+        "h1": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+        "h2": ["18px", { lineHeight: "1.4", fontWeight: "600" }],
+        "label-sm": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600" }],
+        "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+        "caption": ["11px", { lineHeight: "1.4", fontWeight: "400" }],
+      },
+      spacing: { "gutter": "16px", "margin": "24px" },
+    },
+  }
+}
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+.policy-card { transition: box-shadow 0.2s; }
+.policy-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.rule-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.rule-allow { background: #dcfce7; color: #166534; }
+.rule-mask { background: #fef9c3; color: #854d0e; }
+.rule-block { background: #fee2e2; color: #991b1b; }
+.rule-na { background: #f3f4f6; color: #6b7280; }
+</style>
+</head>
+<body class="bg-background font-body-md text-on-surface min-h-screen">
+
+<header class="sticky top-0 z-30 bg-surface border-b border-outline-variant px-margin" style="height:56px; display:flex; align-items:center;">
+  <h1 class="text-h1 text-on-surface">App Governance Policies</h1>
+</header>
+
+<main class="p-margin space-y-6">
+
+  <p class="text-body-md text-on-surface-variant max-w-2xl">
+    Each application that connects to the AI Gateway has its own governance policy. These rules control what data can pass through, which models are available, and how much each app can spend.
+  </p>
+
+  <div id="policies-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <div class="text-on-surface-variant">Loading policies...</div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-h2 mb-4">Kong Gateway Policies (Network Layer)</h2>
+    <p class="text-body-md text-on-surface-variant mb-4 max-w-2xl">
+      These rules are enforced by Kong API Gateway before requests reach the governance engine. Kong handles authentication, rate limiting, and payload size at the network edge.
+    </p>
+    <div class="overflow-x-auto rounded-xl border border-outline-variant">
+      <table class="w-full text-body-md">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Kong Plugin</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">What it does</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Config</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/50">
+          <tr>
+            <td class="px-4 py-3 font-medium">key-auth</td>
+            <td class="px-4 py-3 text-on-surface-variant">Authenticates every request via x-api-key header. Rejects unauthorized requests before they reach the gateway.</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">Required</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">rate-limiting</td>
+            <td class="px-4 py-3 text-on-surface-variant">Per-consumer rate limits. Each team gets different request quotas based on their usage tier.</td>
+            <td class="px-4 py-3 text-caption">
+              Compressor Technique: 60/min<br>
+              Vacuum Technique: 40/min<br>
+              Power Technique: 20/min<br>
+              Industrial Technique: 30/min
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">request-size-limiting</td>
+            <td class="px-4 py-3 text-on-surface-variant">Blocks oversized payloads before they reach the governance engine. Prevents abuse and DoS.</td>
+            <td class="px-4 py-3"><span class="font-medium">Max 1 MB</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">response-transformer</td>
+            <td class="px-4 py-3 text-on-surface-variant">Injects governance headers into every response so apps can verify requests went through Kong.</td>
+            <td class="px-4 py-3 text-caption">X-Governance-Gateway: kong<br>X-Governance-Policy: enforced</td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">bot-detection</td>
+            <td class="px-4 py-3 text-on-surface-variant">Blocks known bot user agents from reaching the AI endpoints.</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-allow">Active</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">cors</td>
+            <td class="px-4 py-3 text-on-surface-variant">Handles cross-origin requests so browser apps (Chat, Product Explorer) can call the gateway.</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-allow">All origins</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-h2 mb-4">Governance Engine Policies (Application Layer)</h2>
+    <p class="text-body-md text-on-surface-variant mb-4 max-w-2xl">
+      After Kong approves the request, the governance engine applies app-specific rules for PII detection, cost tracking, model routing, and budget enforcement.
+    </p>
+  </div>
+
+  <div class="mt-4">
+    <h2 class="text-h2 mb-4">Policy Comparison</h2>
+    <div class="overflow-x-auto rounded-xl border border-outline-variant">
+      <table class="w-full text-body-md">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Rule</th>
+            <th id="th-apps" colspan="5" class="text-center px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Apps</th>
+          </tr>
+        </thead>
+        <tbody id="comparison-table" class="divide-y divide-outline-variant/50"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/api-client.js"></script>
+<script src="../shared/dist/render-utils.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+(function () {
+  window.navigation.bindSideNav('app-policies');
+
+  const BASE = window.APP_CONFIG.API_BASE_URL;
+
+  function badge(type, label) {
+    return `<span class="rule-badge rule-${type}">${label}</span>`;
+  }
+
+  function piiBadge(policy) {
+    if (!policy.allowMasking && policy.blockEmail) return badge('block', 'Block all PII');
+    if (policy.allowMasking && !policy.blockEmail) return badge('mask', 'Mask and forward');
+    return badge('block', 'Block sensitive only');
+  }
+
+  function modelBadge(policy) {
+    if (policy.allowLarge && policy.allowSmall) return badge('allow', 'Small + Large');
+    if (policy.allowLarge) return badge('allow', 'Large only');
+    return badge('mask', 'Small only');
+  }
+
+  function renderCard(name, p) {
+    return `
+      <div class="policy-card bg-surface-container-low rounded-xl border border-outline-variant p-5">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary" style="font-size:20px">apps</span>
+          </div>
+          <div>
+            <div class="text-h2 text-on-surface">${name}</div>
+          </div>
+        </div>
+
+        <div class="space-y-3 text-body-md">
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">PII Policy</span>
+            ${piiBadge(p.pii)}
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Email</span>
+            ${p.pii.blockEmail ? badge('block', 'Blocked') : badge('mask', 'Masked')}
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Phone</span>
+            ${p.pii.blockPhone ? badge('block', 'Blocked') : badge('mask', 'Masked')}
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">SSN / Credit Card</span>
+            ${p.pii.blockSensitive ? badge('block', 'Blocked') : badge('allow', 'Allowed')}
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Model Access</span>
+            ${modelBadge(p.model)}
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Default Model</span>
+            <span class="text-on-surface font-medium">${p.model.defaultModel}</span>
+          </div>
+          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Max Prompt</span>
+            <span class="text-on-surface font-medium">${p.model.maxPromptLength.toLocaleString()} chars</span>
+          </div>
+          <div class="flex justify-between items-center py-1.5">
+            <span class="text-on-surface-variant">Monthly Budget</span>
+            <span class="text-on-surface font-medium">$${p.budget.monthlyLimitUsd}</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderComparison(policies) {
+    const apps = Object.keys(policies);
+    const rows = [
+      { label: 'Email in prompt', fn: (p) => p.pii.blockEmail ? badge('block', 'Block') : badge('mask', 'Mask') },
+      { label: 'Phone in prompt', fn: (p) => p.pii.blockPhone ? badge('block', 'Block') : badge('mask', 'Mask') },
+      { label: 'SSN / Credit Card', fn: (p) => badge('block', 'Block') },
+      { label: 'Keywords', fn: (p) => p.pii.blockKeywords ? badge('block', 'Block') : badge('allow', 'Allow') },
+      { label: 'PII Masking', fn: (p) => p.pii.allowMasking ? badge('mask', 'Enabled') : badge('block', 'Disabled') },
+      { label: 'Large Model', fn: (p) => p.model.allowLarge ? badge('allow', 'Yes') : badge('block', 'No') },
+      { label: 'Default Model', fn: (p) => `<span class="font-medium">${p.model.defaultModel}</span>` },
+      { label: 'Max Prompt', fn: (p) => `<span class="font-medium">${p.model.maxPromptLength.toLocaleString()}</span>` },
+      { label: 'Monthly Budget', fn: (p) => `<span class="font-medium">$${p.budget.monthlyLimitUsd}</span>` },
+      { label: 'Warn at', fn: (p) => `<span class="font-medium">${p.budget.warnAtPercent}%</span>` },
+    ];
+
+    // Update header
+    document.getElementById('th-apps').innerHTML = apps.map(a =>
+      `<th class="text-center px-3 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">${a}</th>`
+    ).join('');
+    document.getElementById('th-apps').setAttribute('colspan', apps.length);
+
+    document.getElementById('comparison-table').innerHTML = rows.map(r => `
+      <tr>
+        <td class="px-4 py-3 text-on-surface-variant font-medium">${r.label}</td>
+        ${apps.map(a => `<td class="px-3 py-3 text-center">${r.fn(policies[a])}</td>`).join('')}
+      </tr>
+    `).join('');
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(BASE + '/admin/policies', {
+        headers: { 'x-api-key': window.APP_CONFIG.DEMO_API_KEY }
+      });
+      const policies = await res.json();
+
+      document.getElementById('policies-grid').innerHTML =
+        Object.entries(policies).map(([name, p]) => renderCard(name, p)).join('');
+
+      renderComparison(policies);
+    } catch (e) {
+      document.getElementById('policies-grid').innerHTML =
+        '<div class="text-error">Failed to load policies. Is the gateway running?</div>';
+    }
+  }
+
+  load();
+})();
+</script>
+<script>window.PAGE_INFO = { key: 'app-policies', title: 'App Policies' };</script>
+<script src="../shared/dist/layout.js"></script>
+</body></html>

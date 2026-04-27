@@ -10,10 +10,11 @@ export interface ChatRequest {
 
 export type ModelTier = "small" | "large";
 
-export type RequestStatus = "passed" | "blocked";
+export type RequestStatus = "passed" | "masked" | "blocked";
 
 export type BlockReason =
   | "pii_detected"
+  | "pii_masked"
   | "blocked_keyword"
   | "budget_exceeded";
 

@@ -27,42 +27,57 @@ This is a centralized AI gateway that sits between all applications and the LLM.
 
 Think of it as a **firewall for AI**. Just like you wouldn't let employees access the internet without a firewall, you shouldn't let apps access AI models without a governance gateway.
 
-## How It Works
+## Architecture
 
 ```
-Apps / Users
+Browser (localhost:3000)
       |
       v
-Kong API Gateway (authentication, rate limiting)
+Kong API Gateway (localhost:8000)
+      |
+      +-- key-auth              Validate API key, identify team/consumer
+      +-- rate-limiting          Per-consumer request quotas
+      +-- request-size-limiting  Block oversized payloads (1MB max)
+      +-- bot-detection          Block automated abuse
+      +-- cors                   Allow browser cross-origin requests
+      +-- ai-prompt-guard        Block prompts with PII patterns (SSN, credit card, personnummer)
+      +-- ai-rate-limiting       Token/cost based LLM quotas per consumer
+      +-- response-transformer   Inject X-Governance-* headers
       |
       v
-Governance Gateway (Express + TypeScript)
+Governance Gateway (localhost:8001, Express + TypeScript)
       |
-      +-- PII Blocker        Scans for SSN, email, credit card, blocks if found
-      +-- Cost Tracker        Counts tokens, enforces per-team budgets
-      +-- Smart Router        Simple prompts go to cheap model, complex to expensive
-      +-- API Detector        Detects business questions, fetches relevant data
-      +-- Request Logger      Logs every request for audit trail
+      +-- Auth Middleware        Map API key to team + app identity
+      +-- PII Blocker           Deep scan: sensitive, maskable, keyword patterns
+      +-- Budget Tracker         Per-team monthly spend limits
+      +-- Smart Router           Simple prompts -> small model, complex -> large model
+      +-- API Detector           Detect business questions, inject real data as context
+      +-- Audit Logger           Write every request to SQLite for governance dashboard
       |
       v
-LLM (Cerebras / Databricks Model Serving)
+LLM Provider (Cerebras API)
+      +-- small: llama3.1-8b
+      +-- large: qwen-3-235b-a22b
 ```
 
-**Example scenarios:**
+**Two layers of governance:** Kong handles infrastructure concerns (auth, rate limits, prompt guard) while the Express gateway handles business logic (PII masking, budgets, model routing, audit logging).
+
+## Example Scenarios
 
 | You ask | What happens |
 |---|---|
-| "What is Atlas Copco?" | Goes through, routed to small model, logged |
-| "My SSN is 123-45-6789" | Blocked. PII detected. Never reaches the LLM |
-| "Sales report for last 6 months" | Fetches business data, injects into prompt, AI responds with real numbers |
-| "Analyze quarterly revenue trends" | Routed to large model (complex question), costs tracked |
-| 61st request in a minute | Rate limited by Kong |
+| "What is Atlas Copco?" | Passes through, routed to small model, logged |
+| "My SSN is 123-45-6789" | Blocked by Kong (ai-prompt-guard) before reaching gateway |
+| "Email me at john@company.com" | PII masked by gateway, email redacted, continues to LLM |
+| "Sales report for last 6 months" | API detector fetches business data, injects into prompt context |
+| "Analyze quarterly revenue trends" | Routed to large model (complex question), cost tracked |
+| 61st request in a minute | Rate limited by Kong per-consumer quota |
 
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) v18 or higher
-- [Docker](https://www.docker.com/products/docker-desktop/) (only needed for Kong)
-- A free [Cerebras](https://cloud.cerebras.ai) API key (or any OpenAI-compatible LLM provider)
+- [Docker](https://www.docker.com/products/docker-desktop/) for Kong Gateway
+- A free [Cerebras](https://cloud.cerebras.ai) API key (or any OpenAI-compatible provider)
 
 ## Setup
 
@@ -77,102 +92,185 @@ cd ai-governance-kong
 
 ```bash
 cd gateway && npm install
-cd ../dashboard && npm install
+cd ../apps && npm install
 ```
 
 **3. Configure environment**
 
-```bash
-cp .env.example gateway/.env
-```
-
-Open `gateway/.env` and add your LLM API key:
+Create `gateway/.env` with your LLM API key:
 
 ```
 LLM_BASE_URL=https://api.cerebras.ai
 LLM_API_KEY=your_cerebras_key_here
 ```
 
-**4. Start the gateway**
+**4. Start the governance gateway**
 
 ```bash
 cd gateway
-npm start
+npm run dev
 ```
 
-This starts the governance gateway on http://localhost:8000. It also creates a local SQLite database for logging.
+Gateway runs on http://localhost:8001. Creates a local SQLite database for audit logging.
 
-**5. Start the dashboard**
+**5. Start Kong**
 
-Open a new terminal:
-
-```bash
-cd dashboard
-npm start
-```
-
-Dashboard runs on http://localhost:3000.
-
-**6. Start Kong (optional)**
-
-Kong adds authentication and rate limiting in front of the gateway. Requires Docker.
+Make sure Docker Desktop is running, then:
 
 ```bash
+docker rm -f kong-gateway 2>/dev/null
 docker run -d --name kong-gateway \
-  -e KONG_DATABASE=off \
-  -e KONG_DECLARATIVE_CONFIG=/kong/kong.yml \
-  -e KONG_ADMIN_LISTEN=0.0.0.0:8001 \
-  -p 8001:8000 -p 8002:8001 \
-  -v ./infra/kong:/kong \
-  kong:3.6
+  -e "KONG_DATABASE=off" \
+  -e "KONG_DECLARATIVE_CONFIG=/kong/kong.yml" \
+  -e "KONG_PROXY_LISTEN=0.0.0.0:8000" \
+  -v "./infra/kong:/kong" \
+  -p 8000:8000 \
+  kong/kong-gateway:3.9
 ```
 
-With Kong running, use port 8001 instead of 8000. Kong will reject requests without a valid API key.
+Kong proxies on http://localhost:8000 with authentication, rate limiting, and AI prompt guard enabled.
 
-**7. Open the chat UI**
+**6. Build and start the dashboard**
 
-Go to http://localhost:3000/chat.html and start asking questions.
+```bash
+cd apps
+npm start
+```
+
+This compiles the TypeScript shared modules and serves the dashboard on http://localhost:3000.
+
+## Dashboard Pages
+
+| Page | URL | Description |
+|---|---|---|
+| Executive Overview | `/dashboard/executive-overview/` | High level metrics, architecture diagram |
+| Governance Audit | `/dashboard/governance-audit-dashboard/` | Live audit log with filters, decisions over time chart |
+| App Policies | `/dashboard/app-policies/` | Per-app governance rules (PII, budgets, models) |
+| Product Data Explorer | `/dashboard/product-service-data-explorer/` | Business data browser with AI Q&A |
+| Gateway Flow | `/dashboard/gateway-flow-architecture/` | Visual architecture of the request flow |
+| Chat | `/chat/` | Interactive chat with governance metadata |
 
 ## API Keys
 
-These are pre-configured for the demo. Use them in the `x-api-key` header:
+Pre-configured demo keys. Use in the `x-api-key` header:
 
-| Key | Team | App |
+| Key | Team | App | Rate Limit |
+|---|---|---|---|
+| `eng-key-2024` | Compressor Technique | Service Assistant | 60/min |
+| `ds-key-2024` | Vacuum Technique | Product Explorer | 40/min |
+| `scheduler-key-2024` | Vacuum Technique | Report Scheduler | 40/min |
+| `mkt-key-2024` | Power Technique | Sales Copilot | 20/min |
+| `chat-key-2024` | Industrial Technique | Atlas Chat | 30/min |
+
+## Per-App Governance Policies
+
+| App | PII Policy | Masking | Budget/mo | Models | Max Prompt |
+|---|---|---|---|---|---|
+| Service Assistant | Block sensitive | Yes | $150 | Both | 5000 chars |
+| Product Explorer | Block sensitive | Yes | $100 | Both | 2000 chars |
+| Atlas Chat | Strict block all | No | $50 | Small only | 500 chars |
+| Sales Copilot | Strict block all | No | $30 | Small only | 1000 chars |
+| Report Scheduler | Block sensitive | Yes | $80 | Both | 10000 chars |
+
+## Kong AI Plugins
+
+This project uses Kong Enterprise (free mode, no license required) with built-in AI plugins:
+
+| Plugin | Purpose | Status |
 |---|---|---|
-| `eng-key-2024` | Engineering | Code Assistant |
-| `ds-key-2024` | Data Science | Analytics Bot |
-| `mkt-key-2024` | Marketing | Content Writer |
-| `chat-key-2024` | Engineering | Chat UI |
+| **ai-prompt-guard** | Regex deny patterns for PII (SSN, credit cards, personnummer) and forbidden keywords | Active on /ai/chat route |
+
+Plugins available with Kong Enterprise license:
+
+| Plugin | Purpose |
+|---|---|
+| ai-rate-limiting-advanced | Token/cost based rate limiting per consumer |
+| ai-proxy | Route directly to LLM providers with unified API format |
+| ai-semantic-prompt-guard | Topic based allow/deny using semantic similarity |
+| ai-semantic-cache | Cache repeated LLM calls to reduce cost and latency |
+| ai-request-transformer | Transform prompts before sending to LLM |
+| ai-response-transformer | Transform LLM responses before returning to client |
+
+## API Endpoints
+
+**Chat**
+- `POST /ai/chat` - Send messages to LLM through full governance pipeline
+
+**Governance**
+- `GET /api/governance/stats` - Aggregated metrics (totals, by team, decisions over time)
+- `GET /api/governance/logs` - Filtered audit log (by decision, team, source app, PII type)
+
+**Business Data**
+- `GET /api/products` - Product listing
+- `POST /api/products/ask` - AI powered product Q&A
+- `GET /api/sales` - Sales data with filters
+- `GET /api/filters` - Available filter options
+
+**Admin**
+- `GET /admin/budgets` - Team budget status
+- `GET /admin/logs` - Raw request logs
+- `GET /admin/stats` - Overall stats
+- `GET /admin/stats/by-team` - Stats by team
+- `GET /admin/stats/by-model` - Stats by model
 
 ## Project Structure
 
 ```
-gateway/               Governance gateway (main application)
+gateway/                    Governance gateway (Express + TypeScript)
   src/
-    config.ts          Environment and API key config
-    types.ts           TypeScript interfaces
-    index.ts           Express app entry point
-    middleware/         Authentication and CORS
-    plugins/           PII blocker, cost tracker, smart router, API detector
-    routes/            Chat, admin, and business data endpoints
-    services/          LLM client, SQLite logger, mock business data
-    setup-konnect.ts   Script to configure Kong Konnect (cloud)
+    index.ts                Express app entry point
+    config.ts               Environment and API key config
+    types.ts                TypeScript interfaces
+    middleware/
+      auth.ts               API key validation, team identification
+      cors.ts               CORS headers
+    plugins/
+      pii-blocker.ts        PII scanning, masking, and blocking
+      cost-tracker.ts       Token cost calculation, budget enforcement
+      smart-router.ts       Prompt complexity classification
+      api-detector.ts       Business data context injection
+      app-policy.ts         Per-app governance rules
+    routes/
+      chat.ts               /ai/chat endpoint (full pipeline)
+      admin.ts              /admin/* endpoints
+      business.ts           /api/sales, /api/filters
+      compat.ts             /api/* compat layer (governance, chat, products)
+    services/
+      llm-client.ts         LLM provider integration
+      logger.ts             SQLite audit logger
+      business-apis.ts      Mock business data
+      seed.ts               Demo seed data
 
-dashboard/             Web dashboard and chat interface
-  public/
-    index.html         Dashboard (usage, costs, blocked requests)
-    chat.html          Chat UI
+apps/                       Frontend dashboard and chat
+  dashboard/
+    executive-overview/     Executive summary page
+    governance-audit-dashboard/  Live audit log with filters
+    app-policies/           Per-app governance policy cards
+    product-service-data-explorer/  Product data browser
+    gateway-flow-architecture/  Visual architecture diagram
+    shared/
+      src/                  TypeScript source (config, api-client, navigation, etc)
+      dist/                 Compiled JS output (tsc)
+      app.css               Shared styles
+    index.html              Dashboard entry (redirects to overview)
+  chat/                     Chat interface
+  product-explorer/         Product explorer app
+  package.json              Build (tsc) and serve scripts
 
-infra/kong/            Kong Gateway config for Docker
-docs/                  Architecture diagrams
+infra/kong/
+  kong.yml                  Kong declarative config (routes, plugins, consumers)
+
+docs/                       Architecture diagrams
 ```
 
 ## Tech Stack
 
 | Component | Technology |
 |---|---|
-| API Gateway | Kong OSS 3.6 |
+| API Gateway | Kong Enterprise 3.9 (free mode) |
+| Kong AI Plugins | ai-prompt-guard, ai-rate-limiting-advanced |
 | Governance Gateway | TypeScript, Express, Node.js |
-| LLM | Cerebras (free tier, OpenAI compatible) |
+| LLM Provider | Cerebras (free tier, OpenAI compatible) |
 | Database | SQLite (via better-sqlite3) |
-| Dashboard | HTML, vanilla JavaScript |
+| Dashboard | TypeScript, HTML, Tailwind CSS |
+| Frontend Serving | npx serve (port 3000) |

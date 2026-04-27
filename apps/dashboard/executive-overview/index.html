@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<link rel="stylesheet" href="../shared/app.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI-Governed Customer Service Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container": "#efedf1",
+                      "secondary": "#515f74",
+                      "inverse-primary": "#aec7f6",
+                      "inverse-on-surface": "#f1f0f4",
+                      "on-background": "#1a1b1e",
+                      "on-tertiary-fixed-variant": "#564500",
+                      "on-primary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "inverse-surface": "#2f3033",
+                      "on-secondary-fixed": "#0d1c2e",
+                      "surface-container-low": "#f4f3f7",
+                      "on-tertiary-fixed": "#231b00",
+                      "on-surface-variant": "#44474e",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-high": "#e9e7eb",
+                      "on-error-container": "#93000a",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#708ab5",
+                      "surface": "#faf9fd",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-dim": "#dad9dd",
+                      "background": "#faf9fd",
+                      "tertiary-fixed": "#ffe07f",
+                      "on-secondary-container": "#57657a",
+                      "on-secondary": "#ffffff",
+                      "tertiary-container": "#cda800",
+                      "surface-variant": "#e3e2e6",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#3a485b",
+                      "on-tertiary-container": "#4e3e00",
+                      "primary-fixed-dim": "#aec7f6",
+                      "on-primary-fixed": "#001b3d",
+                      "primary": "#000a1e",
+                      "surface-container-highest": "#e3e2e6",
+                      "primary-container": "#002147",
+                      "secondary-container": "#d5e3fc",
+                      "primary-fixed": "#d6e3ff",
+                      "surface-bright": "#faf9fd",
+                      "tertiary-fixed-dim": "#edc200",
+                      "on-surface": "#1a1b1e",
+                      "secondary-fixed-dim": "#b9c7df",
+                      "surface-tint": "#465f88",
+                      "on-primary-fixed-variant": "#2d476f",
+                      "outline-variant": "#c4c6cf",
+                      "outline": "#74777f",
+                      "tertiary": "#725c00",
+                      "secondary-fixed": "#d5e3fc"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "gutter": "16px",
+                      "margin": "24px",
+                      "base": "4px",
+                      "panel-width": "320px",
+                      "grid-columns": "12"
+              },
+              "fontFamily": {
+                      "h2": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "h1": [
+                              "Inter"
+                      ],
+                      "display": [
+                              "Inter"
+                      ],
+                      "data-tabular": [
+                              "Inter"
+                      ],
+                      "caption": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "h2": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "data-tabular": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "caption": [
+                              "11px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen w-full overflow-hidden">
+<!-- SideNavBar Component (Semantic Match: Overview is Active) -->
+<aside class="fixed h-screen left-0 w-64 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hidden md:flex flex-col h-full py-4 px-3 space-y-1 overflow-y-auto z-40 font-inter text-[13px] font-medium text-slate-900 dark:text-white flat no shadows">
+<div class="px-3 mb-6 mt-2">
+<h1 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">CRM Service Governance</h1>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active Tab: Overview -->
+<a class="flex items-center px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white rounded-md Active: scale-[0.98] duration-100" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+                Overview
+            </a>
+<!-- Inactive Tabs -->
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">chat</span>
+                Customer Chat
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">add_circle</span>
+                Create Case
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">inbox</span>
+                Case Inbox
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">gavel</span>
+                Governance Audit
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">policy</span>
+                App Policies
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">inventory_2</span>
+                Product Data
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">account_tree</span>
+                Gateway Flow
+            </a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings</span>
+                Settings
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all rounded-md" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">help</span>
+                Support
+            </a>
+</div>
+</aside>
+<!-- Main Workspace Area -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-64 bg-background">
+<!-- TopNavBar Component -->
+<header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-50 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-slate-50 font-inter text-sm antialiased flat no shadows">
+<div class="flex items-center space-x-4">
+<span class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">AI-Governed Customer Service Hub</span>
+<div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+<span class="flex items-center text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span> Gateway: Online
+</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-2 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-1.5 text-sm font-medium cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span>Team Alpha</span>
+<span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</div>
+<div class="flex items-center space-x-2 text-slate-500 dark:text-slate-400">
+<button class="p-1.5 rounded-md hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors Active: opacity-80 duration-150">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+</button>
+<button class="p-1.5 rounded-md hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors Active: opacity-80 duration-150">
+<span class="material-symbols-outlined text-[20px]">key</span>
+</button>
+<button class="p-1.5 rounded-md hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors Active: opacity-80 duration-150">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</button>
+</div>
+<div class="h-4 w-px bg-slate-200 dark:bg-slate-800"></div>
+<button class="text-blue-600 dark:text-blue-400 font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors px-3 py-1.5 rounded-md Active: opacity-80 duration-150">
+                    Hackathon Demo
+                </button>
+</div>
+</header>
+<!-- Main Dashboard Content -->
+<main class="flex-1 overflow-y-auto p-margin">
+<!-- Hero / Executive Summary -->
+<section class="mb-8 max-w-5xl">
+<h2 class="font-display text-display text-on-surface mb-3 tracking-tight">One customer service platform.<br/>Multiple customer entry points. One governed AI gateway.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl leading-relaxed">
+                    This hub unifies our service architecture. Whether a customer initiates an interactive <strong>Chat</strong> session or submits a structured <strong>Case Form</strong>, all telemetry routes through our central Kong API Gateway. Our proprietary Governance Layer intercepts these streams in real-time, executing strict policy checks for PII masking, authentication, and budget controls before permitting LLM inference or CRM case creation.
+                </p>
+</section>
+<!-- Telemetry Metrics Grid -->
+<section class="grid grid-cols-12 gap-gutter mb-margin">
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Total Requests (24h)</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-total" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary" id="m-status">Live</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">AI Requests Allowed</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-allowed" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-primary-container bg-secondary-container px-1.5 py-0.5 rounded-sm text-[11px]" id="m-allowed-pct">— Yield</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">PII Masked</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-masked" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary">Events</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Requests Blocked</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-blocked" class="font-display text-display text-error">…</span>
+<span class="font-data-tabular text-data-tabular text-error-container bg-on-error-container px-1.5 py-0.5 rounded-sm text-[11px]">Policy Violation</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Inference Cost</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-cost" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary">USD today</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Avg Latency (Gateway)</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-latency" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary">avg</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Cases Created</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-cases" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary">Total in CRM</span>
+</div>
+</div>
+<div class="col-span-12 md:col-span-3 bg-surface border border-outline-variant rounded p-4 flex flex-col justify-between h-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-2">PII Events Detected</span>
+<div class="flex items-baseline space-x-2">
+<span id="m-pii" class="font-display text-display text-on-surface">…</span>
+<span class="font-data-tabular text-data-tabular text-secondary">PII Events</span>
+</div>
+</div>
+</section>
+<!-- Central Visual Diagram: Two Channels, One Gateway -->
+<section class="bg-surface-container-low border border-outline-variant rounded-lg p-8 relative overflow-hidden">
+<h3 class="font-h2 text-h2 text-on-surface mb-8 border-b border-outline-variant pb-2">Architecture Topology: Traffic Flow</h3>
+<div class="grid grid-cols-12 gap-4 items-stretch relative min-h-[400px]">
+<!-- Left: Entry Points -->
+<div class="col-span-3 flex flex-col justify-around relative z-10 space-y-6">
+<div class="bg-surface border border-outline rounded p-4 shadow-sm flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-[32px] text-primary mb-2">forum</span>
+<span class="font-label-sm text-label-sm text-on-surface block">Customer Chat</span>
+<span class="font-caption text-caption text-on-surface-variant mt-1">Interactive WS Flow</span>
+</div>
+<div class="bg-surface border border-outline rounded p-4 shadow-sm flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-[32px] text-primary mb-2">assignment</span>
+<span class="font-label-sm text-label-sm text-on-surface block">Case Form</span>
+<span class="font-caption text-caption text-on-surface-variant mt-1">Structured REST Payload</span>
+</div>
+</div>
+<!-- Connectors Left to Center -->
+<div class="col-span-1 flex flex-col justify-around items-center text-outline-variant">
+<span class="material-symbols-outlined">arrow_right_alt</span>
+<span class="material-symbols-outlined">arrow_right_alt</span>
+</div>
+<!-- Center: Kong / Governance Gateway -->
+<div class="col-span-4 bg-primary text-on-primary rounded border border-primary-container p-6 relative z-10 flex flex-col justify-center shadow-md">
+<div class="flex items-center justify-center mb-4 border-b border-primary-fixed-dim/30 pb-4">
+<span class="material-symbols-outlined text-[40px] mr-3">admin_panel_settings</span>
+<div>
+<h4 class="font-h1 text-h1 text-on-primary m-0">Kong API Gateway</h4>
+<span class="font-caption text-caption text-primary-fixed uppercase tracking-widest">Governance Layer</span>
+</div>
+</div>
+<div class="space-y-3 mt-2">
+<div class="flex items-center bg-surface-tint/20 rounded p-2 border border-surface-tint/30">
+<span class="material-symbols-outlined text-[18px] mr-2 text-inverse-primary">policy</span>
+<span class="font-data-tabular text-data-tabular text-on-primary">PII Masking Engine</span>
+</div>
+<div class="flex items-center bg-surface-tint/20 rounded p-2 border border-surface-tint/30">
+<span class="material-symbols-outlined text-[18px] mr-2 text-inverse-primary">verified_user</span>
+<span class="font-data-tabular text-data-tabular text-on-primary">Auth &amp; Rate Limiting</span>
+</div>
+<div class="flex items-center bg-surface-tint/20 rounded p-2 border border-surface-tint/30">
+<span class="material-symbols-outlined text-[18px] mr-2 text-inverse-primary">account_balance_wallet</span>
+<span class="font-data-tabular text-data-tabular text-on-primary">Token Budget Control</span>
+</div>
+</div>
+</div>
+<!-- Connectors Center to Right -->
+<div class="col-span-1 flex flex-col justify-around items-center text-outline-variant">
+<span class="material-symbols-outlined">arrow_right_alt</span>
+<span class="material-symbols-outlined">arrow_right_alt</span>
+</div>
+<!-- Right: Destinations -->
+<div class="col-span-3 flex flex-col justify-around relative z-10 space-y-6">
+<div class="bg-surface border border-outline rounded p-4 shadow-sm flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-[32px] text-tertiary mb-2">smart_toy</span>
+<span class="font-label-sm text-label-sm text-on-surface block">AI Response Generator</span>
+<span class="font-caption text-caption text-on-surface-variant mt-1">LLM Inference</span>
+</div>
+<div class="bg-surface border border-outline rounded p-4 shadow-sm flex flex-col items-center text-center">
+<span class="material-symbols-outlined text-[32px] text-tertiary mb-2">dns</span>
+<span class="font-label-sm text-label-sm text-on-surface block">Core CRM Database</span>
+<span class="font-caption text-caption text-on-surface-variant mt-1">Record Creation</span>
+</div>
+</div>
+<!-- Decorative background lines for industrial feel -->
+<div class="absolute inset-0 pointer-events-none grid grid-cols-12 gap-4 z-0 opacity-10">
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+<div class="col-span-1 border-r border-outline-variant h-full"></div>
+</div>
+</div>
+</section>
+</main>
+</div>
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/api-client.js"></script>
+<script src="../shared/dist/render-utils.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+(function () {
+  const { fmtCurrency, fmtMs } = window.renderUtils;
+  window.navigation.bindSideNav('overview');
+
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const fmtBig = (n) => {
+    n = Number(n || 0);
+    if (n >= 1000) return (n / 1000).toFixed(1) + 'k';
+    return String(n);
+  };
+
+  Promise.allSettled([
+    window.api.getHealth(),
+    window.api.getGovernanceStats(),
+    window.api.getServiceCases({ limit: 1 }),
+  ]).then(([health, stats, cases]) => {
+    if (health.status === 'fulfilled') {
+      set('m-status', 'Gateway: Online');
+    } else {
+      set('m-status', 'Gateway: Offline');
+    }
+
+    if (stats.status === 'fulfilled') {
+      const s = stats.value;
+      set('m-total', fmtBig(s.totalRequests));
+      set('m-allowed', fmtBig(s.allowedRequests));
+      const yieldPct = s.totalRequests > 0 ? Math.round((s.allowedRequests / s.totalRequests) * 100) : 0;
+      set('m-allowed-pct', yieldPct + '% yield');
+      set('m-masked', fmtBig(s.maskedRequests));
+      set('m-blocked', fmtBig(s.blockedRequests));
+      set('m-cost', fmtCurrency(s.costToday));
+      set('m-latency', fmtMs(s.averageLatencyMs));
+      set('m-pii', fmtBig(s.piiEvents));
+      if (s.totalRequests === 0) {
+        const m = document.getElementById('m-status');
+        if (m) m.textContent = 'No governance logs yet. Try Customer Chat or Create Case.';
+      }
+    } else {
+      ['m-total', 'm-allowed', 'm-masked', 'm-blocked', 'm-cost', 'm-latency', 'm-pii'].forEach((id) => set(id, '—'));
+    }
+
+    if (cases.status === 'fulfilled') {
+      set('m-cases', fmtBig(cases.value.total ?? 0));
+    } else {
+      set('m-cases', '—');
+    }
+  });
+})();
+</script>
+<script>window.PAGE_INFO={key:'overview',title:'Overview'};</script>
+<script src="../shared/dist/layout.js"></script>
+</body></html>

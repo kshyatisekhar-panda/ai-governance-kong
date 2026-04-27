@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Governance Gateway | Apps</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f1219; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; padding: 60px 24px; }
+    .container { max-width: 600px; width: 100%; }
+    h1 { color: #fff; font-size: 24px; margin-bottom: 8px; }
+    .subtitle { color: #8892b0; font-size: 13px; margin-bottom: 40px; }
+    .section { margin-bottom: 32px; }
+    .section-label { font-size: 11px; color: #5a7aaa; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px; }
+    .apps { display: flex; flex-direction: column; gap: 12px; }
+    a { text-decoration: none; }
+    .app-card { background: #1a1f35; border: 1px solid #2a3050; border-radius: 12px; padding: 20px; transition: border-color 0.2s; }
+    .app-card:hover { border-color: #64ffda; }
+    .app-card h2 { color: #fff; font-size: 15px; margin-bottom: 4px; }
+    .app-card p { color: #8892b0; font-size: 12px; }
+    .app-card.manager { border-left: 3px solid #ffc107; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI Governance Gateway</h1>
+    <p class="subtitle">Atlas Copco | Enterprise AI Gateway and Governance PoC</p>
+
+    <div class="section">
+      <div class="section-label">Applications</div>
+      <div class="apps">
+        <a href="/chat/">
+          <div class="app-card">
+            <h2>Chat</h2>
+            <p>AI chat bot with PII masking, cost tracking, and smart routing</p>
+          </div>
+        </a>
+        <a href="/product-explorer/">
+          <div class="app-card">
+            <h2>Product Explorer</h2>
+            <p>Sales data explorer with filters by business area, product, brand, region</p>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-label">Manager</div>
+      <div class="apps">
+        <a href="/dashboard/">
+          <div class="app-card manager">
+            <h2>AI Governance Dashboard</h2>
+            <p>Overview, audit logs, cost tracking, and governance monitoring across all apps</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

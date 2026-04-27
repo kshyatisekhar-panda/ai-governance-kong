@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { getAllBudgets } from "../plugins/cost-tracker.js";
+import { getAllPolicies } from "../plugins/app-policy.js";
 import {
   getRecentLogs,
   getOverallStats,
@@ -37,4 +38,8 @@ adminRouter.get("/stats/by-model", async (_req, res) => {
 adminRouter.get("/stats/today", async (_req, res) => {
   const stats = await getTodayStatsByTeam();
   res.json(stats);
+});
+
+adminRouter.get("/policies", (_req, res) => {
+  res.json(getAllPolicies());
 });

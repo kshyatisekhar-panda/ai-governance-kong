@@ -34,9 +34,10 @@
     <div class="team-select">
       <label>Team:</label>
       <select id="team-key">
-        <option value="chat-key-2024">Engineering (chat-ui)</option>
-        <option value="ds-key-2024">Data Science (analytics-bot)</option>
-        <option value="mkt-key-2024">Marketing (content-writer)</option>
+        <option value="chat-key-2024">Industrial Technique (Atlas Chat)</option>
+        <option value="eng-key-2024">Compressor Technique (Service Assistant)</option>
+        <option value="ds-key-2024">Vacuum Technique (Product Explorer)</option>
+        <option value="mkt-key-2024">Power Technique (Sales Copilot)</option>
       </select>
     </div>
 
@@ -49,7 +50,7 @@
   </div>
 
   <script>
-    const GATEWAY = "http://localhost:8001";
+    const GATEWAY = "http://localhost:8000";
     const chatBox = document.getElementById("chat-box");
 
     function addMsg(role, text, meta) {

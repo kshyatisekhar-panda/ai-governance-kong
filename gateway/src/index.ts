@@ -4,6 +4,7 @@ import { corsMiddleware } from "./middleware/cors.js";
 import { chatRouter } from "./routes/chat.js";
 import { adminRouter } from "./routes/admin.js";
 import { businessRouter } from "./routes/business.js";
+import { compatRouter } from "./routes/compat.js";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/ai/chat", chatRouter);
 app.use("/admin", adminRouter);
 app.use("/api", businessRouter);
+app.use("/api", compatRouter);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "ai-governance-gateway" });

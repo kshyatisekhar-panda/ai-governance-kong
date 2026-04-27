@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<link rel="stylesheet" href="../shared/app.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-width=1.0" name="viewport"/>
+<title>Product &amp; Service Data Explorer - AI-Governed Customer Service Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#efedf1",
+                        "secondary": "#515f74",
+                        "inverse-primary": "#aec7f6",
+                        "inverse-on-surface": "#f1f0f4",
+                        "on-background": "#1a1b1e",
+                        "on-tertiary-fixed-variant": "#564500",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3033",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "surface-container-low": "#f4f3f7",
+                        "on-tertiary-fixed": "#231b00",
+                        "on-surface-variant": "#44474e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e9e7eb",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#708ab5",
+                        "surface": "#faf9fd",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#dad9dd",
+                        "background": "#faf9fd",
+                        "tertiary-fixed": "#ffe07f",
+                        "on-secondary-container": "#57657a",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#cda800",
+                        "surface-variant": "#e3e2e6",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "on-tertiary-container": "#4e3e00",
+                        "primary-fixed-dim": "#aec7f6",
+                        "on-primary-fixed": "#001b3d",
+                        "primary": "#000a1e",
+                        "surface-container-highest": "#e3e2e6",
+                        "primary-container": "#002147",
+                        "secondary-container": "#d5e3fc",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-bright": "#faf9fd",
+                        "tertiary-fixed-dim": "#edc200",
+                        "on-surface": "#1a1b1e",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-tint": "#465f88",
+                        "on-primary-fixed-variant": "#2d476f",
+                        "outline-variant": "#c4c6cf",
+                        "outline": "#74777f",
+                        "tertiary": "#725c00",
+                        "secondary-fixed": "#d5e3fc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin": "24px",
+                        "base": "4px",
+                        "panel-width": "320px",
+                        "grid-columns": "12"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h1": ["Inter"],
+                        "display": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["18px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "label-sm": ["12px", {"lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                        "h1": ["24px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "data-tabular": ["13px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "caption": ["11px", {"lineHeight": "1.4", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md text-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar (JSON) -->
+<nav class="fixed h-screen left-0 w-64 border-r border-slate-200 dark:border-slate-800 flat no shadows flex flex-col py-4 px-3 space-y-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 z-40 hidden md:flex">
+<div class="mb-8 px-3 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<img alt="Organization Logo" class="w-full h-full object-cover rounded-full" data-alt="professional modern abstract geometric corporate logo design in deep navy and silver on white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBinQwI9frANvezlO1sQRFEWhFVvFF61V3T_COBPorhSxE6GOB0GmJeDpSKisa3v-VE9Rr4EvO3r_EgQtEJXPeLicz7jGPjvPgMurSux5I2X_O7tgHbyp4b_bXtivg72ZNN0r2SCe2YX5a_iFIpCHlCX0nOKJcBaSExi3wy-NtarjwYMcQTEl5wtoNtufDLGpS8YINudLzaU4GqyhwFPD3ivH7oPTM9gW1uKBDlZUtZIh1vE60BToQEXsO5Jclbi-XfujnsgQ0jJQQ"/>
+</div>
+<div>
+<h2 class="text-xl font-black text-slate-900 dark:text-white truncate">CRM Service Governance</h2>
+<p class="font-caption text-caption text-secondary">Gateway: Online</p>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<!-- Active Tab: Product Data -->
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">chat</span>
+<span>Customer Chat</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">add_circle</span>
+<span>Create Case</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">inbox</span>
+<span>Case Inbox</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">gavel</span>
+<span>Governance Audit</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">policy</span>
+<span>App Policies</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white rounded-md scale-[0.98] duration-100 font-inter text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span>Product Data</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">account_tree</span>
+<span>Gateway Flow</span>
+</a>
+</div>
+<div class="pt-4 border-t border-outline-variant space-y-1">
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all font-inter text-[13px] font-medium rounded-md" href="#">
+<span class="material-symbols-outlined text-lg">help</span>
+<span>Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<div class="flex-1 flex flex-col md:ml-64 w-full bg-background overflow-hidden relative">
+<!-- TopNavBar (JSON) -->
+<header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-50 docked full-width border-b border-slate-200 dark:border-slate-800 flat no shadows bg-white dark:bg-slate-950 font-inter text-sm antialiased text-slate-900 dark:text-slate-50">
+<!-- Left: Brand Logo -->
+<div class="flex items-center md:hidden">
+<span class="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100">AI-Governed Customer Service Hub</span>
+</div>
+<!-- Left: Search (on_left) -->
+<div class="hidden md:flex flex-1 max-w-md">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-surface-container-low border border-outline-variant rounded text-data-tabular font-data-tabular focus:border-primary focus:ring-0 transition-colors" placeholder="Search product data..." type="text"/>
+</div>
+</div>
+<!-- Right: Actions -->
+<div class="flex items-center space-x-4">
+<button class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">hub</span>
+</button>
+<button class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">key</span>
+</button>
+<button class="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">group</span>
+</button>
+<button class="bg-primary text-on-primary px-4 py-1.5 rounded text-data-tabular font-data-tabular font-semibold hover:bg-primary-container hover:text-on-primary-container transition-colors ml-2 border border-primary">
+                    Hackathon Demo
+                </button>
+<div class="w-8 h-8 rounded-full ml-4 border border-outline-variant overflow-hidden cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional headshot of a corporate engineer in a well-lit office environment" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDMqetSeVakshDegroOyIo2ntNPiTlRP8-IV70AI3Puzye8oDqyxLIe_iAtg6B4IZyAn3NIqnbv1dAMZCUBveOpek71-r433UsvW1a-2bYRB7eZrDJnxhbrTFDUYUJEFMubbN6PEnnVIoLfFKkS6GoDbIgMDzBM3CVDtB6VY8_6yqyL5sfdTORW8dymAFN-yZIQBsNE40K4Dgqk4fM09aR5xX6E36sHEW9J06Up_A7D25akT1mJY0n5YMIyKULIrsrNSMOfYW4u2W0"/>
+</div>
+</div>
+</header>
+<!-- Main Body Area with Side Panel Layout -->
+<main class="flex-1 flex overflow-hidden">
+<!-- Center Canvas (Table & Filters) -->
+<div class="flex-1 flex flex-col overflow-y-auto px-margin py-margin space-y-6">
+<!-- Page Header & Governance Badge -->
+<div class="flex flex-col md:flex-row md:items-end justify-between space-y-4 md:space-y-0">
+<div>
+<h1 class="font-h1 text-h1 text-on-background mb-1">Product &amp; Service Data Explorer</h1>
+<p class="font-body-md text-body-md text-secondary max-w-2xl">Analyze performance and service metrics across Atlas Copco industrial equipment portfolios.</p>
+</div>
+<div class="inline-flex items-center space-x-2 bg-surface-container-low border border-outline-variant rounded-full px-3 py-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Policy: Business Data (No PII expected)</span>
+</div>
+</div>
+<!-- Filters & Controls Bar -->
+<div class="bg-surface p-4 border border-outline-variant rounded-DEFAULT flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
+<div class="flex flex-wrap items-center gap-4">
+<div class="flex flex-col space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Region</label>
+<select id="prod-filter-region" class="bg-surface border border-outline-variant text-data-tabular font-data-tabular rounded py-1.5 px-3 focus:border-primary focus:ring-0 min-w-[150px]">
+<option value="">All Regions</option>
+</select>
+</div>
+<div class="flex flex-col space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase">Business Area</label>
+<select id="prod-filter-business-area" class="bg-surface border border-outline-variant text-data-tabular font-data-tabular rounded py-1.5 px-3 focus:border-primary focus:ring-0 min-w-[150px]">
+<option value="">All Business Areas</option>
+</select>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button class="flex items-center space-x-1 px-3 py-1.5 border border-outline-variant rounded text-data-tabular font-data-tabular hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+<span>More Filters</span>
+</button>
+<button class="flex items-center space-x-1 px-3 py-1.5 border border-outline-variant rounded text-data-tabular font-data-tabular hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-sm">download</span>
+<span>Export</span>
+</button>
+</div>
+</div>
+<!-- Data Table Card -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT overflow-hidden flex-1 flex flex-col min-h-[400px]">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-low">
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap">Product</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap">Category</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap">Region</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap text-right">Sales (YTD)</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap text-right">Inventory</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap text-right">Active Cases</th>
+<th class="py-3 px-4 font-label-sm text-label-sm text-on-surface-variant uppercase whitespace-nowrap text-right">Avg Response Time</th>
+</tr>
+</thead>
+<tbody id="products-tbody" class="divide-y divide-outline-variant/50 bg-white">
+<tr><td colspan="7" class="py-6 text-center text-on-surface-variant">Loading product data…</td></tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination Footer -->
+<div class="mt-auto border-t border-outline-variant bg-surface-container-low p-3 flex items-center justify-between">
+<span id="products-pagination" class="font-caption text-caption text-secondary">Loading…</span>
+<div class="flex items-center space-x-1">
+<button class="p-1 border border-outline-variant rounded bg-white text-secondary hover:bg-surface-container disabled:opacity-50" disabled="">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="p-1 border border-outline-variant rounded bg-white text-secondary hover:bg-surface-container">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Technical Side Panel: Ask AI -->
+<aside class="w-panel-width hidden lg:flex flex-col border-l border-outline-variant bg-[#F8FAFC]">
+<!-- Panel Header -->
+<div class="p-4 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+<div class="flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary-container text-xl" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<h2 class="font-h2 text-h2 text-primary">Ask AI about this data</h2>
+</div>
+</div>
+<!-- Chat Canvas -->
+<div id="ask-canvas" class="flex-1 overflow-y-auto p-4 flex flex-col space-y-4">
+<div class="flex items-start space-x-3">
+<div class="w-6 h-6 rounded bg-primary-container flex-shrink-0 flex items-center justify-center text-on-primary mt-1">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-3 max-w-[85%] rounded-tl-none">
+<p class="font-body-md text-body-md text-on-surface">Ask a business-data question about the products in the grid. Personal data is not expected on this path; emails or phone numbers will be blocked by the gateway.</p>
+<div class="mt-2 flex flex-col gap-1">
+<button class="text-left text-caption text-primary hover:underline ask-quick" data-q="Which products have high service demand in the Nordics this month?">"Which products have high service demand in the Nordics this month?"</button>
+<button class="text-left text-caption text-primary hover:underline ask-quick" data-q="Compare warranty claims across regions for the GA 75 VSD+ Compressor.">"Compare warranty claims across regions for the GA 75 VSD+ Compressor."</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area -->
+<div class="p-4 bg-white border-t border-outline-variant">
+<form id="ask-form" class="relative">
+<textarea id="ask-input" class="w-full pl-3 pr-10 py-2 border border-outline-variant rounded focus:border-primary focus:ring-0 font-body-md text-body-md resize-none text-on-surface" placeholder="Ask a question about the table..." rows="2"></textarea>
+<button id="ask-send" type="submit" class="absolute bottom-3 right-3 text-primary hover:text-primary-container transition-colors disabled:opacity-50">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</form>
+<p id="ask-status" class="font-caption text-caption text-secondary mt-2 text-center">AI governance policies apply. No PII should be queried.</p>
+</div>
+</aside>
+</main>
+</div>
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/api-client.js"></script>
+<script src="../shared/dist/render-utils.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+(function () {
+  const { escapeHtml, governancePanelHtml, decisionBadgeClass } = window.renderUtils;
+  window.navigation.bindSideNav('product-data');
+
+  const tbody = document.getElementById('products-tbody');
+  const pagination = document.getElementById('products-pagination');
+  const fRegion = document.getElementById('prod-filter-region');
+  const fBA = document.getElementById('prod-filter-business-area');
+  const askCanvas = document.getElementById('ask-canvas');
+  const askForm = document.getElementById('ask-form');
+  const askInput = document.getElementById('ask-input');
+  const askSend = document.getElementById('ask-send');
+  const askStatus = document.getElementById('ask-status');
+
+  function fillSelect(el, values) {
+    if (!values) return;
+    const head = el.querySelector('option[value=""]');
+    el.innerHTML = '';
+    if (head) el.appendChild(head);
+    values.forEach((v) => {
+      const o = document.createElement('option');
+      o.value = v; o.textContent = v;
+      el.appendChild(o);
+    });
+  }
+
+  window.api.getFilters().then((f) => {
+    if (f && f.products) {
+      fillSelect(fRegion, f.products.region);
+      fillSelect(fBA, f.products.businessArea);
+    }
+  }).catch(() => { /* leave defaults */ });
+
+  function renderRow(r) {
+    const cellRight = 'py-2 px-4 font-data-tabular text-data-tabular text-right';
+    return '<tr class="hover:bg-[#F0F9FF] transition-colors group h-10">' +
+      '<td class="py-2 px-4 font-data-tabular text-data-tabular font-semibold text-primary">' + escapeHtml(r.product) + '</td>' +
+      '<td class="py-2 px-4 font-data-tabular text-data-tabular text-secondary">' + escapeHtml(r.category) + '</td>' +
+      '<td class="py-2 px-4 font-data-tabular text-data-tabular text-secondary">' + escapeHtml(r.region) + '</td>' +
+      '<td class="' + cellRight + '">' + escapeHtml(String(r.sales)) + ' Units</td>' +
+      '<td class="' + cellRight + '">' + escapeHtml(r.inventory) + '</td>' +
+      '<td class="' + cellRight + ' ' + (r.activeServiceCases >= 5 ? 'text-error font-semibold' : '') + '">' + escapeHtml(String(r.activeServiceCases)) + '</td>' +
+      '<td class="' + cellRight + '">' + escapeHtml(String(r.avgResponseTimeHours)) + ' Hrs</td>' +
+    '</tr>';
+  }
+
+  function loadProducts() {
+    const filters = {
+      region: fRegion.value || undefined,
+      businessArea: fBA.value || undefined,
+      limit: 200,
+    };
+    window.api.getProducts(filters).then((data) => {
+      const rows = data.rows || [];
+      if (rows.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="py-6 text-center text-on-surface-variant">No product rows match these filters.</td></tr>';
+      } else {
+        tbody.innerHTML = rows.map(renderRow).join('');
+      }
+      pagination.textContent = 'Showing ' + rows.length + ' of ' + (data.total ?? rows.length) + ' records';
+    }).catch((err) => {
+      tbody.innerHTML = '';
+      window.renderUtils.renderError(tbody.parentElement, err);
+    });
+  }
+
+  fRegion.addEventListener('change', loadProducts);
+  fBA.addEventListener('change', loadProducts);
+  loadProducts();
+
+  // Quick-prompt buttons
+  document.querySelectorAll('.ask-quick').forEach((btn) => {
+    btn.addEventListener('click', () => { askInput.value = btn.dataset.q; askInput.focus(); });
+  });
+
+  function appendUser(text) {
+    const div = document.createElement('div');
+    div.className = 'flex items-start space-x-3 justify-end';
+    div.innerHTML =
+      '<div class="bg-primary-fixed border border-primary-fixed-dim rounded-lg p-3 max-w-[85%] rounded-tr-none"><p class="font-body-md text-body-md text-on-primary-fixed whitespace-pre-wrap">' + escapeHtml(text) + '</p></div>' +
+      '<div class="w-6 h-6 rounded bg-surface border border-outline-variant flex-shrink-0 flex items-center justify-center mt-1"><span class="material-symbols-outlined text-[14px]">person</span></div>';
+    askCanvas.appendChild(div);
+    askCanvas.scrollTop = askCanvas.scrollHeight;
+  }
+
+  function appendAssistant(text, governance) {
+    const div = document.createElement('div');
+    div.className = 'flex items-start space-x-3';
+    div.innerHTML =
+      '<div class="w-6 h-6 rounded bg-primary-container flex-shrink-0 flex items-center justify-center text-on-primary mt-1"><span class="material-symbols-outlined text-[14px]">smart_toy</span></div>' +
+      '<div class="bg-surface border border-outline-variant rounded-lg p-3 max-w-[85%] rounded-tl-none">' +
+        '<p class="font-body-md text-body-md text-on-surface whitespace-pre-wrap">' + escapeHtml(text) + '</p>' +
+        (governance
+          ? '<div class="mt-3 pt-3 border-t border-outline-variant"><span class="font-label-sm text-label-sm px-2 py-0.5 rounded ' + decisionBadgeClass(governance.decision) + '">' + escapeHtml(governance.decision || '') + '</span> · ' + escapeHtml(governance.model || '') + ' · ' + escapeHtml(governance.routeReason || '') + '</div>'
+          : '') +
+      '</div>';
+    askCanvas.appendChild(div);
+    askCanvas.scrollTop = askCanvas.scrollHeight;
+  }
+
+  async function ask(question) {
+    if (!question || !question.trim()) return;
+    askSend.disabled = true;
+    askStatus.textContent = 'Sending through gateway…';
+    appendUser(question);
+    askInput.value = '';
+    try {
+      const resp = await window.api.askProductQuestion(question, {
+        region: fRegion.value || undefined,
+        businessArea: fBA.value || undefined,
+      });
+      appendAssistant(resp.answer || '(no answer)', resp.governance);
+      askStatus.textContent = 'Gateway decision: ' + (resp.governance && resp.governance.decision);
+    } catch (err) {
+      if (err && err.body && err.body.governance) {
+        appendAssistant('Request blocked by governance policy: ' + (err.body.governance.blockReason || 'POLICY_VIOLATION'), err.body.governance);
+        askStatus.textContent = 'Gateway blocked the request.';
+      } else {
+        appendAssistant('Gateway error: ' + (err.message || err), null);
+        askStatus.textContent = 'Gateway error.';
+      }
+    } finally {
+      askSend.disabled = false;
+    }
+  }
+
+  askForm.addEventListener('submit', (e) => { e.preventDefault(); ask(askInput.value); });
+})();
+</script>
+<script>window.PAGE_INFO={key:'product-data',title:'Product Data'};</script>
+<script src="../shared/dist/layout.js"></script>
+</body></html>

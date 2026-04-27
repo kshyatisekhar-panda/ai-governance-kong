@@ -26,16 +26,16 @@ for (const envPath of candidates) {
 }
 
 export const config = {
-  port: parseInt(process.env.PORT || "8000", 10),
+  port: parseInt(process.env.PORT || "8001", 10),
   llmBaseUrl: process.env.LLM_BASE_URL || "https://api.cerebras.ai",
   llmApiKey: process.env.LLM_API_KEY || "",
   sqlitePath: process.env.SQLITE_PATH || "./ai_gateway.db",
 } as const;
 
 export const API_KEYS: Record<string, ClientIdentity> = {
-  "eng-key-2024": { team: "engineering", app: "code-assistant" },
-  "ds-key-2024": { team: "data-science", app: "analytics-bot" },
-  "mkt-key-2024": { team: "marketing", app: "content-writer" },
-  "chat-key-2024": { team: "engineering", app: "chat-ui" },
-  "scheduler-key-2024": { team: "data-science", app: "windows-scheduler" },
+  "eng-key-2024": { team: "Compressor Technique", app: "Service Assistant" },
+  "ds-key-2024": { team: "Vacuum Technique", app: "Product Explorer" },
+  "mkt-key-2024": { team: "Power Technique", app: "Sales Copilot" },
+  "chat-key-2024": { team: "Industrial Technique", app: "Atlas Chat" },
+  "scheduler-key-2024": { team: "Vacuum Technique", app: "Report Scheduler" },
 };

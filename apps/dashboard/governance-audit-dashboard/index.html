@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<link rel="stylesheet" href="../shared/app.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Governance Audit Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#efedf1",
+                        "secondary": "#515f74",
+                        "inverse-primary": "#aec7f6",
+                        "inverse-on-surface": "#f1f0f4",
+                        "on-background": "#1a1b1e",
+                        "on-tertiary-fixed-variant": "#564500",
+                        "on-primary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#2f3033",
+                        "on-secondary-fixed": "#0d1c2e",
+                        "surface-container-low": "#f4f3f7",
+                        "on-tertiary-fixed": "#231b00",
+                        "on-surface-variant": "#44474e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-high": "#e9e7eb",
+                        "on-error-container": "#93000a",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#708ab5",
+                        "surface": "#faf9fd",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-dim": "#dad9dd",
+                        "background": "#faf9fd",
+                        "tertiary-fixed": "#ffe07f",
+                        "on-secondary-container": "#57657a",
+                        "on-secondary": "#ffffff",
+                        "tertiary-container": "#cda800",
+                        "surface-variant": "#e3e2e6",
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#3a485b",
+                        "on-tertiary-container": "#4e3e00",
+                        "primary-fixed-dim": "#aec7f6",
+                        "on-primary-fixed": "#001b3d",
+                        "primary": "#000a1e",
+                        "surface-container-highest": "#e3e2e6",
+                        "primary-container": "#002147",
+                        "secondary-container": "#d5e3fc",
+                        "primary-fixed": "#d6e3ff",
+                        "surface-bright": "#faf9fd",
+                        "tertiary-fixed-dim": "#edc200",
+                        "on-surface": "#1a1b1e",
+                        "secondary-fixed-dim": "#b9c7df",
+                        "surface-tint": "#465f88",
+                        "on-primary-fixed-variant": "#2d476f",
+                        "outline-variant": "#c4c6cf",
+                        "outline": "#74777f",
+                        "tertiary": "#725c00",
+                        "secondary-fixed": "#d5e3fc"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin": "24px",
+                        "base": "4px",
+                        "panel-width": "320px",
+                        "grid-columns": "12"
+                    },
+                    "fontFamily": {
+                        "h2": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "h1": ["Inter"],
+                        "display": ["Inter"],
+                        "data-tabular": ["Inter"],
+                        "caption": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "h2": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "h1": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-tabular": ["13px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "caption": ["11px", { "lineHeight": "1.4", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #faf9fd; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .icon-fill { font-variation-settings: 'FILL' 1; }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="fixed h-screen left-0 w-64 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col py-4 px-3 space-y-1 overflow-y-auto z-40 hidden md:flex">
+<div class="px-3 pb-6 border-b border-slate-200 dark:border-slate-800 mb-2">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined">shield</span>
+</div>
+<div>
+<div class="text-xl font-black text-slate-900 dark:text-white font-display tracking-tight text-lg">Industrial Service Intelligence</div>
+<div class="font-caption text-secondary mt-0.5">Gateway: Online</div>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">chat</span>
+                Customer Chat
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">add_circle</span>
+                Create Case
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">inbox</span>
+                Case Inbox
+            </a>
+<a class="flex items-center px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white rounded-md transition-all font-inter text-[13px] font-medium" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px] icon-fill">gavel</span>
+                Governance Audit
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">policy</span>
+                App Policies
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">inventory_2</span>
+                Product Data
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">account_tree</span>
+                Gateway Flow
+            </a>
+</div>
+<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">settings</span>
+                Settings
+            </a>
+<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
+<span class="material-symbols-outlined mr-3 text-[20px]">help</span>
+                Support
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 bg-background min-h-screen w-full">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-30 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 font-inter text-sm antialiased text-slate-900 dark:text-slate-50">
+<div class="flex items-center flex-1">
+<div class="md:hidden text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 mr-4">Industrial Service Intelligence</div>
+<div class="relative w-64 max-w-md hidden md:block">
+<span class="material-symbols-outlined absolute left-2 top-1.5 text-secondary text-[20px]">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-DEFAULT py-1.5 pl-8 pr-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface placeholder:text-secondary" placeholder="Search logs, models, users..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded">
+<span class="material-symbols-outlined">hub</span>
+</button>
+<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded">
+<span class="material-symbols-outlined">key</span>
+</button>
+<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded mr-2">
+<span class="material-symbols-outlined">group</span>
+</button>
+<button class="bg-primary text-on-primary px-3 py-1.5 rounded-DEFAULT text-sm font-medium hover:bg-primary-container transition-colors mr-4">
+                    Hackathon Demo
+                </button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0 cursor-pointer">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional corporate headshot avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Bjyx3dQ4b4HoTWbEd04UmWDcD482_p5bq18jyW3u4AIIS1ISgRFeAuVtFsgZdQ0D2dKfYw6ltYX77Z-h7BiKHkcXwr2BepRrzRfjqIbqoquFtEZuuvUhEZZxdwesePmFMg01SwsamXoaUF-aXaY49-Ncy17s9uRi5ZyOT0wWmxmKNGAsp2z7050REFXYtmbcTrja1odPfOXyOxP_uMiJJXamUN8PtWDdegB6CEShFjQHnv-sxIAnXJT609aI3x6d5uZnLi0t1GbF"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-y-auto p-margin">
+<div class="flex justify-between items-end mb-6">
+<div>
+<h1 class="font-h1 text-h1 text-on-surface">Governance Audit</h1>
+<p class="font-body-md text-body-md text-secondary mt-1">Real-time monitoring of LLM gateway decisions and PII events.</p>
+<div class="mt-3 flex flex-wrap gap-2 items-center">
+<select id="log-filter-decision" class="px-2 py-1 bg-surface-container-low border border-outline-variant rounded text-data-tabular font-data-tabular">
+  <option value="">Any decision</option><option>ALLOWED</option><option>MASKED</option><option>BLOCKED</option>
+</select>
+<select id="log-filter-source" class="px-2 py-1 bg-surface-container-low border border-outline-variant rounded text-data-tabular font-data-tabular">
+  <option value="">Any source app</option>
+</select>
+<select id="log-filter-team" class="px-2 py-1 bg-surface-container-low border border-outline-variant rounded text-data-tabular font-data-tabular">
+  <option value="">Any team</option>
+</select>
+<select id="log-filter-pii" class="px-2 py-1 bg-surface-container-low border border-outline-variant rounded text-data-tabular font-data-tabular">
+  <option value="">Any PII type</option><option>EMAIL</option><option>PHONE</option><option>SWEDISH_PERSONNUMMER</option><option>US_SSN</option><option>CREDIT_CARD</option><option>NAME</option>
+</select>
+<button id="log-filter-refresh" class="px-2 py-1 border border-outline-variant rounded text-data-tabular font-data-tabular hover:bg-surface-container-low">Refresh</button>
+</div>
+</div>
+<div class="flex space-x-2">
+<button class="px-3 py-1.5 border border-outline-variant rounded-DEFAULT font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-1.5">filter_list</span>
+                        Filter
+                    </button>
+<button class="px-3 py-1.5 border border-outline-variant rounded-DEFAULT font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors flex items-center">
+<span class="material-symbols-outlined text-[16px] mr-1.5">download</span>
+                        Export
+                    </button>
+</div>
+</div>
+<!-- Top Metrics Bento Grid -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-gutter mb-6">
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="font-label-sm text-label-sm text-secondary uppercase">Total Requests</div>
+<div id="ga-total" class="font-display text-display text-on-surface mt-2">…</div>
+<div id="ga-total-sub" class="flex items-center text-secondary mt-1 font-caption text-caption">all-time</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="font-label-sm text-label-sm text-secondary uppercase flex items-center">
+<span class="w-2 h-2 rounded-full bg-primary-fixed mr-2"></span> Allowed
+                    </div>
+<div id="ga-allowed" class="font-display text-display text-on-surface mt-2">…</div>
+<div id="ga-allowed-pct" class="font-caption text-caption text-secondary mt-1">— of total</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between relative overflow-hidden">
+<div class="font-label-sm text-label-sm text-secondary uppercase flex items-center relative z-10">
+<span class="w-2 h-2 rounded-full bg-tertiary mr-2"></span> Masked
+                    </div>
+<div id="ga-masked" class="font-display text-display text-on-surface mt-2 relative z-10">…</div>
+<div id="ga-masked-pct" class="font-caption text-caption text-secondary mt-1 relative z-10">— of total</div>
+<div class="absolute bottom-0 right-0 opacity-5 w-16 h-16 transform translate-x-4 translate-y-4">
+<span class="material-symbols-outlined text-[64px]">visibility_off</span>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between relative overflow-hidden">
+<div class="font-label-sm text-label-sm text-secondary uppercase flex items-center relative z-10">
+<span class="w-2 h-2 rounded-full bg-error mr-2"></span> Blocked
+                    </div>
+<div id="ga-blocked" class="font-display text-display text-on-surface mt-2 relative z-10">…</div>
+<div id="ga-blocked-pct" class="font-caption text-caption text-secondary mt-1 relative z-10">— of total</div>
+<div class="absolute bottom-0 right-0 opacity-5 w-16 h-16 transform translate-x-4 translate-y-4">
+<span class="material-symbols-outlined text-[64px]">block</span>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="font-label-sm text-label-sm text-secondary uppercase">PII Events</div>
+<div id="ga-pii" class="font-display text-display text-on-surface mt-2">…</div>
+<div id="ga-pii-sub" class="font-caption text-caption text-secondary mt-1">events captured</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-4 flex flex-col justify-between">
+<div class="font-label-sm text-label-sm text-secondary uppercase">Cost (today)</div>
+<div id="ga-cost" class="font-display text-display text-on-surface mt-2">…</div>
+<div id="ga-budget" class="font-caption text-caption text-secondary mt-1">budget — remaining</div>
+</div>
+</div>
+<!-- Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-6">
+<!-- Decisions over time (live) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-4 lg:col-span-2">
+<div class="flex justify-between items-center mb-4">
+<h2 class="font-h2 text-h2 text-on-surface">Governance Decisions Over Time</h2>
+<span class="font-caption text-caption text-secondary">last 24 hourly buckets</span>
+</div>
+<div id="ga-decisions-chart" class="h-48 w-full"></div>
+<div class="flex justify-center space-x-4 mt-4">
+<div class="flex items-center font-caption text-caption"><span class="w-3 h-3 rounded-sm bg-primary-fixed mr-1.5"></span> Allowed</div>
+<div class="flex items-center font-caption text-caption"><span class="w-3 h-3 rounded-sm bg-tertiary-fixed mr-1.5"></span> Masked</div>
+<div class="flex items-center font-caption text-caption"><span class="w-3 h-3 rounded-sm bg-error mr-1.5"></span> Blocked</div>
+</div>
+</div>
+<!-- Usage by team (live) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-4">
+<h2 class="font-h2 text-h2 text-on-surface mb-4">Usage by Team</h2>
+<div id="ga-usage-by-team" class="space-y-4">
+  <p class="font-caption text-caption text-on-surface-variant">Loading…</p>
+</div>
+</div>
+</div>
+<!-- Audit Log Table -->
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<h2 class="font-h2 text-h2 text-on-surface">Live Audit Log</h2>
+<div class="flex items-center space-x-2">
+<span class="relative flex h-2 w-2 mr-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+<span class="font-caption text-caption text-secondary">Live audit log</span>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant">
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-24">Time</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Source</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Endpoint</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-32">Decision</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Action / Rule Triggered</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-28">Model</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider text-right w-20">Cost</th>
+<th class="py-2 px-4 w-10"></th>
+</tr>
+</thead>
+<tbody id="logs-tbody" class="font-data-tabular text-data-tabular text-on-surface divide-y divide-outline-variant/50">
+<tr><td colspan="8" class="px-4 py-6 text-center text-on-surface-variant">Loading governance logs…</td></tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center font-caption text-caption text-secondary">
+<div>Showing 5 of 124,500 records</div>
+<div class="flex space-x-1">
+<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container disabled:opacity-50" disabled="">Prev</button>
+<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container">Next</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+<div id="log-detail-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-lg p-6 border border-outline-variant relative">
+    <button id="log-detail-close" class="absolute top-3 right-3 text-on-surface-variant hover:text-on-surface" aria-label="Close">
+      <span class="material-symbols-outlined">close</span>
+    </button>
+    <h3 class="font-h2 text-h2 mb-4">Governance Log Detail</h3>
+    <div id="log-detail-body"></div>
+  </div>
+</div>
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/api-client.js"></script>
+<script src="../shared/dist/render-utils.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+(function () {
+  const { escapeHtml, fmtCurrency, fmtMs, fmtTime, fmtTimestamp, decisionBadgeClass, governancePanelHtml, checkForRawPii } = window.renderUtils;
+  window.navigation.bindSideNav('governance-audit');
+
+  const tbody = document.getElementById('logs-tbody');
+  const fDec = document.getElementById('log-filter-decision');
+  const fSrc = document.getElementById('log-filter-source');
+  const fTeam = document.getElementById('log-filter-team');
+  const fPii = document.getElementById('log-filter-pii');
+  const refreshBtn = document.getElementById('log-filter-refresh');
+
+  const modal = document.getElementById('log-detail-modal');
+  const modalBody = document.getElementById('log-detail-body');
+  document.getElementById('log-detail-close').addEventListener('click', () => modal.classList.add('hidden'));
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.add('hidden'); });
+
+  function setStatNum(id, n) { const el = document.getElementById(id); if (el) el.textContent = String(n); }
+  function setStatPct(id, num, total) { const el = document.getElementById(id); if (!el) return; if (!total) el.textContent = '0% of total'; else el.textContent = Math.round((num / total) * 100) + '% of total'; }
+
+  function loadStats() {
+    return window.api.getGovernanceStats().then((s) => {
+      setStatNum('ga-total', s.totalRequests);
+      setStatNum('ga-allowed', s.allowedRequests);
+      setStatPct('ga-allowed-pct', s.allowedRequests, s.totalRequests);
+      setStatNum('ga-masked', s.maskedRequests);
+      setStatPct('ga-masked-pct', s.maskedRequests, s.totalRequests);
+      setStatNum('ga-blocked', s.blockedRequests);
+      setStatPct('ga-blocked-pct', s.blockedRequests, s.totalRequests);
+      setStatNum('ga-pii', s.piiEvents);
+      const cost = document.getElementById('ga-cost');
+      if (cost) cost.textContent = fmtCurrency(s.costToday);
+      const budget = document.getElementById('ga-budget');
+      if (budget) budget.textContent = 'Budget remaining ' + fmtCurrency(s.budgetRemaining);
+      // Populate source app filter
+      if (Array.isArray(s.requestsBySourceApp)) {
+        const current = fSrc.value;
+        fSrc.innerHTML = '<option value="">Any source app</option>' +
+          s.requestsBySourceApp.map((r) => '<option value="' + escapeHtml(r.sourceApp) + '">' + escapeHtml(r.sourceApp) + '</option>').join('');
+        fSrc.value = current;
+      }
+      if (Array.isArray(s.usageByTeam)) {
+        const current = fTeam.value;
+        fTeam.innerHTML = '<option value="">Any team</option>' +
+          s.usageByTeam.map((r) => '<option value="' + escapeHtml(r.team) + '">' + escapeHtml(r.team) + '</option>').join('');
+        fTeam.value = current;
+        renderUsageByTeam(s.usageByTeam);
+      }
+      if (Array.isArray(s.decisionsOverTime)) {
+        renderDecisionsChart(s.decisionsOverTime);
+      }
+    }).catch(() => { /* leave defaults */ });
+  }
+
+  function renderUsageByTeam(rows) {
+    const root = document.getElementById('ga-usage-by-team');
+    if (!root) return;
+    if (!rows.length) {
+      root.innerHTML = '<p class="font-caption text-caption text-on-surface-variant">No usage yet.</p>';
+      return;
+    }
+    const max = Math.max(1, ...rows.map((r) => r.requests || 0));
+    root.innerHTML = rows.slice(0, 6).map((r) => {
+      const pct = Math.round(((r.requests || 0) / max) * 100);
+      return (
+        '<div>' +
+          '<div class="flex justify-between font-caption text-caption mb-1">' +
+            '<span class="capitalize">' + escapeHtml(String(r.team).replace(/-/g, ' ')) + '</span>' +
+            '<span class="font-data-tabular">' + r.requests + ' req · ' + fmtCurrency(r.cost) + '</span>' +
+          '</div>' +
+          '<div class="w-full bg-surface-variant rounded-full h-1.5">' +
+            '<div class="bg-primary h-1.5 rounded-full" style="width: ' + pct + '%"></div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+
+  function renderDecisionsChart(rows) {
+    const root = document.getElementById('ga-decisions-chart');
+    if (!root) return;
+    if (!rows.length) {
+      root.innerHTML = '<p class="font-caption text-caption text-on-surface-variant flex items-center h-full">No decisions logged yet.</p>';
+      return;
+    }
+    const max = Math.max(1, ...rows.map((r) => (r.allowed || 0) + (r.masked || 0) + (r.blocked || 0)));
+    const bars = rows.map((r) => {
+      const total = (r.allowed || 0) + (r.masked || 0) + (r.blocked || 0);
+      const heightPct = total === 0 ? 2 : Math.max(4, (total / max) * 100);
+      const allowed = r.allowed || 0;
+      const masked = r.masked || 0;
+      const blocked = r.blocked || 0;
+      const segs = total === 0
+        ? '<div class="bg-surface-variant flex-1"></div>'
+        : (
+            (allowed ? '<div class="bg-primary-fixed" style="flex-grow:' + allowed + '"></div>' : '') +
+            (masked ? '<div class="bg-tertiary-fixed" style="flex-grow:' + masked + '"></div>' : '') +
+            (blocked ? '<div class="bg-error" style="flex-grow:' + blocked + '"></div>' : '')
+          );
+      return (
+        '<div class="flex flex-col-reverse mx-0.5 flex-1 min-w-[4px] rounded-t overflow-hidden" ' +
+          'style="height:' + heightPct + '%" ' +
+          'title="' + escapeHtml(r.hour) + ' · allowed=' + allowed + ' masked=' + masked + ' blocked=' + blocked + '">' +
+          segs +
+        '</div>'
+      );
+    }).join('');
+    root.innerHTML =
+      '<div class="flex items-end h-full w-full border-b border-l border-outline-variant px-1 pb-px">' + bars + '</div>';
+  }
+
+  function renderRow(log) {
+    const decision = String(log.decision || '').toUpperCase();
+    const piiTypes = Array.isArray(log.piiTypes) ? log.piiTypes : [];
+    return '<tr data-request-id="' + escapeHtml(log.requestId) + '" class="hover:bg-surface-container-low transition-colors group cursor-pointer">' +
+      '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(fmtTime(log.timestamp)) + '</td>' +
+      '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.sourceApp || '') + ' / ' + escapeHtml(log.team || '') + '</td>' +
+      '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.endpoint || '') + '</td>' +
+      '<td class="py-2 px-4 whitespace-nowrap"><span class="font-label-sm text-label-sm px-2 py-0.5 rounded ' + decisionBadgeClass(decision) + '">' + escapeHtml(decision) + '</span></td>' +
+      '<td class="py-2 px-4">' + escapeHtml((log.piiAction || '—') + (log.blockReason ? ' · ' + log.blockReason : '')) + ' ' + (piiTypes.length ? '<span class="text-caption text-on-surface-variant">[' + escapeHtml(piiTypes.join(', ')) + ']</span>' : '') + '</td>' +
+      '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.model || '—') + '</td>' +
+      '<td class="py-2 px-4 text-right">' + fmtCurrency(log.cost) + '</td>' +
+      '<td class="py-2 px-4 text-on-surface-variant"><span class="material-symbols-outlined text-[16px]">chevron_right</span></td>' +
+    '</tr>';
+  }
+
+  let currentLogs = [];
+  function loadLogs() {
+    const filters = {
+      decision: fDec.value || undefined,
+      sourceApp: fSrc.value || undefined,
+      team: fTeam.value || undefined,
+      piiType: fPii.value || undefined,
+      limit: 50,
+    };
+    return window.api.getGovernanceLogs(filters).then((data) => {
+      currentLogs = data.logs || [];
+      if (currentLogs.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-on-surface-variant">No logs match the current filters.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = currentLogs.map(renderRow).join('');
+      tbody.querySelectorAll('tr[data-request-id]').forEach((tr) => {
+        tr.addEventListener('click', () => openDetail(tr.dataset.requestId));
+      });
+    }).catch((err) => {
+      tbody.innerHTML = '';
+      window.renderUtils.renderError(tbody.parentElement, err);
+    });
+  }
+
+  function openDetail(requestId) {
+    const log = currentLogs.find((l) => l.requestId === requestId);
+    if (!log) return;
+    checkForRawPii(log.safePromptPreview, 'governance-audit:safePromptPreview');
+    checkForRawPii(log.redactedInputPreview, 'governance-audit:redactedInputPreview');
+    const g = {
+      requestId: log.requestId,
+      policy: log.policy,
+      decision: log.decision,
+      blockReason: log.blockReason,
+      piiDetected: log.piiDetected,
+      piiTypes: log.piiTypes,
+      piiAction: log.piiAction,
+      sensitivePiiDetected: log.sensitivePiiDetected,
+      bulkPiiRequest: log.bulkPiiRequest,
+      model: log.model,
+      routeReason: log.modelRouteReason,
+      budgetStatus: log.budgetStatus,
+      estimatedCostUsd: log.cost,
+      latencyMs: log.latencyMs,
+      auditLogged: true,
+    };
+    modalBody.innerHTML =
+      '<div class="space-y-4">' +
+        '<div class="font-data-tabular text-data-tabular text-on-surface-variant">' + escapeHtml(fmtTimestamp(log.timestamp)) + ' · ' + escapeHtml(log.sourceApp || '') + ' · ' + escapeHtml(log.endpoint || '') + '</div>' +
+        governancePanelHtml(g) +
+        '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Safe Prompt Preview</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.safePromptPreview || '—') + '</pre></div>' +
+        '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Redacted Input Preview</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.redactedInputPreview || '—') + '</pre></div>' +
+        '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Response Summary</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.responseSummary || '—') + '</pre></div>' +
+        (log.errorMessage ? '<div class="text-error">Error: ' + escapeHtml(log.errorMessage) + '</div>' : '') +
+      '</div>';
+    modal.classList.remove('hidden');
+  }
+
+  function refreshAll() {
+    return Promise.all([loadStats(), loadLogs()]);
+  }
+
+  [fDec, fSrc, fTeam, fPii].forEach((el) => el.addEventListener('change', loadLogs));
+  refreshBtn.addEventListener('click', refreshAll);
+
+  refreshAll();
+})();
+</script>
+<script>window.PAGE_INFO={key:'governance-audit',title:'Governance Audit'};</script>
+<script src="../shared/dist/layout.js"></script>
+</body></html>

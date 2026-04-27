@@ -2,7 +2,10 @@ _format_version: "3.0"
 
 services:
   - name: ai-gateway
-    url: http://host.docker.internal:8000
+    url: http://host.docker.internal:8001
+    connect_timeout: 10000
+    read_timeout: 60000
+    write_timeout: 60000
     routes:
       - name: ai-chat
         paths:
@@ -11,31 +14,56 @@ services:
           - POST
           - OPTIONS
         strip_path: false
+        plugins:
+          - name: ai-prompt-guard
+            config:
+              allow_all_conversation_history: true
+              deny_patterns:
+                # Sensitive PII patterns
+                - "\\d{3}-\\d{2}-\\d{4}"                           # US SSN
+                - "\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}[\\s-]?\\d{4}" # Credit card
+                - "(?:19|20)\\d{6}-\\d{4}"                          # Swedish personnummer
+                # Forbidden keywords
+                - "(?i)social\\s*security"
+                - "(?i)credit\\s*card\\s*number"
+                - "(?i)password"
+                - "(?i)secret\\s*key"
+                - "(?i)api\\s*key"
+                - "(?i)private\\s*key"
       - name: admin-routes
         paths:
           - /admin
         methods:
           - GET
+          - OPTIONS
+        strip_path: false
+      - name: api-routes
+        paths:
+          - /api
+        methods:
+          - GET
+          - POST
+          - OPTIONS
         strip_path: false
       - name: health
         paths:
           - /health
         methods:
           - GET
+          - OPTIONS
         strip_path: false
 
+# ---------------------------------------------------------------------------
+# Global plugins
+# ---------------------------------------------------------------------------
 plugins:
-  - name: rate-limiting
-    config:
-      minute: 60
-      hour: 1000
-      policy: local
-
+  # Authentication: every request needs an API key
   - name: key-auth
     config:
       key_names:
         - x-api-key
 
+  # CORS: allow browser apps to call the gateway
   - name: cors
     config:
       origins:
@@ -48,15 +76,103 @@ plugins:
         - "*"
       credentials: false
 
+  # Global rate limit (baseline for all consumers)
+  - name: rate-limiting
+    config:
+      minute: 120
+      hour: 2000
+      policy: local
+
+  # Request size limiting: block oversized payloads before they reach the gateway
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 1
+      size_unit: megabytes
+
+  # Bot detection: block known automated abuse patterns
+  - name: bot-detection
+    config:
+      allow: []
+      deny: []
+
+  # Response headers: inject governance metadata so apps know Kong processed the request
+  - name: response-transformer
+    config:
+      add:
+        headers:
+          - "X-Governance-Gateway: kong"
+          - "X-Governance-Version: 1.0"
+          - "X-Governance-Policy: enforced"
+
+  # ---------------------------------------------------------------------------
+  # Kong AI Gateway plugins (Enterprise, runs without license in free mode)
+  # ---------------------------------------------------------------------------
+
+  # AI Prompt Guard: block prompts containing sensitive data or forbidden topics.
+  # This acts as a first line of PII defense at the Kong layer, before
+  # requests even reach the Express governance gateway.
+  # Scoped to the ai-chat route only (applied per-route below).
+
+  # AI Rate Limiting Advanced: token/cost based limits per consumer.
+  # Requires Kong Enterprise license. Uncomment when licensed:
+  # - name: ai-rate-limiting-advanced
+  #   config:
+  #     llm_providers:
+  #       - name: cerebras
+  #         limit: 100000
+  #         window_size: 3600
+
+# ---------------------------------------------------------------------------
+# Per-consumer rate limits and ACLs
+# Each team (consumer) gets different limits based on their governance policy
+# ---------------------------------------------------------------------------
+
 consumers:
-  - username: engineering
+  # Compressor Technique: Service Assistant app
+  # High usage team, generous limits, full API access
+  - username: compressor-technique
     keyauth_credentials:
       - key: eng-key-2024
-      - key: chat-key-2024
-  - username: data-science
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 60
+          hour: 1000
+          policy: local
+
+  # Vacuum Technique: Product Explorer + Report Scheduler
+  # Medium usage, standard limits
+  - username: vacuum-technique
     keyauth_credentials:
       - key: ds-key-2024
       - key: scheduler-key-2024
-  - username: marketing
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 40
+          hour: 800
+          policy: local
+
+  # Power Technique: Sales Copilot
+  # Lower usage team, tighter limits
+  - username: power-technique
     keyauth_credentials:
       - key: mkt-key-2024
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 20
+          hour: 400
+          policy: local
+
+  # Industrial Technique: Atlas Chat
+  # Chat app, moderate limits
+  - username: industrial-technique
+    keyauth_credentials:
+      - key: chat-key-2024
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 30
+          hour: 600
+          policy: local
