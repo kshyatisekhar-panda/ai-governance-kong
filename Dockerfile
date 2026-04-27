@@ -24,4 +24,5 @@ ENV PORT=8001
 EXPOSE 8001
 
 # Start gateway with static file serving
-CMD ["node", "--import", "tsx", "gateway/src/index.ts"]
+WORKDIR /app/gateway
+CMD ["npx", "tsx", "src/index.ts"]
