@@ -78,7 +78,6 @@
   function buildSidebar(activeKey) {
     const items = [
       { key: 'home', label: 'Overview', href: 'index.html' },
-      { key: 'customer-chat', label: 'Customer Chat', href: 'customer-chat.html' },
       { key: 'create-case', label: 'Create Case', href: 'create-case.html' },
       { key: 'inbox', label: 'Case Inbox', href: 'inbox.html' },
     ];

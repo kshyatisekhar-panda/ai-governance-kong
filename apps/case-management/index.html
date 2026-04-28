@@ -14,12 +14,6 @@
 
       <div class="section-label">Modules</div>
       <div class="cards">
-        <a href="customer-chat.html">
-          <div class="card link">
-            <h2>Customer Chat</h2>
-            <p>Free-text customer support. PII (email, phone) masked before reaching the LLM. Sensitive IDs and bulk-PII keywords blocked at the gateway.</p>
-          </div>
-        </a>
         <a href="create-case.html">
           <div class="card link">
             <h2>Create Case</h2>
@@ -43,10 +37,10 @@
       <h2 style="margin-top:32px">How it works</h2>
       <div class="card">
         <ol style="padding-left:20px;line-height:1.8;font-size:13px;color:#475569">
-          <li>Customer or agent submits input via one of the modules above.</li>
-          <li>Request hits <span class="kbd">Kong</span> on port 8000 — key-auth, rate-limit, and (for chat) <span class="kbd">ai-prompt-guard</span> regex deny patterns fire here.</li>
+          <li>Agent submits a service case or runs AI triage / draft reply from the inbox.</li>
+          <li>Request hits <span class="kbd">Kong</span> on port 8000 — key-auth and per-consumer rate-limit fire here.</li>
           <li>Kong forwards to the <span class="kbd">governance gateway</span> (Express). PII is scanned per app policy: email/phone masked, SSN/credit card/personnummer blocked.</li>
-          <li>Cases are persisted with raw PII in <span class="kbd">service_cases</span>; only redacted context is sent to the LLM for triage.</li>
+          <li>Cases are persisted with raw PII in <span class="kbd">service_cases</span>; only redacted context is sent to the LLM for triage and reply drafts.</li>
           <li>Every request is audited in <span class="kbd">request_logs</span> with team, app, model, cost, latency, and decision.</li>
         </ol>
       </div>
