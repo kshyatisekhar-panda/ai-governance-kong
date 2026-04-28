@@ -27,6 +27,14 @@ app.get("/health", (_req, res) => {
   res.json({ status: "ok", service: "ai-governance-gateway" });
 });
 
+app.get("/debug/config", (_req, res) => {
+  res.json({
+    llmBaseUrl: config.llmBaseUrl,
+    llmApiKeyPrefix: config.llmApiKey ? config.llmApiKey.slice(0, 10) + "..." : "(not set)",
+    llmApiKeyLength: config.llmApiKey?.length ?? 0,
+  });
+});
+
 // Serve the frontend apps as static files (production single-container mode)
 const appsDir = resolve(__dirname, "../../apps");
 if (existsSync(appsDir)) {
