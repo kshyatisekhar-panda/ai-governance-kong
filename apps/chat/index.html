@@ -84,7 +84,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script>
-    const GATEWAY = ['localhost','127.0.0.1','0.0.0.0'].includes(location.hostname) ? 'http://localhost:8001' : '';
+    const GATEWAY = ['localhost','127.0.0.1','0.0.0.0'].includes(location.hostname) ? 'http://localhost:8000' : '';
     const chatBox = document.getElementById("chat-box");
 
     function useSuggestion(el) {
@@ -135,22 +135,34 @@
         const upstreamLatency = res.headers.get("x-kong-upstream-latency") || "n/a";
         const rateRemaining = res.headers.get("ratelimit-remaining") || "n/a";
         const rateLimit = res.headers.get("ratelimit-limit") || "n/a";
+        const shieldHeader = res.headers.get("x-kong-prompt-shield") || null;
 
         const kongMeta = `🦍 ${kongVersion} | Kong: ${kongLatency}ms | Rate: ${rateRemaining}/${rateLimit} remaining`;
 
-        if (res.status === 451 || res.status === 429) {
+        if (res.status === 403 && data.decision === "BLOCKED_BY_KONG_PROMPT_SHIELD") {
+          // Kong Prompt Shield block
+          addMsg("error",
+            `🛡️ BLOCKED BY KONG PROMPT SHIELD\n\nReason: ${data.blockReason || "Sensitive content detected"}\nLayer: ${data.layer || "Kong"}\nLLM called: no\n\nYour prompt was stopped at the Kong infrastructure layer before reaching the AI or any backend service.`,
+            `🔴 Kong Prompt Shield | ${kongMeta}`
+          );
+        } else if (res.status === 403) {
+          addMsg("error", `🛡️ BLOCKED: ${data.error || data.message || "Access denied"}`, kongMeta);
+        } else if (res.status === 451 || res.status === 429) {
           addMsg("error", `BLOCKED: ${data.message || data.error}`, kongMeta);
         } else if (res.status === 401) {
           addMsg("error", `Unauthorized: ${data.message}`, kongMeta);
+        } else if (!res.ok) {
+          addMsg("error", `Error ${res.status}: ${data.error || data.message || "Unknown error"}`, kongMeta);
         } else {
           const msg = data.choices?.[0]?.message?.content || "No response";
           const gw = data.gateway || {};
           const source = gw.data_source ? ` | Data: ${gw.data_source} API` : "";
-          const meta = `Model: ${gw.model_routed} | Cost: $${gw.cost_usd?.toFixed(4)} | Latency: ${gw.latency_ms}ms | Team: ${gw.team}${source}\n${kongMeta}`;
+          const shield = shieldHeader ? ` | Shield: ${shieldHeader}` : "";
+          const meta = `Model: ${gw.model_routed} | Cost: $${gw.cost_usd?.toFixed(4)} | Latency: ${gw.latency_ms}ms | Team: ${gw.team}${source}${shield}\n${kongMeta}`;
           addMsg("assistant", msg, meta);
         }
       } catch (e) {
-        addMsg("error", "Connection error. Is the gateway running?");
+        addMsg("error", "Connection error. Is the gateway running on :8000?");
       }
     }
   </script>

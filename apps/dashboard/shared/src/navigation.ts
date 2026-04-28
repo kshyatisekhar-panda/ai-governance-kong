@@ -1,6 +1,8 @@
 (function (): void {
   const PAGES: Record<string, string> = {
     overview: 'executive-overview/',
+    'prompt-shield-soc': 'prompt-shield-soc/',
+    'kong-backend-terminal': 'kong-backend-terminal/',
     'governance-audit': 'governance-audit-dashboard/',
     'app-policies': 'app-policies/',
     'product-data': 'product-service-data-explorer/',
@@ -25,6 +27,8 @@
 
   const LABEL_TO_KEY: Record<string, string | null> = {
     overview: 'overview',
+    'prompt shield soc': 'prompt-shield-soc',
+    'kong backend terminal': 'kong-backend-terminal',
     'governance audit': 'governance-audit',
     'app policies': 'app-policies',
     'product data': 'product-data',
@@ -69,5 +73,5 @@
     toRemove.forEach((a) => a.remove());
   }
 
-  window.navigation = { PAGES, linkTo, bindSideNav };
+  (window as any).appNav = { PAGES, linkTo, bindSideNav };
 })();

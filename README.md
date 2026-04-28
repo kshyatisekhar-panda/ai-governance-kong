@@ -118,17 +118,12 @@ Gateway runs on http://localhost:8001. Creates a local SQLite database for audit
 Make sure Docker Desktop is running, then:
 
 ```bash
-docker rm -f kong-gateway 2>/dev/null
-docker run -d --name kong-gateway \
-  -e "KONG_DATABASE=off" \
-  -e "KONG_DECLARATIVE_CONFIG=/kong/kong.yml" \
-  -e "KONG_PROXY_LISTEN=0.0.0.0:8000" \
-  -v "./infra/kong:/kong" \
-  -p 8000:8000 \
-  kong/kong-gateway:3.9
+cd infra/kong
+docker-compose up -d
+cd ../..
 ```
 
-Kong proxies on http://localhost:8000 with authentication, rate limiting, and AI prompt guard enabled.
+Kong proxies on http://localhost:8000 with authentication, rate limiting, and the AI Prompt Shield custom plugin enabled.
 
 **6. Build and start the dashboard**
 
@@ -144,11 +139,24 @@ This compiles the TypeScript shared modules and serves the dashboard on http://l
 | Page | URL | Description |
 |---|---|---|
 | Executive Overview | `/dashboard/executive-overview/` | High level metrics, architecture diagram |
+| Prompt Shield SOC | `/dashboard/prompt-shield-soc/` | Kong-native active AI security control point and alerts |
+| Kong Backend Terminal | `/dashboard/kong-backend-terminal/` | Visual request trace of Kong and Express acting in series |
 | Governance Audit | `/dashboard/governance-audit-dashboard/` | Live audit log with filters, decisions over time chart |
 | App Policies | `/dashboard/app-policies/` | Per-app governance rules (PII, budgets, models) |
 | Product Data Explorer | `/dashboard/product-service-data-explorer/` | Business data browser with AI Q&A |
 | Gateway Flow | `/dashboard/gateway-flow-architecture/` | Visual architecture of the request flow |
 | Chat | `/chat/` | Interactive chat with governance metadata |
+
+## Prompt Shield SOC
+
+The Prompt Shield SOC layer makes Kong an active AI security control point. Instead of just routing traffic, Kong inspects incoming AI prompts to detect sensitive data (SSN, credit cards) and prompt injection attempts before they ever reach the backend Express app or the LLM. 
+
+When a restricted prompt is detected, Kong immediately blocks the request and emits an audit event. The dashboard provides a SOC-style view of these events, showing Kong's decisions, Live Traffic, Alerts, and a Test Sandbox to easily demo different risk scenarios.
+
+## Kong Backend Terminal
+
+The terminal page is a visual request trace. It is not just a log viewer. It shows where Kong enters the request lifecycle, which Kong plugins ran, whether the request reached Express, whether the LLM was called, and where the audit event was written.
+This visually proves that requests blocked by Kong are halted early, saving cost and reducing risk.
 
 ## API Keys
 

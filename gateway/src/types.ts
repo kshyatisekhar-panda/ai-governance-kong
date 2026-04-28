@@ -75,3 +75,19 @@ export interface BudgetStatus {
   limit: number;
   percentage: number;
 }
+
+export interface SocEvent {
+  eventId: string;
+  timestamp: string;
+  layer: string;
+  decision: string;
+  blockReason: string;
+  method: string;
+  path: string;
+  clientIp: string;
+  consumer: string;
+  routeName: string;
+  model: string;
+  llmCalled: boolean;
+  datapoints: Record<string, string>;
+}

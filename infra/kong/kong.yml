@@ -15,6 +15,10 @@ services:
           - OPTIONS
         strip_path: false
         plugins:
+          - name: prompt-shield
+            config:
+              backend_events_url: "http://host.docker.internal:8001/admin/kong-events"
+              internal_secret: "kong_secret"
           - name: ai-prompt-guard
             config:
               allow_all_conversation_history: true
