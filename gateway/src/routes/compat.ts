@@ -94,6 +94,7 @@ compatRouter.get("/governance/logs", async (req, res) => {
 
 // Customer chat (their format)
 compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
+  try {
   const { message, team = "engineering", sourceApp = "customer-chat" } = req.body;
 
   const piiResult = scanAndProcess(message);
@@ -189,6 +190,11 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
       dataSource: detected?.name ?? null,
     },
   });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[customer-chat] error:", message);
+    res.status(500).json({ error: "Customer chat failed", details: message });
+  }
 });
 
 // Products (map to our sales data)
@@ -226,32 +232,38 @@ compatRouter.get("/products", (req, res) => {
 
 // Products ask (AI question about products)
 compatRouter.post("/products/ask", async (req: Request, res: Response) => {
-  const { question, filters } = req.body;
-  const data = getSalesData(filters);
+  try {
+    const { question, filters } = req.body;
+    const data = getSalesData(filters);
 
-  const messages: ChatMessage[] = [
-    {
-      role: "system",
-      content: `You are an Atlas Copco product specialist. Use this data to answer:\n${JSON.stringify(data.slice(0, 30), null, 2)}`,
-    },
-    { role: "user", content: question },
-  ];
+    const messages: ChatMessage[] = [
+      {
+        role: "system",
+        content: `You are an Atlas Copco product specialist. Use this data to answer:\n${JSON.stringify(data.slice(0, 30), null, 2)}`,
+      },
+      { role: "user", content: question },
+    ];
 
-  const model: ModelTier = classifyPrompt(question);
-  const result = await forwardToLLM(messages, model);
+    const model: ModelTier = classifyPrompt(question);
+    const result = await forwardToLLM(messages, model);
 
-  const { prompt_tokens: inputTokens, completion_tokens: outputTokens } = result.usage;
-  const cost = calculateCost(model, inputTokens, outputTokens);
+    const { prompt_tokens: inputTokens, completion_tokens: outputTokens } = result.usage;
+    const cost = calculateCost(model, inputTokens, outputTokens);
 
-  res.json({
-    answer: result.choices[0]?.message?.content ?? "",
-    governance: {
-      decision: "ALLOWED",
-      policy: "GENERAL_BUSINESS_DATA",
-      model,
-      estimatedCostUsd: cost,
-    },
-  });
+    res.json({
+      answer: result.choices[0]?.message?.content ?? "",
+      governance: {
+        decision: "ALLOWED",
+        policy: "GENERAL_BUSINESS_DATA",
+        model,
+        estimatedCostUsd: cost,
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[products/ask] error:", message);
+    res.status(500).json({ error: "Product Q&A failed", details: message });
+  }
 });
 
 // Service cases (basic stub)
