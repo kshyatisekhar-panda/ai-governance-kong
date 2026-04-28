@@ -176,3 +176,16 @@ consumers:
           minute: 30
           hour: 600
           policy: local
+
+  # Customer Service: Case Management portal (customer chat, case form,
+  # case inbox, AI triage, draft reply). Higher limits because each case
+  # creation runs an additional AI triage call.
+  - username: customer-service
+    keyauth_credentials:
+      - key: case-key-2024
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 60
+          hour: 1200
+          policy: local

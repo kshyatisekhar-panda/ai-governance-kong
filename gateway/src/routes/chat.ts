@@ -34,6 +34,18 @@ function buildLogEntry(
 }
 
 chatRouter.post("/", async (req: Request, res: Response) => {
+  try {
+    await handleChat(req, res);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error("[chat] error:", message);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Chat request failed", details: message });
+    }
+  }
+});
+
+async function handleChat(req: Request, res: Response): Promise<void> {
   const start = Date.now();
   const { team, app } = req.client!;
   const { messages, model: requestedModel } = req.body as {
@@ -164,4 +176,4 @@ chatRouter.post("/", async (req: Request, res: Response) => {
       },
     },
   });
-});
+}

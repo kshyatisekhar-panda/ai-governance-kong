@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Management | Atlas Copco</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <main class="main">
+      <h1>Atlas Copco Case Management</h1>
+      <p class="subtitle">Customer service portal with governed AI triage. Every AI call routes through Kong and the governance gateway.</p>
+
+      <div class="section-label">Modules</div>
+      <div class="cards">
+        <a href="create-case.html">
+          <div class="card link">
+            <h2>Create Case</h2>
+            <p>Structured CRM intake form. Raw PII stored in the case record; only redacted operational context is sent to the LLM for AI triage.</p>
+          </div>
+        </a>
+        <a href="inbox.html">
+          <div class="card link">
+            <h2>Case Inbox</h2>
+            <p>Agent view of open and recent cases. Filter by status, priority, AI triage state. Drill into any case to view detail and run actions.</p>
+          </div>
+        </a>
+        <a href="inbox.html">
+          <div class="card link">
+            <h2>AI Triage &amp; Draft Reply</h2>
+            <p>Per-case AI summary and suggested first response, generated from a redacted context. Re-run triage or draft a new reply on demand.</p>
+          </div>
+        </a>
+      </div>
+
+      <h2 style="margin-top:32px">How it works</h2>
+      <div class="card">
+        <ol style="padding-left:20px;line-height:1.8;font-size:13px;color:#475569">
+          <li>Agent submits a service case or runs AI triage / draft reply from the inbox.</li>
+          <li>Request hits <span class="kbd">Kong</span> on port 8000 — key-auth and per-consumer rate-limit fire here.</li>
+          <li>Kong forwards to the <span class="kbd">governance gateway</span> (Express). PII is scanned per app policy: email/phone masked, SSN/credit card/personnummer blocked.</li>
+          <li>Cases are persisted with raw PII in <span class="kbd">service_cases</span>; only redacted context is sent to the LLM for triage and reply drafts.</li>
+          <li>Every request is audited in <span class="kbd">request_logs</span> with team, app, model, cost, latency, and decision.</li>
+        </ol>
+      </div>
+
+      <p class="muted" style="margin-top:24px">API key in use: <span class="kbd">case-key-2024</span> · Team: <span class="kbd">Customer Service</span> · App policy: <span class="kbd">Case Management</span></p>
+    </main>
+  </div>
+  <script src="app.js"></script>
+  <script>cm.mountSidebar('home');</script>
+</body>
+</html>

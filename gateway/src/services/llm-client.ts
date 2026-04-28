@@ -12,6 +12,8 @@ export async function forwardToLLM(
 ): Promise<LLMResponse> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
+    "HTTP-Referer": "https://ai-governance-kong-production.up.railway.app",
+    "X-Title": "AI Governance Gateway",
   };
 
   if (config.llmApiKey) {

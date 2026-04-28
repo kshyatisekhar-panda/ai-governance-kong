@@ -105,6 +105,28 @@ const APP_POLICIES: Record<string, AppPolicy> = {
     },
   },
 
+  // Case Management: structured CRM input. Stores raw PII in service_cases,
+  // but only redacted context goes to the LLM. Allows masking of email/phone.
+  "Case Management": {
+    pii: {
+      blockSensitive: true,
+      blockEmail: false,
+      blockPhone: false,
+      blockKeywords: true,
+      allowMasking: true,
+    },
+    budget: {
+      monthlyLimitUsd: 120,
+      warnAtPercent: 80,
+    },
+    model: {
+      allowSmall: true,
+      allowLarge: true,
+      defaultModel: "small",
+      maxPromptLength: 8000,
+    },
+  },
+
   // Report Scheduler: no PII expected, moderate budget, large model
   "Report Scheduler": {
     pii: {
