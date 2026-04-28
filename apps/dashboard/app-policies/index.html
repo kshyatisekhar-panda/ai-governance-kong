@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html class="light" lang="en"><head>
 <link rel="stylesheet" href="../shared/app.css"/>
+<script src="../../shared/theme.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>App Policies | AI Governance Gateway</title>
@@ -49,14 +50,13 @@ tailwind.config = {
 </head>
 <body class="bg-background font-body-md text-on-surface min-h-screen">
 
-<header class="sticky top-0 z-30 bg-surface border-b border-outline-variant px-margin" style="height:56px; display:flex; align-items:center;">
-  <h1 class="text-h1 text-on-surface">App Governance Policies</h1>
-</header>
-
 <main class="p-margin space-y-6">
 
-  <p class="text-body-md text-on-surface-variant max-w-2xl">
-    Each application that connects to the AI Gateway has its own governance policy. These rules control what data can pass through, which models are available, and how much each app can spend.
+  <p class="text-body-md text-on-surface-variant max-w-3xl">
+    Each application has two layers of policy. The <strong>Kong layer</strong> controls authentication, rate limit
+    and request size at the network edge. The <strong>App governance layer</strong> controls per-app PII rules,
+    budgets, model access, and prompt length. Sensitive data is blocked at one of these two layers — never sent
+    to the LLM.
   </p>
 
   <div id="policies-grid" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -168,50 +168,85 @@ tailwind.config = {
     return badge('mask', 'Small only');
   }
 
+  // App identity table — keep in sync with gateway/src/config.ts and infra/kong/kong.yml
+  const APP_IDENTITY = {
+    "Service Assistant":  { team: "Compressor Technique", apiKey: "eng-key-2024",       kongRpm: 60 },
+    "Product Explorer":   { team: "Vacuum Technique",     apiKey: "ds-key-2024",        kongRpm: 40 },
+    "Report Scheduler":   { team: "Vacuum Technique",     apiKey: "scheduler-key-2024", kongRpm: 40 },
+    "Sales Copilot":      { team: "Power Technique",      apiKey: "mkt-key-2024",       kongRpm: 20 },
+    "Atlas Chat":         { team: "Industrial Technique", apiKey: "chat-key-2024",      kongRpm: 30 },
+  };
+
+  function managerSentence(name, p, ident) {
+    const piiSummary = !p.pii.allowMasking
+      ? "any PII causes the request to be blocked"
+      : (p.pii.blockEmail ? "emails and phones are blocked" : "emails and phones are masked, sensitive PII (SSN, credit card) is blocked");
+    const modelSummary = p.model.allowLarge && p.model.allowSmall
+      ? "can use either small or large models"
+      : (p.model.allowLarge ? "uses the large model only" : "uses the small model only");
+    return `${name} can use AI under tight rules: Kong limits the team to ${ident.kongRpm} requests per minute, ${piiSummary}, and the app ${modelSummary} with a ${p.budget.monthlyLimitUsd ? "$" + p.budget.monthlyLimitUsd + "/month" : "no"} budget.`;
+  }
+
   function renderCard(name, p) {
+    const ident = APP_IDENTITY[name] || { team: "—", apiKey: "—", kongRpm: "—" };
     return `
       <div class="policy-card bg-surface-container-low rounded-xl border border-outline-variant p-5">
-        <div class="flex items-center gap-3 mb-4">
+        <div class="flex items-center gap-3 mb-3">
           <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
             <span class="material-symbols-outlined text-on-primary" style="font-size:20px">apps</span>
           </div>
           <div>
             <div class="text-h2 text-on-surface">${name}</div>
+            <div class="text-caption text-on-surface-variant">${ident.team}</div>
           </div>
         </div>
 
-        <div class="space-y-3 text-body-md">
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">PII Policy</span>
+        <div class="text-[12px] text-on-surface-variant bg-surface border border-outline-variant rounded p-3 mb-4">
+          ${managerSentence(name, p, ident)}
+        </div>
+
+        <div class="space-y-2 text-body-md">
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">API key (x-api-key)</span>
+            <code class="text-[12px]">${ident.apiKey}</code>
+          </div>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Kong rate limit</span>
+            <span class="text-on-surface font-medium">${ident.kongRpm} req/min</span>
+          </div>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">PII policy (App layer)</span>
             ${piiBadge(p.pii)}
           </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">Email</span>
-            ${p.pii.blockEmail ? badge('block', 'Blocked') : badge('mask', 'Masked')}
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">On sensitive PII</span>
+            ${badge('block', 'Block + log')}
           </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">Phone</span>
-            ${p.pii.blockPhone ? badge('block', 'Blocked') : badge('mask', 'Masked')}
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">On normal PII (email, phone)</span>
+            ${p.pii.blockEmail
+              ? badge('block', 'Block')
+              : (p.pii.allowMasking ? badge('mask', 'Mask + forward') : badge('block', 'Block'))}
           </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">SSN / Credit Card</span>
-            ${p.pii.blockSensitive ? badge('block', 'Blocked') : badge('allow', 'Allowed')}
-          </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">Model Access</span>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Model access</span>
             ${modelBadge(p.model)}
           </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">Default Model</span>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Default model</span>
             <span class="text-on-surface font-medium">${p.model.defaultModel}</span>
           </div>
-          <div class="flex justify-between items-center py-1.5 border-b border-outline-variant/30">
-            <span class="text-on-surface-variant">Max Prompt</span>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Max prompt</span>
             <span class="text-on-surface font-medium">${p.model.maxPromptLength.toLocaleString()} chars</span>
           </div>
-          <div class="flex justify-between items-center py-1.5">
-            <span class="text-on-surface-variant">Monthly Budget</span>
+          <div class="flex justify-between items-center py-1 border-b border-outline-variant/30">
+            <span class="text-on-surface-variant">Monthly budget</span>
             <span class="text-on-surface font-medium">$${p.budget.monthlyLimitUsd}</span>
+          </div>
+          <div class="flex justify-between items-center py-1">
+            <span class="text-on-surface-variant">When over budget</span>
+            ${badge('block', 'Block + log')}
           </div>
         </div>
       </div>

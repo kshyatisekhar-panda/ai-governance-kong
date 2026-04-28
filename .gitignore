@@ -5,3 +5,11 @@ dist/
 .next/
 package-lock.json
 .claude/
+
+# Kong Enterprise license — must never be committed.
+# License file conventionally lives at infra/kong/license.json.
+infra/kong/license.json
+**/license.json
+**/kong-license.json
+*.license.json
+*.log

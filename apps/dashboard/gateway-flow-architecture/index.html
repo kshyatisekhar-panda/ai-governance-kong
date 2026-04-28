@@ -1,458 +1,267 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="en">
+<head>
 <link rel="stylesheet" href="../shared/app.css"/>
+<script src="../../shared/theme.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Gateway Flow - Architecture</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
-        .material-symbols-outlined {
-            font-family: 'Material Symbols Outlined';
-            font-weight: normal;
-            font-style: normal;
-            font-size: 20px; /* Adjust based on typography */
-            line-height: 1;
-            letter-spacing: normal;
-            text-transform: none;
-            display: inline-block;
-            white-space: nowrap;
-            word-wrap: normal;
-            direction: ltr;
-            -webkit-font-feature-settings: 'liga';
-            -webkit-font-smoothing: antialiased;
-        }
-    </style>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+</style>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "surface-container": "#efedf1",
-                        "secondary": "#515f74",
-                        "inverse-primary": "#aec7f6",
-                        "inverse-on-surface": "#f1f0f4",
-                        "on-background": "#1a1b1e",
-                        "on-tertiary-fixed-variant": "#564500",
-                        "on-primary": "#ffffff",
-                        "on-error": "#ffffff",
-                        "inverse-surface": "#2f3033",
-                        "on-secondary-fixed": "#0d1c2e",
-                        "surface-container-low": "#f4f3f7",
-                        "on-tertiary-fixed": "#231b00",
-                        "on-surface-variant": "#44474e",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-high": "#e9e7eb",
-                        "on-error-container": "#93000a",
-                        "error-container": "#ffdad6",
-                        "on-primary-container": "#708ab5",
-                        "surface": "#faf9fd",
-                        "surface-container-lowest": "#ffffff",
-                        "surface-dim": "#dad9dd",
-                        "background": "#faf9fd",
-                        "tertiary-fixed": "#ffe07f",
-                        "on-secondary-container": "#57657a",
-                        "on-secondary": "#ffffff",
-                        "tertiary-container": "#cda800",
-                        "surface-variant": "#e3e2e6",
-                        "error": "#ba1a1a",
-                        "on-secondary-fixed-variant": "#3a485b",
-                        "on-tertiary-container": "#4e3e00",
-                        "primary-fixed-dim": "#aec7f6",
-                        "on-primary-fixed": "#001b3d",
-                        "primary": "#000a1e",
-                        "surface-container-highest": "#e3e2e6",
-                        "primary-container": "#002147",
-                        "secondary-container": "#d5e3fc",
-                        "primary-fixed": "#d6e3ff",
-                        "surface-bright": "#faf9fd",
-                        "tertiary-fixed-dim": "#edc200",
-                        "on-surface": "#1a1b1e",
-                        "secondary-fixed-dim": "#b9c7df",
-                        "surface-tint": "#465f88",
-                        "on-primary-fixed-variant": "#2d476f",
-                        "outline-variant": "#c4c6cf",
-                        "outline": "#74777f",
-                        "tertiary": "#725c00",
-                        "secondary-fixed": "#d5e3fc"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.125rem",
-                        "lg": "0.25rem",
-                        "xl": "0.5rem",
-                        "full": "0.75rem"
-                    },
-                    "spacing": {
-                        "gutter": "16px",
-                        "margin": "24px",
-                        "base": "4px",
-                        "panel-width": "320px",
-                        "grid-columns": "12"
-                    },
-                    "fontFamily": {
-                        "h2": ["Inter"],
-                        "label-sm": ["Inter"],
-                        "h1": ["Inter"],
-                        "display": ["Inter"],
-                        "data-tabular": ["Inter"],
-                        "caption": ["Inter"],
-                        "body-md": ["Inter"],
-                        "body-lg": ["Inter"]
-                    },
-                    "fontSize": {
-                        "h2": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
-                        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
-                        "h1": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
-                        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "data-tabular": ["13px", { "lineHeight": "1.4", "fontWeight": "500" }],
-                        "caption": ["11px", { "lineHeight": "1.4", "fontWeight": "400" }],
-                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
-                        "body-lg": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
-                    }
-                }
-            }
-        }
-    </script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface-container": "#efedf1", "secondary": "#515f74", "inverse-primary": "#aec7f6",
+        "inverse-on-surface": "#f1f0f4", "on-background": "#1a1b1e",
+        "on-tertiary-fixed-variant": "#564500", "on-primary": "#ffffff", "on-error": "#ffffff",
+        "inverse-surface": "#2f3033", "on-secondary-fixed": "#0d1c2e",
+        "surface-container-low": "#f4f3f7", "on-tertiary-fixed": "#231b00",
+        "on-surface-variant": "#44474e", "on-tertiary": "#ffffff",
+        "surface-container-high": "#e9e7eb", "on-error-container": "#93000a",
+        "error-container": "#ffdad6", "on-primary-container": "#708ab5",
+        "surface": "#faf9fd", "surface-container-lowest": "#ffffff",
+        "surface-dim": "#dad9dd", "background": "#faf9fd",
+        "tertiary-fixed": "#ffe07f", "on-secondary-container": "#57657a",
+        "on-secondary": "#ffffff", "tertiary-container": "#cda800",
+        "surface-variant": "#e3e2e6", "error": "#ba1a1a",
+        "on-secondary-fixed-variant": "#3a485b", "on-tertiary-container": "#4e3e00",
+        "primary-fixed-dim": "#aec7f6", "on-primary-fixed": "#001b3d",
+        "primary": "#000a1e", "surface-container-highest": "#e3e2e6",
+        "primary-container": "#002147", "secondary-container": "#d5e3fc",
+        "primary-fixed": "#d6e3ff", "surface-bright": "#faf9fd",
+        "tertiary-fixed-dim": "#edc200", "on-surface": "#1a1b1e",
+        "secondary-fixed-dim": "#b9c7df", "surface-tint": "#465f88",
+        "on-primary-fixed-variant": "#2d476f", "outline-variant": "#c4c6cf",
+        "outline": "#74777f", "tertiary": "#725c00", "secondary-fixed": "#d5e3fc"
+      },
+      borderRadius: { DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem" },
+      spacing: { gutter: "16px", margin: "24px", base: "4px", "panel-width": "320px", "grid-columns": "12" },
+      fontFamily: {
+        h2: ["Inter"], "label-sm": ["Inter"], h1: ["Inter"], display: ["Inter"],
+        "data-tabular": ["Inter"], caption: ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"]
+      },
+      fontSize: {
+        h2: ["18px", { lineHeight: "1.4", fontWeight: "600" }],
+        "label-sm": ["12px", { lineHeight: "1", letterSpacing: "0.05em", fontWeight: "600" }],
+        h1: ["24px", { lineHeight: "1.3", letterSpacing: "-0.01em", fontWeight: "600" }],
+        display: ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+        "data-tabular": ["13px", { lineHeight: "1.4", fontWeight: "500" }],
+        caption: ["11px", { lineHeight: "1.4", fontWeight: "400" }],
+        "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+        "body-lg": ["16px", { lineHeight: "1.5", fontWeight: "400" }]
+      }
+    }
+  }
+}
+</script>
 </head>
-<body class="bg-background text-on-background font-body-md text-body-md flex h-screen overflow-hidden">
-<!-- Shared Component: SideNavBar -->
-<aside class="w-64 bg-surface-container-lowest border-r border-outline-variant hidden md:flex flex-col h-full flex-shrink-0 z-10 transition-all duration-300">
-<!-- Sidebar Header -->
-<div class="h-16 flex items-center px-4 border-b border-outline-variant shrink-0">
-<div class="w-8 h-8 rounded bg-primary text-on-primary flex items-center justify-center font-bold mr-3 shrink-0">
-<span class="material-symbols-outlined text-[18px]">account_balance</span>
-</div>
-<div class="flex flex-col min-w-0 overflow-hidden">
-<span class="font-h2 text-[15px] font-bold text-on-surface truncate leading-tight">CRM Service Governance</span>
-<span id="gw-status" class="font-caption text-caption text-secondary truncate">Gateway: …</span>
-</div>
-</div>
-<!-- Sidebar Navigation -->
-<nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1">
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">dashboard</span>
-                Overview
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">chat</span>
-                Customer Chat
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">add_circle</span>
-                Create Case
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">inbox</span>
-                Case Inbox
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">gavel</span>
-                Governance Audit
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">policy</span>
-                App Policies
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">inventory_2</span>
-                Product Data
-            </a>
-<!-- Active Tab -->
-<a class="flex items-center gap-3 px-3 py-2 bg-secondary-container text-on-secondary-container rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">account_tree</span>
-                Gateway Flow
-            </a>
-</nav>
-<!-- Sidebar Footer -->
-<div class="p-4 border-t border-outline-variant space-y-1 shrink-0">
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">settings</span>
-                Settings
-            </a>
-<a class="flex items-center gap-3 px-3 py-2 text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors rounded-DEFAULT font-label-sm text-[13px]" href="#">
-<span class="material-symbols-outlined text-[18px]">help</span>
-                Support
-            </a>
-</div>
-</aside>
-<!-- Main Content Wrapper -->
-<div class="flex-1 flex flex-col min-w-0 min-h-screen relative">
-<!-- Shared Component: TopNavBar -->
-<header class="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-6 z-10 shrink-0">
-<div class="flex items-center gap-4">
-<h1 class="font-h2 text-h2 text-on-surface truncate">AI-Governed Customer Service Hub</h1>
-</div>
-<div class="flex items-center gap-4">
-<div class="flex items-center gap-2">
-<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" title="Notifications">
-<span class="material-symbols-outlined text-[20px]">notifications</span>
-</button>
-<button class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors" title="System Status">
-<span class="material-symbols-outlined text-[20px]">cloud_done</span>
-</button>
-</div>
-<div class="h-6 w-px bg-outline-variant mx-2"></div>
-<button class="bg-primary text-on-primary px-4 py-1.5 rounded-DEFAULT font-label-sm text-label-sm hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
-                Hackathon Demo
-            </button>
-<div class="relative ml-2">
-<button class="flex items-center gap-2 hover:opacity-80 transition-opacity">
-<img alt="User Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHD3b6wdiwiyoDvlHpm2ksY2scxNkl1iWcY0qGvqnaHb76sEO8GB7OErulT1P4luiwC66KSHjrStAYOAEm7ESTN7KLwEUEn9Qq7YbzLDWqzoHcLBpD5vSl1KB1UYQwy5QzS9fJHxSs1gSjjX2eZ1rW1lgmfVySfb0VRpCg-4aEAoathnZhoQaXP78kLRymFXVPRusuGpFCvU5V60I2ZuMaSMvoWunjLwY5S-PPtsb3VHOHiYrmU8EssGA6biJ9f0L8pgdB9SH2-gqP"/>
-</button>
-</div>
-</div>
-</header>
-<!-- Page Canvas -->
-<main class="flex-1 p-margin overflow-y-auto bg-surface flex gap-gutter">
-<!-- Center Column (Architecture & Data) -->
-<div class="flex-1 flex flex-col gap-6">
-<!-- Header -->
+<body class="bg-background text-on-background font-body-md text-body-md min-h-screen">
+
+<main class="p-margin space-y-6">
+
 <div>
-<h1 class="font-h1 text-h1 text-on-surface mb-2">System Architecture Flow</h1>
-<p class="text-secondary font-body-md text-body-md">Real-time governance monitoring and request routing topology.</p>
+  <h1 class="font-h1 text-h1 text-on-surface mb-2">The full request path</h1>
+  <p class="text-secondary font-body-md text-body-md max-w-3xl">
+    Two columns of commentary: the left is the manager view of <em>why</em> each layer exists, the right is the
+    developer view of <em>where</em> each layer lives in this repo. Browser → Kong → Express → LLM → SQLite → Dashboard.
+  </p>
 </div>
-<!-- Visual Diagram Section -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT p-6 flex flex-col items-center">
-<!-- Diagram Container -->
-<div class="flex flex-col items-center w-full max-w-4xl relative gap-8 py-4">
-<!-- Tier 1: Entry Points -->
-<div class="w-full">
-<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-3 text-center">Entry Points</h3>
-<div class="flex justify-center gap-8">
-<div class="bg-surface-container px-6 py-3 border border-outline-variant rounded-DEFAULT flex items-center gap-3 w-48 justify-center shadow-sm">
-<span class="material-symbols-outlined text-primary">chat</span>
-<span class="font-data-tabular text-data-tabular">Customer Chat</span>
-</div>
-<div class="bg-surface-container px-6 py-3 border border-outline-variant rounded-DEFAULT flex items-center gap-3 w-48 justify-center shadow-sm">
-<span class="material-symbols-outlined text-primary">description</span>
-<span class="font-data-tabular text-data-tabular">Web Form</span>
-</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline">arrow_downward</span>
-<!-- Tier 2: Kong Gateway -->
-<div class="w-full flex justify-center">
-<div class="bg-primary-container border border-primary w-3/4 p-4 rounded-DEFAULT flex flex-col items-center relative">
-<div class="absolute -left-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-on-primary-container">dns</span>
-</div>
-<h3 class="font-h2 text-h2 text-on-primary-container flex items-center gap-2 mb-2">
-<span class="material-symbols-outlined">security</span>
-                                    Kong API Gateway
-                                </h3>
-<div class="flex gap-4">
-<span class="bg-surface-container-highest px-2 py-1 rounded text-[11px] font-data-tabular text-on-surface">Authentication</span>
-<span class="bg-surface-container-highest px-2 py-1 rounded text-[11px] font-data-tabular text-on-surface">Rate Limiting</span>
-</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline">arrow_downward</span>
-<!-- Tier 3: Governance Gateway -->
-<div class="w-full flex justify-center">
-<div class="bg-secondary-container border border-secondary-fixed-dim w-3/4 p-5 rounded-DEFAULT flex flex-col items-center relative shadow-sm">
-<div class="absolute -right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-on-secondary-container">gavel</span>
-</div>
-<h3 class="font-h2 text-h2 text-on-secondary-container flex items-center gap-2 mb-4">
-<span class="material-symbols-outlined">policy</span>
-                                    Governance Gateway Engine
-                                </h3>
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
-<div class="bg-surface-container-lowest border border-outline-variant p-2 rounded text-center flex flex-col items-center justify-center gap-1">
-<span class="material-symbols-outlined text-[18px] text-secondary">visibility_off</span>
-<span class="text-[10px] font-data-tabular text-secondary uppercase tracking-wide">PII Scan</span>
-</div>
-<div class="bg-surface-container-lowest border border-outline-variant p-2 rounded text-center flex flex-col items-center justify-center gap-1">
-<span class="material-symbols-outlined text-[18px] text-secondary">masks</span>
-<span class="text-[10px] font-data-tabular text-secondary uppercase tracking-wide">Data Masking</span>
-</div>
-<div class="bg-surface-container-lowest border border-outline-variant p-2 rounded text-center flex flex-col items-center justify-center gap-1">
-<span class="material-symbols-outlined text-[18px] text-secondary">rule</span>
-<span class="text-[10px] font-data-tabular text-secondary uppercase tracking-wide">Policy Check</span>
-</div>
-<div class="bg-surface-container-lowest border border-outline-variant p-2 rounded text-center flex flex-col items-center justify-center gap-1">
-<span class="material-symbols-outlined text-[18px] text-secondary">account_balance_wallet</span>
-<span class="text-[10px] font-data-tabular text-secondary uppercase tracking-wide">Budgeting</span>
-</div>
-</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline">arrow_downward</span>
-<!-- Tier 4: Destinations -->
-<div class="w-full">
-<h3 class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider mb-3 text-center">Destinations</h3>
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full">
-<div class="bg-surface-container p-3 border border-outline-variant rounded-DEFAULT flex flex-col items-center gap-2 text-center">
-<span class="material-symbols-outlined text-secondary">smart_toy</span>
-<span class="font-data-tabular text-data-tabular text-[12px]">LLM Provider</span>
-</div>
-<div class="bg-surface-container p-3 border border-outline-variant rounded-DEFAULT flex flex-col items-center gap-2 text-center">
-<span class="material-symbols-outlined text-secondary">contact_mail</span>
-<span class="font-data-tabular text-data-tabular text-[12px]">CRM System</span>
-</div>
-<div class="bg-surface-container p-3 border border-outline-variant rounded-DEFAULT flex flex-col items-center gap-2 text-center">
-<span class="material-symbols-outlined text-secondary">storage</span>
-<span class="font-data-tabular text-data-tabular text-[12px]">Business DB</span>
-</div>
-<div class="bg-surface-container p-3 border border-outline-variant rounded-DEFAULT flex flex-col items-center gap-2 text-center">
-<span class="material-symbols-outlined text-secondary">receipt_long</span>
-<span class="font-data-tabular text-data-tabular text-[12px]">Audit Log</span>
-</div>
-</div>
-</div>
-</div>
+
+<section class="grid gap-6 lg:grid-cols-3">
+
+  <!-- Diagram column -->
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6 lg:col-span-1">
+    <h3 class="font-h2 text-h2 text-on-surface mb-4">Request path</h3>
+    <ol class="space-y-3">
+      <li class="flex gap-3">
+        <div class="w-7 h-7 rounded bg-surface-container border border-outline-variant flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px] text-on-surface-variant">desktop_windows</span>
+        </div>
+        <div>
+          <div class="font-medium text-on-surface">Browser / Dashboard</div>
+          <div class="text-[12px] text-on-surface-variant"><code>apps/chat</code>, <code>apps/dashboard/**</code></div>
+        </div>
+      </li>
+      <li class="text-center text-on-surface-variant"><span class="material-symbols-outlined">arrow_downward</span></li>
+      <li class="flex gap-3">
+        <div class="w-7 h-7 rounded bg-primary-container border border-primary flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px] text-on-primary-container">shield</span>
+        </div>
+        <div>
+          <div class="font-medium text-on-surface">Kong Gateway (:8000)</div>
+          <div class="text-[12px] text-on-surface-variant"><code>infra/kong/kong.yml</code></div>
+          <div class="text-[11px] text-on-surface-variant mt-1">key-auth · rate-limiting · request-size-limiting · bot-detection · cors · ai-prompt-guard (on /ai/chat) · response-transformer</div>
+        </div>
+      </li>
+      <li class="text-center text-on-surface-variant"><span class="material-symbols-outlined">arrow_downward</span></li>
+      <li class="flex gap-3">
+        <div class="w-7 h-7 rounded bg-secondary-container border border-secondary-fixed-dim flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px] text-on-secondary-container">gavel</span>
+        </div>
+        <div>
+          <div class="font-medium text-on-surface">Express Governance App (:8001)</div>
+          <div class="text-[12px] text-on-surface-variant"><code>gateway/src/**</code></div>
+          <div class="text-[11px] text-on-surface-variant mt-1">auth · pii-blocker · cost-tracker / budget · smart-router · api-detector · audit-logger</div>
+        </div>
+      </li>
+      <li class="text-center text-on-surface-variant"><span class="material-symbols-outlined">arrow_downward</span></li>
+      <li class="flex gap-3">
+        <div class="w-7 h-7 rounded bg-surface-container border border-outline-variant flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px] text-on-surface-variant">smart_toy</span>
+        </div>
+        <div>
+          <div class="font-medium text-on-surface">LLM provider</div>
+          <div class="text-[12px] text-on-surface-variant">Cerebras OpenAI-compatible <code>/v1/chat/completions</code></div>
+          <div class="text-[11px] text-on-surface-variant mt-1">small: <code>llama3.1-8b</code> · large: <code>qwen-3-235b</code></div>
+        </div>
+      </li>
+      <li class="text-center text-on-surface-variant"><span class="material-symbols-outlined">arrow_downward</span></li>
+      <li class="flex gap-3">
+        <div class="w-7 h-7 rounded bg-surface-container border border-outline-variant flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-[18px] text-on-surface-variant">history_edu</span>
+        </div>
+        <div>
+          <div class="font-medium text-on-surface">SQLite audit log</div>
+          <div class="text-[12px] text-on-surface-variant"><code>request_logs</code> — team, app, model, cost, latency, status, decision_layer, llm_called, kong_route…</div>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Manager column -->
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6">
+    <div class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-secondary-container text-on-secondary-container mb-2">For managers</div>
+    <h3 class="font-h2 text-h2 text-on-surface mb-3">What each layer is for</h3>
+    <dl class="space-y-3 text-body-md">
+      <div>
+        <dt class="font-medium text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">shield</span>Kong is the enterprise control point</dt>
+        <dd class="text-on-surface-variant">It handles "who can call us, how often, with what size payload" — the same way an API gateway has done these things for years. It also does a coarse first pass on obvious sensitive data via <code>ai-prompt-guard</code>.</dd>
+      </div>
+      <div>
+        <dt class="font-medium text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">gavel</span>The governance app holds the business rules</dt>
+        <dd class="text-on-surface-variant">Per-app PII policies, per-team budgets, model selection, and the "what data is allowed for which app" decision. This is where compliance owns the rules.</dd>
+      </div>
+      <div>
+        <dt class="font-medium text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">block</span>Blocked requests do not reach the LLM</dt>
+        <dd class="text-on-surface-variant">If either Kong or the app rejects a request, the LLM is never called. The audit row records the rejection.</dd>
+      </div>
+      <div>
+        <dt class="font-medium text-on-surface flex items-center gap-2"><span class="material-symbols-outlined text-[18px] text-primary">payments</span>Passed requests are costed and logged</dt>
+        <dd class="text-on-surface-variant">Every successful call records team, app, model, tokens, cost, and latency to SQLite. Finance and compliance read the same table.</dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Developer column -->
+  <div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6">
+    <div class="inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded bg-tertiary-container text-on-tertiary-container mb-2">For developers</div>
+    <h3 class="font-h2 text-h2 text-on-surface mb-3">Where each layer lives</h3>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse text-body-md">
+        <thead>
+          <tr class="bg-surface-container-low border-b border-outline-variant">
+            <th class="p-2 font-label-sm text-label-sm uppercase text-on-surface-variant">Layer</th>
+            <th class="p-2 font-label-sm text-label-sm uppercase text-on-surface-variant">File</th>
+          </tr>
+        </thead>
+        <tbody class="font-data-tabular text-data-tabular text-[12px]">
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Kong config</td><td class="p-2"><code>infra/kong/kong.yml</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Express entry / static</td><td class="p-2"><code>gateway/src/index.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">/ai/chat pipeline</td><td class="p-2"><code>gateway/src/routes/chat.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">/api compat (dashboard data)</td><td class="p-2"><code>gateway/src/routes/compat.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">/admin endpoints</td><td class="p-2"><code>gateway/src/routes/admin.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">API key → team/app</td><td class="p-2"><code>gateway/src/middleware/auth.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">PII scan / mask / block</td><td class="p-2"><code>gateway/src/plugins/pii-blocker.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Per-app policy</td><td class="p-2"><code>gateway/src/plugins/app-policy.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Budget / cost</td><td class="p-2"><code>gateway/src/plugins/cost-tracker.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Smart routing</td><td class="p-2"><code>gateway/src/plugins/smart-router.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">API detector</td><td class="p-2"><code>gateway/src/plugins/api-detector.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">Kong evidence builder</td><td class="p-2"><code>gateway/src/plugins/kong-evidence.ts</code></td></tr>
+          <tr class="border-b border-outline-variant/40"><td class="p-2">LLM client</td><td class="p-2"><code>gateway/src/services/llm-client.ts</code></td></tr>
+          <tr><td class="p-2">SQLite audit log</td><td class="p-2"><code>gateway/src/services/logger.ts</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 </section>
-<!-- Lower Data Row -->
-<div class="grid grid-cols-2 gap-6">
-<!-- Keys & Secrets -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT flex flex-col">
-<div class="p-4 border-b border-surface-variant flex items-center justify-between">
-<h2 class="font-h2 text-h2 text-on-surface">Authentication Credentials</h2>
-<span class="material-symbols-outlined text-outline">vpn_key</span>
-</div>
-<div class="p-4 flex flex-col gap-4">
-<div>
-<label class="font-label-sm text-label-sm text-on-surface-variant mb-1 block">Client Demo Key</label>
-<div class="bg-surface-container px-3 py-2 border border-outline-variant flex items-center justify-between rounded-DEFAULT">
-<code class="font-data-tabular text-data-tabular text-primary">crm-key-2024</code>
-<span class="bg-tertiary-container text-on-tertiary-container px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Demo Mode</span>
-</div>
-<p class="font-caption text-caption text-secondary mt-1">Used for initial handshake from Entry Points.</p>
-</div>
-<hr class="border-surface-variant"/>
-<div>
-<label class="font-label-sm text-label-sm text-on-surface-variant mb-2 block">Backend-Only Secrets</label>
-<ul class="space-y-2">
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[16px] text-error">lock</span>
-<span class="font-data-tabular text-data-tabular text-on-surface text-[12px]">OpenRouter API Token</span>
-<span class="ml-auto text-[10px] text-outline font-data-tabular">Masked</span>
-</li>
-<li class="flex items-center gap-2">
-<span class="material-symbols-outlined text-[16px] text-error">lock</span>
-<span class="font-data-tabular text-data-tabular text-on-surface text-[12px]">Kong Enterprise License</span>
-<span class="ml-auto text-[10px] text-outline font-data-tabular">Masked</span>
-</li>
-</ul>
-<div class="mt-3 bg-error-container text-on-error-container p-2 rounded text-[11px] font-body-md flex items-start gap-2">
-<span class="material-symbols-outlined text-[14px]">warning</span>
-                                    These values never leave the secure governance perimeter.
-                                </div>
-</div>
-</div>
+
+<!-- LLM path mode honesty -->
+<section class="bg-surface-container-low border border-outline-variant rounded-lg p-6">
+  <h3 class="font-h2 text-h2 text-on-surface mb-2">LLM path mode (honest)</h3>
+  <p class="text-body-md text-on-surface-variant mb-3 max-w-3xl">
+    Today, the Express app calls the LLM provider directly. We don't pretend Kong sits between Express and the
+    provider — that would require Kong's <code>ai-proxy</code> plugin and a non-loopback route, which we have
+    not configured. The audit log records the path mode so the dashboard can show the truth.
+  </p>
+  <table class="w-full text-left border-collapse text-body-md">
+    <thead>
+      <tr class="bg-surface-container border-b border-outline-variant">
+        <th class="p-2 font-label-sm text-label-sm uppercase text-on-surface-variant">Mode</th>
+        <th class="p-2 font-label-sm text-label-sm uppercase text-on-surface-variant">Description</th>
+        <th class="p-2 font-label-sm text-label-sm uppercase text-on-surface-variant">Status</th>
+      </tr>
+    </thead>
+    <tbody class="font-data-tabular text-data-tabular text-[12px]">
+      <tr class="border-b border-outline-variant/40">
+        <td class="p-2"><code>direct-provider</code></td>
+        <td class="p-2">Express calls the LLM provider directly (current default).</td>
+        <td class="p-2"><span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300">active</span></td>
+      </tr>
+      <tr class="border-b border-outline-variant/40">
+        <td class="p-2"><code>kong-ai-route</code></td>
+        <td class="p-2">Express calls Kong's <code>ai-proxy</code> plugin, which calls the provider. Requires a non-loopback Kong route.</td>
+        <td class="p-2"><span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-300">future work</span></td>
+      </tr>
+      <tr>
+        <td class="p-2"><code>mock</code></td>
+        <td class="p-2">Stub responses for offline tests.</td>
+        <td class="p-2"><span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-300">opt-in</span></td>
+      </tr>
+    </tbody>
+  </table>
 </section>
-<!-- Policy Comparison -->
-<section class="bg-surface-container-lowest border border-outline-variant rounded-DEFAULT flex flex-col">
-<div class="p-4 border-b border-surface-variant flex items-center justify-between">
-<h2 class="font-h2 text-h2 text-on-surface">Routing Policy Enforcement</h2>
-<span class="material-symbols-outlined text-outline">compare_arrows</span>
-</div>
-<div class="p-0">
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-surface-container-low border-b border-surface-variant">
-<th class="p-3 font-label-sm text-label-sm text-on-surface-variant w-1/3">Rule Parameter</th>
-<th class="p-3 font-label-sm text-label-sm text-on-surface-variant w-1/3 border-l border-surface-variant">General Business Data</th>
-<th class="p-3 font-label-sm text-label-sm text-on-surface-variant w-1/3 border-l border-surface-variant bg-primary-fixed-dim bg-opacity-20">CRM Service Case</th>
-</tr>
-</thead>
-<tbody class="font-data-tabular text-data-tabular text-[12px]">
-<tr class="border-b border-surface-variant">
-<td class="p-3 text-secondary font-medium">PII Masking</td>
-<td class="p-3 border-l border-surface-variant"><span class="flex items-center gap-1 text-on-surface"><span class="w-2 h-2 rounded-full bg-outline"></span> Standard (Regex)</span></td>
-<td class="p-3 border-l border-surface-variant bg-primary-fixed-dim bg-opacity-10"><span class="flex items-center gap-1 text-primary"><span class="w-2 h-2 rounded-full bg-primary"></span> Aggressive (NER Model)</span></td>
-</tr>
-<tr class="border-b border-surface-variant">
-<td class="p-3 text-secondary font-medium">LLM Routing</td>
-<td class="p-3 border-l border-surface-variant">Fastest Available (Tier 2)</td>
-<td class="p-3 border-l border-surface-variant bg-primary-fixed-dim bg-opacity-10 font-bold">High Precision (Tier 1)</td>
-</tr>
-<tr class="border-b border-surface-variant">
-<td class="p-3 text-secondary font-medium">Audit Logging</td>
-<td class="p-3 border-l border-surface-variant">Metadata Only</td>
-<td class="p-3 border-l border-surface-variant bg-primary-fixed-dim bg-opacity-10">Redacted Payload Trace</td>
-</tr>
-<tr>
-<td class="p-3 text-secondary font-medium">Rate Limit</td>
-<td class="p-3 border-l border-surface-variant">100 req / min</td>
-<td class="p-3 border-l border-surface-variant bg-primary-fixed-dim bg-opacity-10">500 req / min (Priority)</td>
-</tr>
-</tbody>
-</table>
-</div>
+
+<!-- Reproduce with curl -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-6">
+  <h3 class="font-h2 text-h2 text-on-surface mb-3">Reproduce with curl</h3>
+  <p class="text-body-md text-on-surface-variant mb-3 max-w-3xl">
+    All three of these go through Kong on port 8000. The audit log will show which layer made the decision.
+  </p>
+  <pre class="bg-surface text-on-surface text-[11px] font-mono p-3 rounded border border-outline-variant overflow-x-auto"># 1) Safe prompt — should be ALLOWED, LLM called
+curl -s -X POST http://localhost:8000/ai/chat \
+  -H "x-api-key: eng-key-2024" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"What is Atlas Copco?"}]}'
+
+# 2) Sensitive PII — Kong's ai-prompt-guard rejects with 400 (or Express returns 451 if Kong skipped)
+curl -s -X POST http://localhost:8000/ai/chat \
+  -H "x-api-key: eng-key-2024" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"My SSN is 123-45-6789"}]}'
+
+# 3) Maskable PII — Express masks the email, then the LLM is called
+curl -s -X POST http://localhost:8000/ai/chat \
+  -H "x-api-key: eng-key-2024" \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Email me at john@example.com"}]}'
+</pre>
 </section>
-</div>
-</div>
-<!-- Right Fixed Panel (Demo Script) -->
-<aside class="w-panel-width bg-surface-container-lowest border border-outline-variant rounded-DEFAULT flex flex-col h-[calc(100vh-theme(spacing.14)-theme(spacing.margin)*2)] sticky top-0">
-<div class="p-4 border-b border-surface-variant flex items-center justify-between bg-surface-container-highest rounded-t-DEFAULT">
-<h2 class="font-h2 text-h2 text-on-surface flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">play_circle</span>
-                        Demo Execution Script
-                    </h2>
-</div>
-<div class="p-4 overflow-y-auto flex-1 flex flex-col gap-4">
-<p class="font-body-md text-body-md text-secondary text-sm">Follow these steps to demonstrate governance capabilities during the review.</p>
-<div class="space-y-4">
-<!-- Step 1 -->
-<div class="flex gap-3">
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-data-tabular text-[12px] flex-shrink-0 mt-0.5">1</div>
-<div>
-<h4 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Send a chat with PII</h4>
-<p class="font-caption text-caption text-secondary mb-2">From Customer Chat, paste the personnummer prompt and submit.</p>
-<div class="bg-surface border border-outline-variant p-2 rounded text-[11px] font-data-tabular text-on-surface-variant font-mono">
-                                    POST /api/customer-chat<br/>
-                                    body.message: "My personal identity number is 850101-1234…"
-                                </div>
-</div>
-</div>
-<!-- Step 2 -->
-<div class="flex gap-3">
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-data-tabular text-[12px] flex-shrink-0 mt-0.5">2</div>
-<div>
-<h4 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Confirm the block</h4>
-<p class="font-caption text-caption text-secondary">The chat panel shows <code class="bg-surface px-1 border border-outline-variant rounded">SENSITIVE_PII_BLOCKED</code>. The LLM was never called.</p>
-</div>
-</div>
-<!-- Step 3 -->
-<div class="flex gap-3">
-<div class="w-6 h-6 rounded-full bg-primary text-on-primary flex items-center justify-center font-data-tabular text-[12px] flex-shrink-0 mt-0.5">3</div>
-<div>
-<h4 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Inspect the audit trail</h4>
-<p class="font-caption text-caption text-secondary mb-2">Open Governance Audit and look for the new BLOCKED row tagged <code class="bg-surface px-1 border border-outline-variant rounded">SENSITIVE_PII_BLOCKED</code>.</p>
-<div class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded text-[10px] font-bold uppercase w-max">Audit log: redacted previews only</div>
-</div>
-</div>
-<!-- Step 4 -->
-<div class="flex gap-3">
-<div class="w-6 h-6 rounded-full border border-primary text-primary flex items-center justify-center font-data-tabular text-[12px] flex-shrink-0 mt-0.5">4</div>
-<div>
-<h4 class="font-label-sm text-label-sm text-on-surface uppercase mb-1">Service-case path is governed too</h4>
-<p class="font-caption text-caption text-secondary">From <em>Create Case</em>, submit the form. CRM stores raw PII; the LLM only sees a redacted safe context. Both rows show up in Governance Audit.</p>
-</div>
-</div>
-</div>
-</div>
-</aside>
+
 </main>
-</div>
+
 <script src="../shared/dist/config.js"></script>
 <script src="../shared/dist/api-client.js"></script>
 <script src="../shared/dist/render-utils.js"></script>
 <script src="../shared/dist/navigation.js"></script>
-<script>
-(function () {
-  window.navigation.bindSideNav('gateway-flow');
-  const status = document.getElementById('gw-status');
-  if (status) {
-    window.api.getHealth()
-      .then(() => { status.textContent = 'Gateway: Online'; status.classList.add('text-primary'); })
-      .catch(() => { status.textContent = 'Gateway: Offline'; status.classList.add('text-error'); });
-  }
-})();
-</script>
 <script>window.PAGE_INFO={key:'gateway-flow',title:'Gateway Flow'};</script>
 <script src="../shared/dist/layout.js"></script>
-</body></html>
+</body>
+</html>

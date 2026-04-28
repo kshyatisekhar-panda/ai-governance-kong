@@ -27,9 +27,19 @@ for (const envPath of candidates) {
 
 export const config = {
   port: parseInt(process.env.PORT || "8001", 10),
-  llmBaseUrl: process.env.LLM_BASE_URL || "https://api.cerebras.ai",
+  // Default provider is OpenRouter. Real keys must come from .env (never
+  // committed) and never reach the browser — only the server reads them.
+  llmProvider: (process.env.LLM_PROVIDER || "openrouter").toLowerCase(),
+  llmBaseUrl: process.env.LLM_BASE_URL || "https://openrouter.ai/api/v1",
   llmApiKey: process.env.LLM_API_KEY || "",
+  // OpenRouter requires HTTP-Referer + X-Title for attribution. These are
+  // safe to expose; only the API key must stay server-side.
+  openrouterSiteUrl: process.env.OPENROUTER_SITE_URL || "http://localhost:3000",
+  openrouterAppName: process.env.OPENROUTER_APP_NAME || "AI-Governed Customer Service Hub",
+  smallModel: process.env.SMALL_MODEL || "openai/gpt-4o-mini",
+  largeModel: process.env.LARGE_MODEL || "openai/gpt-4o",
   sqlitePath: process.env.SQLITE_PATH || "./ai_gateway.db",
+  allowDemoReset: (process.env.ALLOW_DEMO_RESET || "").toLowerCase() === "true",
 } as const;
 
 export const API_KEYS: Record<string, ClientIdentity> = {

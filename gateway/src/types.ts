@@ -29,6 +29,10 @@ export interface BlockResult {
   message: string;
 }
 
+export type DecisionLayer = "kong" | "express" | "llm" | "";
+export type KongObserved = "observed" | "unknown";
+export type LlmPathMode = "direct-provider" | "kong-ai-route" | "mock" | "";
+
 export interface RequestLogEntry {
   team: string;
   app: string;
@@ -40,6 +44,23 @@ export interface RequestLogEntry {
   latencyMs: number;
   status: RequestStatus;
   blockReason: string;
+  // Lifecycle / evidence (all optional — older callers can omit)
+  decisionLayer?: DecisionLayer;
+  kongRoute?: string;
+  kongProcessed?: KongObserved;
+  llmCalled?: boolean;
+  llmPathMode?: LlmPathMode;
+  dataSource?: string;
+  piiMaskedTypes?: string;
+  policyApplied?: string;
+}
+
+export interface KongEvidence {
+  processedByKong: "observed" | "unknown";
+  kongRoute: string;
+  kongConsumer: string | null;
+  kongPluginsExpected: string[];
+  kongHeadersSeen: Record<string, string>;
 }
 
 export interface LLMUsage {

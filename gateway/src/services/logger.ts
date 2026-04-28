@@ -22,6 +22,26 @@ db.exec(`
   )
 `);
 
+// Lifecycle/evidence columns. Added via ALTER TABLE so older databases keep
+// working — every column is optional with a safe default.
+const LIFECYCLE_COLUMNS: Array<[string, string]> = [
+  ["decision_layer", "TEXT DEFAULT ''"],
+  ["kong_route", "TEXT DEFAULT ''"],
+  ["kong_processed", "TEXT DEFAULT 'unknown'"],
+  ["llm_called", "INTEGER DEFAULT 0"],
+  ["llm_path_mode", "TEXT DEFAULT ''"],
+  ["data_source", "TEXT DEFAULT ''"],
+  ["pii_masked_types", "TEXT DEFAULT ''"],
+  ["policy_applied", "TEXT DEFAULT ''"],
+];
+for (const [name, type] of LIFECYCLE_COLUMNS) {
+  try {
+    db.exec(`ALTER TABLE request_logs ADD COLUMN ${name} ${type}`);
+  } catch {
+    // column already exists — ignore
+  }
+}
+
 seedDatabase(db);
 
 export { db };
@@ -29,8 +49,10 @@ export { db };
 const insertStmt = db.prepare(`
   INSERT INTO request_logs
     (team, app, model, prompt_length, input_tokens, output_tokens,
-     cost_usd, latency_ms, status, block_reason)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     cost_usd, latency_ms, status, block_reason,
+     decision_layer, kong_route, kong_processed, llm_called, llm_path_mode,
+     data_source, pii_masked_types, policy_applied)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 export async function logRequest(entry: RequestLogEntry): Promise<void> {
@@ -46,6 +68,14 @@ export async function logRequest(entry: RequestLogEntry): Promise<void> {
       entry.latencyMs,
       entry.status,
       entry.blockReason,
+      entry.decisionLayer ?? "",
+      entry.kongRoute ?? "",
+      entry.kongProcessed ?? "unknown",
+      entry.llmCalled ? 1 : 0,
+      entry.llmPathMode ?? "",
+      entry.dataSource ?? "",
+      entry.piiMaskedTypes ?? "",
+      entry.policyApplied ?? "",
     );
   } catch (error) {
     console.error("[logger] Failed to write log:", error);

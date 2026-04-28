@@ -2,6 +2,7 @@
 
 <html class="light" lang="en"><head>
 <link rel="stylesheet" href="../shared/app.css"/>
+<script src="../../shared/theme.js"></script>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Governance Audit Dashboard</title>
@@ -106,95 +107,8 @@
         .icon-fill { font-variation-settings: 'FILL' 1; }
     </style>
 </head>
-<body class="font-body-md text-on-surface bg-background flex h-screen overflow-hidden">
-<!-- SideNavBar -->
-<nav class="fixed h-screen left-0 w-64 border-r border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 flex flex-col py-4 px-3 space-y-1 overflow-y-auto z-40 hidden md:flex">
-<div class="px-3 pb-6 border-b border-slate-200 dark:border-slate-800 mb-2">
-<div class="flex items-center space-x-3">
-<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center text-on-primary-container">
-<span class="material-symbols-outlined">shield</span>
-</div>
-<div>
-<div class="text-xl font-black text-slate-900 dark:text-white font-display tracking-tight text-lg">Industrial Service Intelligence</div>
-<div class="font-caption text-secondary mt-0.5">Gateway: Online</div>
-</div>
-</div>
-</div>
-<div class="flex-1 space-y-1">
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>
-                Overview
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">chat</span>
-                Customer Chat
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">add_circle</span>
-                Create Case
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">inbox</span>
-                Case Inbox
-            </a>
-<a class="flex items-center px-3 py-2 bg-slate-200 dark:bg-slate-800 text-slate-900 dark:text-white rounded-md transition-all font-inter text-[13px] font-medium" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px] icon-fill">gavel</span>
-                Governance Audit
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">policy</span>
-                App Policies
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">inventory_2</span>
-                Product Data
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">account_tree</span>
-                Gateway Flow
-            </a>
-</div>
-<div class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800 space-y-1">
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">settings</span>
-                Settings
-            </a>
-<a class="flex items-center px-3 py-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 transition-all font-inter text-[13px] font-medium rounded" href="#">
-<span class="material-symbols-outlined mr-3 text-[20px]">help</span>
-                Support
-            </a>
-</div>
-</nav>
-<!-- Main Content Area -->
-<div class="flex-1 flex flex-col md:ml-64 bg-background min-h-screen w-full">
-<!-- TopNavBar -->
-<header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-30 bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 font-inter text-sm antialiased text-slate-900 dark:text-slate-50">
-<div class="flex items-center flex-1">
-<div class="md:hidden text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 mr-4">Industrial Service Intelligence</div>
-<div class="relative w-64 max-w-md hidden md:block">
-<span class="material-symbols-outlined absolute left-2 top-1.5 text-secondary text-[20px]">search</span>
-<input class="w-full bg-surface-container-low border border-outline-variant rounded-DEFAULT py-1.5 pl-8 pr-3 text-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors text-on-surface placeholder:text-secondary" placeholder="Search logs, models, users..." type="text"/>
-</div>
-</div>
-<div class="flex items-center space-x-2">
-<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded">
-<span class="material-symbols-outlined">hub</span>
-</button>
-<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded">
-<span class="material-symbols-outlined">key</span>
-</button>
-<button class="p-1.5 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors rounded mr-2">
-<span class="material-symbols-outlined">group</span>
-</button>
-<button class="bg-primary text-on-primary px-3 py-1.5 rounded-DEFAULT text-sm font-medium hover:bg-primary-container transition-colors mr-4">
-                    Hackathon Demo
-                </button>
-<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0 cursor-pointer">
-<img alt="User Profile" class="w-full h-full object-cover" data-alt="professional corporate headshot avatar placeholder" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0Bjyx3dQ4b4HoTWbEd04UmWDcD482_p5bq18jyW3u4AIIS1ISgRFeAuVtFsgZdQ0D2dKfYw6ltYX77Z-h7BiKHkcXwr2BepRrzRfjqIbqoquFtEZuuvUhEZZxdwesePmFMg01SwsamXoaUF-aXaY49-Ncy17s9uRi5ZyOT0wWmxmKNGAsp2z7050REFXYtmbcTrja1odPfOXyOxP_uMiJJXamUN8PtWDdegB6CEShFjQHnv-sxIAnXJT609aI3x6d5uZnLi0t1GbF"/>
-</div>
-</div>
-</header>
-<!-- Canvas -->
+<body class="font-body-md text-on-surface bg-background">
+<!-- Sidebar and topbar are injected at runtime by shared/dist/layout.js. -->
 <main class="flex-1 overflow-y-auto p-margin">
 <div class="flex justify-between items-end mb-6">
 <div>
@@ -215,16 +129,6 @@
 </select>
 <button id="log-filter-refresh" class="px-2 py-1 border border-outline-variant rounded text-data-tabular font-data-tabular hover:bg-surface-container-low">Refresh</button>
 </div>
-</div>
-<div class="flex space-x-2">
-<button class="px-3 py-1.5 border border-outline-variant rounded-DEFAULT font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors flex items-center">
-<span class="material-symbols-outlined text-[16px] mr-1.5">filter_list</span>
-                        Filter
-                    </button>
-<button class="px-3 py-1.5 border border-outline-variant rounded-DEFAULT font-label-sm text-label-sm text-on-surface hover:bg-surface-container transition-colors flex items-center">
-<span class="material-symbols-outlined text-[16px] mr-1.5">download</span>
-                        Export
-                    </button>
 </div>
 </div>
 <!-- Top Metrics Bento Grid -->
@@ -315,33 +219,35 @@
 <th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Source</th>
 <th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Endpoint</th>
 <th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-32">Decision</th>
-<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">Action / Rule Triggered</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-28">Decided by</th>
+<th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider">PII action / reason</th>
 <th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider w-28">Model</th>
 <th class="py-2 px-4 font-label-sm text-label-sm text-secondary uppercase tracking-wider text-right w-20">Cost</th>
 <th class="py-2 px-4 w-10"></th>
 </tr>
 </thead>
 <tbody id="logs-tbody" class="font-data-tabular text-data-tabular text-on-surface divide-y divide-outline-variant/50">
-<tr><td colspan="8" class="px-4 py-6 text-center text-on-surface-variant">Loading governance logs…</td></tr>
+<tr><td colspan="9" class="px-4 py-6 text-center text-on-surface-variant">Loading governance logs…</td></tr>
 </tbody>
 </table>
 </div>
-<div class="p-3 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center font-caption text-caption text-secondary">
-<div>Showing 5 of 124,500 records</div>
-<div class="flex space-x-1">
-<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container disabled:opacity-50" disabled="">Prev</button>
-<button class="px-2 py-1 border border-outline-variant rounded hover:bg-surface-container">Next</button>
-</div>
-</div>
 </div>
 </main>
-</div>
 <div id="log-detail-modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
   <div class="bg-surface-container-lowest w-full max-w-3xl max-h-[85vh] overflow-y-auto rounded-lg p-6 border border-outline-variant relative">
     <button id="log-detail-close" class="absolute top-3 right-3 text-on-surface-variant hover:text-on-surface" aria-label="Close">
       <span class="material-symbols-outlined">close</span>
     </button>
-    <h3 class="font-h2 text-h2 mb-4">Governance Log Detail</h3>
+    <h3 class="font-h2 text-h2 mb-1">Request Lifecycle Evidence</h3>
+    <p class="text-[12px] text-on-surface-variant mb-4">
+      Every request crosses four layers. Each section below shows what that layer did, with an
+      <span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-green-100 text-green-800 border border-green-300">observed</span>
+      /
+      <span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 border border-blue-300">configured</span>
+      /
+      <span class="inline-block text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 border border-gray-300">unknown</span>
+      label so you can tell what we directly verified vs. what we only know from Kong's config.
+    </p>
     <div id="log-detail-body"></div>
   </div>
 </div>
@@ -460,14 +366,28 @@
       '<div class="flex items-end h-full w-full border-b border-l border-outline-variant px-1 pb-px">' + bars + '</div>';
   }
 
+  function decidedByLabel(log) {
+    const layer = log.lifecycle && log.lifecycle.decisionLayer;
+    if (layer === 'kong') return ['Kong layer', 'bg-blue-100 text-blue-800 border border-blue-300'];
+    if (layer === 'express') return ['App governance', 'bg-amber-100 text-amber-900 border border-amber-300'];
+    if (layer === 'llm') return ['LLM (after pass)', 'bg-green-100 text-green-800 border border-green-300'];
+    // Fallback inference
+    const d = String(log.decision || '').toUpperCase();
+    if (d === 'BLOCKED') return ['App governance', 'bg-amber-100 text-amber-900 border border-amber-300'];
+    if (d === 'MASKED') return ['App governance', 'bg-amber-100 text-amber-900 border border-amber-300'];
+    return ['LLM (after pass)', 'bg-green-100 text-green-800 border border-green-300'];
+  }
+
   function renderRow(log) {
     const decision = String(log.decision || '').toUpperCase();
     const piiTypes = Array.isArray(log.piiTypes) ? log.piiTypes : [];
+    const [decidedText, decidedClass] = decidedByLabel(log);
     return '<tr data-request-id="' + escapeHtml(log.requestId) + '" class="hover:bg-surface-container-low transition-colors group cursor-pointer">' +
       '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(fmtTime(log.timestamp)) + '</td>' +
       '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.sourceApp || '') + ' / ' + escapeHtml(log.team || '') + '</td>' +
       '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.endpoint || '') + '</td>' +
       '<td class="py-2 px-4 whitespace-nowrap"><span class="font-label-sm text-label-sm px-2 py-0.5 rounded ' + decisionBadgeClass(decision) + '">' + escapeHtml(decision) + '</span></td>' +
+      '<td class="py-2 px-4 whitespace-nowrap"><span class="font-label-sm text-label-sm px-2 py-0.5 rounded ' + decidedClass + '">' + decidedText + '</span></td>' +
       '<td class="py-2 px-4">' + escapeHtml((log.piiAction || '—') + (log.blockReason ? ' · ' + log.blockReason : '')) + ' ' + (piiTypes.length ? '<span class="text-caption text-on-surface-variant">[' + escapeHtml(piiTypes.join(', ')) + ']</span>' : '') + '</td>' +
       '<td class="py-2 px-4 whitespace-nowrap">' + escapeHtml(log.model || '—') + '</td>' +
       '<td class="py-2 px-4 text-right">' + fmtCurrency(log.cost) + '</td>' +
@@ -487,7 +407,7 @@
     return window.api.getGovernanceLogs(filters).then((data) => {
       currentLogs = data.logs || [];
       if (currentLogs.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-on-surface-variant">No logs match the current filters.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-on-surface-variant">No logs match the current filters.</td></tr>';
         return;
       }
       tbody.innerHTML = currentLogs.map(renderRow).join('');
@@ -505,27 +425,14 @@
     if (!log) return;
     checkForRawPii(log.safePromptPreview, 'governance-audit:safePromptPreview');
     checkForRawPii(log.redactedInputPreview, 'governance-audit:redactedInputPreview');
-    const g = {
-      requestId: log.requestId,
-      policy: log.policy,
-      decision: log.decision,
-      blockReason: log.blockReason,
-      piiDetected: log.piiDetected,
-      piiTypes: log.piiTypes,
-      piiAction: log.piiAction,
-      sensitivePiiDetected: log.sensitivePiiDetected,
-      bulkPiiRequest: log.bulkPiiRequest,
-      model: log.model,
-      routeReason: log.modelRouteReason,
-      budgetStatus: log.budgetStatus,
-      estimatedCostUsd: log.cost,
-      latencyMs: log.latencyMs,
-      auditLogged: true,
-    };
+    const lifecycle = log.lifecycle || {};
+    const lifecycleHtml = window.renderUtils.lifecyclePanelHtml({ log, lifecycle });
+    const traceHtml = window.renderUtils.traceTimelineHtml({ log, lifecycle });
     modalBody.innerHTML =
       '<div class="space-y-4">' +
         '<div class="font-data-tabular text-data-tabular text-on-surface-variant">' + escapeHtml(fmtTimestamp(log.timestamp)) + ' · ' + escapeHtml(log.sourceApp || '') + ' · ' + escapeHtml(log.endpoint || '') + '</div>' +
-        governancePanelHtml(g) +
+        lifecycleHtml +
+        '<div class="border-t border-outline-variant pt-4">' + traceHtml + '</div>' +
         '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Safe Prompt Preview</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.safePromptPreview || '—') + '</pre></div>' +
         '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Redacted Input Preview</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.redactedInputPreview || '—') + '</pre></div>' +
         '<div><h4 class="font-label-sm text-label-sm uppercase mb-1">Response Summary</h4><pre class="bg-surface-container-low p-2 rounded text-[11px] font-mono whitespace-pre-wrap break-all">' + escapeHtml(log.responseSummary || '—') + '</pre></div>' +

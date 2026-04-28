@@ -1,16 +1,19 @@
 (function (): void {
   const PAGES: Record<string, string> = {
-    overview: 'executive-overview/',
-    'governance-audit': 'governance-audit-dashboard/',
-    'app-policies': 'app-policies/',
-    'product-data': 'product-service-data-explorer/',
-    'gateway-flow': 'gateway-flow-architecture/',
+    home: '/',
+    overview: '/dashboard/executive-overview/',
+    'governance-audit': '/dashboard/governance-audit-dashboard/',
+    'app-policies': '/dashboard/app-policies/',
+    'product-data': '/dashboard/product-service-data-explorer/',
+    'gateway-flow': '/dashboard/gateway-flow-architecture/',
+    chat: '/chat/',
+    'sales-explorer': '/product-explorer/',
   };
 
   function linkTo(key: string, params?: Record<string, string>): string {
     const target = PAGES[key];
     if (!target) return '#';
-    let href = '../' + target;
+    let href = target;
     if (params && typeof params === 'object') {
       const p = new URLSearchParams();
       Object.entries(params).forEach(([k, v]) => {
@@ -24,11 +27,15 @@
 
   const LABEL_TO_KEY: Record<string, string | null> = {
     overview: 'overview',
+    home: 'home',
     'governance audit': 'governance-audit',
     'app policies': 'app-policies',
     'product data': 'product-data',
     'gateway flow': 'gateway-flow',
     'gateway flow architecture': 'gateway-flow',
+    chat: 'chat',
+    'ai assistant': 'chat',
+    'sales explorer': 'sales-explorer',
     settings: 'app-policies',
     support: null,
   };
@@ -47,7 +54,7 @@
       const label = visibleLabel(a);
       const key = LABEL_TO_KEY[label];
 
-      if (['customer chat', 'create case', 'case inbox', 'case detail'].includes(label)) {
+      if (['customer chat', 'create case', 'case inbox', 'case detail', 'monitor', 'data grid'].includes(label)) {
         toRemove.push(a);
         return;
       }

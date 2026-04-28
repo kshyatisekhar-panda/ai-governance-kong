@@ -6,14 +6,14 @@
   }
 
   const NAV_ITEMS: NavItem[] = [
+    { key: 'home', label: 'Home', icon: 'home' },
     { key: 'overview', label: 'Overview', icon: 'dashboard' },
-    { key: 'customer-chat', label: 'Customer Chat', icon: 'chat' },
-    { key: 'create-case', label: 'Create Case', icon: 'add_circle' },
-    { key: 'case-inbox', label: 'Case Inbox', icon: 'inbox' },
     { key: 'governance-audit', label: 'Governance Audit', icon: 'gavel' },
     { key: 'app-policies', label: 'App Policies', icon: 'policy' },
     { key: 'product-data', label: 'Product Data', icon: 'inventory_2' },
     { key: 'gateway-flow', label: 'Gateway Flow', icon: 'account_tree' },
+    { key: 'chat', label: 'Chat', icon: 'chat' },
+    { key: 'sales-explorer', label: 'Sales Explorer', icon: 'table_chart' },
   ];
 
   function init(): void {
@@ -69,8 +69,8 @@
           <span class="material-symbols-outlined">precision_manufacturing</span>
         </div>
         <div>
-          <div class="app-sidebar__brand-name">CRM Service Governance</div>
-          <div class="app-sidebar__brand-sub">AI-Governed Hub</div>
+          <div class="app-sidebar__brand-name">AI Governance Gateway</div>
+          <div class="app-sidebar__brand-sub">Atlas Copco PoC</div>
         </div>
       </div>
       <nav class="app-sidebar__nav" aria-label="Main navigation">
@@ -92,13 +92,16 @@
     const topbar = document.createElement('header');
     topbar.className = 'app-topbar';
     topbar.innerHTML = `
-      <div class="flex items-center min-w-0">
+      <div class="app-topbar__left">
         <span class="app-topbar__title">${escapeStr(pageTitle)}</span>
         ${pageSubtitle ? `<span class="app-topbar__sub">${escapeStr(pageSubtitle)}</span>` : ''}
       </div>
-      <div class="app-topbar__pill" id="app-status-pill" title="Gateway status">
-        <span class="dot"></span>
-        <span id="app-status-pill-text">Gateway</span>
+      <div class="app-topbar__right">
+        <div data-theme-mount aria-label="Theme"></div>
+        <div class="app-topbar__pill" id="app-status-pill" title="Gateway status">
+          <span class="dot"></span>
+          <span id="app-status-pill-text">Gateway</span>
+        </div>
       </div>
     `;
 
@@ -152,6 +155,13 @@
       window.api
         .getHealth()
         .then(() => updateStatus(true))
+        .catch(() => updateStatus(false));
+    } else {
+      const base = ['localhost', '127.0.0.1', '0.0.0.0'].includes(location.hostname)
+        ? 'http://localhost:8000'
+        : '';
+      fetch(base + '/health', { headers: { 'x-api-key': 'eng-key-2024' } })
+        .then((res) => updateStatus(res.ok))
         .catch(() => updateStatus(false));
     }
 

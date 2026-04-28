@@ -1,0 +1,296 @@
+/*
+ * Cross-app Light/Dark theme overrides.
+ *
+ * The toggle button styling, plus per-surface overrides for every page
+ * type in apps/*. Strategy:
+ *
+ *   - The dashboard pages are Tailwind-based and live in light by default.
+ *     "theme-dark" mode swaps the global tokens that the dashboard reads
+ *     via app.css custom properties. This re-skins the surface, sidebar,
+ *     topbar, cards, and tables without rewriting markup.
+ *
+ *   - The standalone pages (homepage, chat, product-explorer) hard-code
+ *     dark colours inline. We treat dark as their default (so they look
+ *     unchanged) and override to light tones when "theme-light" is active
+ *     by tagging each page's <body> with class "standalone-dark".
+ *
+ * The toggle uses CSS variables for its own colours so it inverts cleanly
+ * in either mode.
+ */
+
+/* ------------------------------------------------------------------ */
+/* Toggle button                                                       */
+/* ------------------------------------------------------------------ */
+html.theme-light {
+  --app-color-surface: #faf9fd;
+  --app-color-surface-low: #f4f3f7;
+  --app-color-surface-high: #e9e7eb;
+  --app-color-on-surface: #1a1b1e;
+  --app-color-on-surface-variant: #44474e;
+  --app-color-outline: #74777f;
+  --app-color-outline-variant: #c4c6cf;
+  --app-color-primary: #000a1e;
+  --app-color-primary-on: #ffffff;
+  --app-color-secondary: #515f74;
+  --app-color-secondary-container: #d5e3fc;
+  --app-color-on-secondary-container: #57657a;
+}
+
+html.theme-dark {
+  --app-color-surface: #161b29;
+  --app-color-surface-low: #1f2638;
+  --app-color-surface-high: #2a3045;
+  --app-color-on-surface: #e7eaf3;
+  --app-color-on-surface-variant: #94a3b8;
+  --app-color-outline: #3a4258;
+  --app-color-outline-variant: #2a3045;
+  --app-color-primary: #aec7f6;
+  --app-color-primary-on: #001b3d;
+  --app-color-secondary: #94a3b8;
+  --app-color-secondary-container: #2a3045;
+  --app-color-on-secondary-container: #d6e3ff;
+}
+
+.app-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 6px;
+  background: var(--theme-toggle-bg, #e9e7eb);
+  border: 1px solid var(--theme-toggle-border, #c4c6cf);
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  font-size: 10px;
+  line-height: 1;
+}
+.app-theme-toggle button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  width: 28px;
+  height: 24px;
+  padding: 0;
+  justify-content: center;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--theme-toggle-fg, #44474e);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.app-theme-toggle button[aria-pressed="true"] {
+  background: var(--theme-toggle-active-bg, #000a1e);
+  color: var(--theme-toggle-active-fg, #ffffff);
+}
+.app-theme-toggle--floating {
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(6px);
+}
+.app-theme-toggle .label { display: none; }
+.app-theme-toggle .material-symbols-outlined { font-size: 16px; }
+
+/* Toggle palette per theme */
+html.theme-light {
+  --theme-toggle-bg: #e9e7eb;
+  --theme-toggle-border: #c4c6cf;
+  --theme-toggle-fg: #44474e;
+  --theme-toggle-active-bg: #000a1e;
+  --theme-toggle-active-fg: #ffffff;
+}
+html.theme-dark {
+  --theme-toggle-bg: rgba(42, 48, 69, 0.8);
+  --theme-toggle-border: #3a4258;
+  --theme-toggle-fg: #cdd3e0;
+  --theme-toggle-active-bg: #aec7f6;
+  --theme-toggle-active-fg: #001b3d;
+}
+
+/* ------------------------------------------------------------------ */
+/* Standalone dark pages: homepage, chat, product-explorer            */
+/* The page's <body> sets class "standalone-dark"; default appearance  */
+/* is the page's existing dark CSS. We override to a light skin when   */
+/* html.theme-light is active.                                         */
+/* ------------------------------------------------------------------ */
+html.theme-light body.standalone-dark {
+  background: #faf9fd !important;
+  color: #1a1b1e !important;
+}
+html.theme-light body.standalone-dark h1,
+html.theme-light body.standalone-dark h2,
+html.theme-light body.standalone-dark h3 {
+  color: #0f172a !important;
+}
+html.theme-light body.standalone-dark .subtitle,
+html.theme-light body.standalone-dark .section-label,
+html.theme-light body.standalone-dark .filter-label {
+  color: #475569 !important;
+}
+html.theme-light body.standalone-dark .app-card,
+html.theme-light body.standalone-dark .panel,
+html.theme-light body.standalone-dark .summary-card,
+html.theme-light body.standalone-dark .chat-box,
+html.theme-light body.standalone-dark .ai-response {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #1a1b1e !important;
+}
+html.theme-light body.standalone-dark .app-card h2,
+html.theme-light body.standalone-dark .panel h2 {
+  color: #0f172a !important;
+}
+html.theme-light body.standalone-dark .app-card p {
+  color: #475569 !important;
+}
+html.theme-light body.standalone-dark a {
+  color: #0f172a;
+}
+html.theme-light body.standalone-dark .nav a {
+  color: #1d4ed8 !important;
+  border-color: #cbd5e1 !important;
+}
+html.theme-light body.standalone-dark .nav a:hover,
+html.theme-light body.standalone-dark .nav a.active {
+  background: #eef2ff !important;
+  border-color: #1d4ed8 !important;
+}
+html.theme-light body.standalone-dark input,
+html.theme-light body.standalone-dark select,
+html.theme-light body.standalone-dark textarea {
+  background: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #1a1b1e !important;
+}
+html.theme-light body.standalone-dark th,
+html.theme-light body.standalone-dark td {
+  color: #1a1b1e !important;
+  border-color: #e2e8f0 !important;
+}
+html.theme-light body.standalone-dark th { color: #475569 !important; }
+html.theme-light body.standalone-dark tr:hover {
+  background: rgba(2, 132, 199, 0.04) !important;
+}
+html.theme-light body.standalone-dark button {
+  background: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+}
+html.theme-light body.standalone-dark .clear-btn {
+  background: #ffffff !important;
+  color: #b91c1c !important;
+  border-color: #fecaca !important;
+}
+html.theme-light body.standalone-dark .ask-ai button {
+  background: #1d4ed8 !important;
+  color: #ffffff !important;
+  border-color: #1d4ed8 !important;
+}
+/* Chat: user/assistant bubbles in light mode */
+html.theme-light body.standalone-dark .msg.user {
+  background: #dbeafe !important;
+  color: #0f172a !important;
+}
+html.theme-light body.standalone-dark .msg.assistant {
+  background: #f1f5f9 !important;
+  color: #1a1b1e !important;
+}
+html.theme-light body.standalone-dark .msg.error {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #fecaca !important;
+}
+html.theme-light body.standalone-dark .msg .meta {
+  color: #64748b !important;
+}
+
+/* ------------------------------------------------------------------ */
+/* Dashboard pages (Tailwind-based, light by default)                  */
+/* In dark mode we re-skin the chrome via the existing custom props in */
+/* shared/app.css. This intentionally targets only the chrome — pages  */
+/* keep their Tailwind utility colours, but the surface tones flip.    */
+/* ------------------------------------------------------------------ */
+html.theme-dark body {
+  background: #0f1219 !important;
+  color: #e7eaf3 !important;
+}
+html.theme-dark body .app-shell { background: #0f1219; }
+html.theme-dark body .app-sidebar {
+  background: #161b29 !important;
+  border-right-color: #2a3045 !important;
+}
+html.theme-dark body .app-sidebar__brand { border-bottom-color: #2a3045 !important; }
+html.theme-dark body .app-sidebar__brand-name { color: #f8fafc !important; }
+html.theme-dark body .app-sidebar__brand-sub { color: #94a3b8 !important; }
+html.theme-dark body .app-sidebar__link { color: #cdd3e0 !important; }
+html.theme-dark body .app-sidebar__link:hover { background: #1f2638 !important; }
+html.theme-dark body .app-sidebar__link[aria-current="page"] {
+  background: #2a3045 !important;
+  color: #aec7f6 !important;
+}
+html.theme-dark body .app-topbar {
+  background: #161b29 !important;
+  border-bottom-color: #2a3045 !important;
+}
+html.theme-dark body .app-topbar__title { color: #f8fafc !important; }
+html.theme-dark body .app-topbar__sub { color: #94a3b8 !important; }
+html.theme-dark body .app-topbar__pill {
+  background: #2a3045 !important;
+  border-color: #3a4258 !important;
+  color: #cdd3e0 !important;
+}
+html.theme-dark body .app-page { background: #0f1219 !important; }
+
+/* Tame Tailwind surface utilities so cards/sections don't look like
+   white islands on a dark background. */
+html.theme-dark body .bg-surface,
+html.theme-dark body .bg-surface-container,
+html.theme-dark body .bg-surface-container-low,
+html.theme-dark body .bg-surface-container-lowest,
+html.theme-dark body .bg-surface-container-high {
+  background-color: #161b29 !important;
+}
+html.theme-dark body .border-outline-variant,
+html.theme-dark body .border-outline {
+  border-color: #2a3045 !important;
+}
+html.theme-dark body .text-on-surface { color: #e7eaf3 !important; }
+html.theme-dark body .text-on-surface-variant,
+html.theme-dark body .text-secondary {
+  color: #94a3b8 !important;
+}
+html.theme-dark body code {
+  background: rgba(174, 199, 246, 0.12);
+  color: #e7eaf3;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+html.theme-dark body pre {
+  background: #0b0f1a !important;
+  color: #e7eaf3 !important;
+  border-color: #2a3045 !important;
+}
+html.theme-dark body table thead tr,
+html.theme-dark body table thead th {
+  background: #1f2638 !important;
+  color: #cdd3e0 !important;
+}
+html.theme-dark body table tbody td,
+html.theme-dark body table tbody tr {
+  color: #e7eaf3 !important;
+  border-color: #2a3045 !important;
+}
+html.theme-dark body input,
+html.theme-dark body select,
+html.theme-dark body textarea {
+  background: #1f2638 !important;
+  color: #e7eaf3 !important;
+  border-color: #3a4258 !important;
+}
+
+/* Modal backdrop / surface in dark mode (governance audit detail). */
+html.theme-dark body #log-detail-modal > div {
+  background: #161b29 !important;
+  color: #e7eaf3 !important;
+  border-color: #2a3045 !important;
+}

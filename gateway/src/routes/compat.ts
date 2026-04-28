@@ -66,31 +66,72 @@ compatRouter.get("/governance/logs", async (req, res) => {
   }) as any[];
 
   res.json({
-    logs: logs.map((l: any) => ({
-      requestId: `req-${l.id}`,
-      timestamp: l.timestamp,
-      sourceApp: l.app,
-      team: l.team,
-      endpoint: "/ai/chat",
-      decision: l.status === "blocked" ? "BLOCKED" : l.status === "masked" ? "MASKED" : "ALLOWED",
-      policy: "AI_GOVERNANCE",
-      blockReason: l.block_reason || null,
-      model: l.model,
-      modelRouteReason: l.model === "large" ? "complex prompt" : "simple prompt",
-      piiDetected: l.block_reason ? true : false,
-      piiTypes: l.block_reason ? l.block_reason.split(",") : [],
-      piiAction: l.status === "masked" ? "REDACT" : l.status === "blocked" ? "BLOCK" : "NONE",
-      sensitivePiiDetected: l.status === "blocked" && l.block_reason !== "blocked_keyword",
-      budgetStatus: "BUDGET_OK",
-      estimatedCostUsd: l.cost_usd,
-      latencyMs: l.latency_ms,
-      auditLogged: true,
-      safePromptPreview: `[${l.prompt_length} chars]`,
-      redactedInputPreview: `[${l.prompt_length} chars]`,
-      responseSummary: l.status === "passed" || l.status === "masked" ? "Response delivered" : "Request blocked",
-    })),
+    logs: logs.map((l: any) => {
+      const status: string = l.status;
+      const blocked = status === "blocked";
+      const masked = status === "masked";
+      // Inferred decision layer for legacy rows: kong layer can only block
+      // when the prompt-guard pattern hits, which produces a `blocked` status
+      // without ever reaching Express (so older rows of those will be missing
+      // here entirely). For everything in this table, the decision was made
+      // in Express or further down the chain.
+      const decisionLayer: string =
+        l.decision_layer ||
+        (blocked ? "express" : masked ? "express" : "llm");
+      return {
+        requestId: `req-${l.id}`,
+        timestamp: l.timestamp,
+        sourceApp: l.app,
+        team: l.team,
+        endpoint: l.kong_route || "/ai/chat",
+        decision: blocked ? "BLOCKED" : masked ? "MASKED" : "ALLOWED",
+        policy: l.policy_applied || "AI_GOVERNANCE",
+        blockReason: l.block_reason || null,
+        model: l.model,
+        modelRouteReason: l.model === "large" ? "complex prompt" : "simple prompt",
+        piiDetected: l.block_reason ? true : false,
+        piiTypes: l.block_reason ? String(l.block_reason).split(",") : [],
+        piiAction: masked ? "REDACT" : blocked ? "BLOCK" : "NONE",
+        sensitivePiiDetected: blocked && l.block_reason !== "blocked_keyword",
+        budgetStatus: l.block_reason === "budget_exceeded" ? "BUDGET_EXCEEDED" : "BUDGET_OK",
+        estimatedCostUsd: l.cost_usd,
+        latencyMs: l.latency_ms,
+        auditLogged: true,
+        safePromptPreview: `[${l.prompt_length} chars]`,
+        redactedInputPreview: `[${l.prompt_length} chars]`,
+        responseSummary: status === "passed" || status === "masked" ? "Response delivered" : "Request blocked",
+        // Lifecycle / evidence fields (defaults preserve compatibility)
+        lifecycle: {
+          decisionLayer,
+          llmCalled: !!l.llm_called || (status !== "blocked"),
+          llmPathMode: l.llm_path_mode || "direct-provider",
+          kongRoute: l.kong_route || "/ai/chat",
+          kongProcessed: l.kong_processed || "unknown",
+          dataSource: l.data_source || null,
+          piiMaskedTypes: l.pii_masked_types ? String(l.pii_masked_types).split(",").filter(Boolean) : [],
+          policyApplied: l.policy_applied || `app:${l.app}`,
+          // Plugins configured at the Kong layer for this route. Note: the
+          // app cannot directly observe whether each plugin executed — these
+          // are "expected from Kong config".
+          kongPluginsExpected: kongPluginsExpectedForRoute(l.kong_route || "/ai/chat"),
+        },
+      };
+    }),
   });
 });
+
+function kongPluginsExpectedForRoute(route: string): string[] {
+  if (route === "/ai/chat" || route.startsWith("/ai/chat/")) {
+    return [
+      "key-auth", "rate-limiting", "cors", "request-size-limiting",
+      "bot-detection", "response-transformer", "ai-prompt-guard",
+    ];
+  }
+  return [
+    "key-auth", "rate-limiting", "cors", "request-size-limiting",
+    "bot-detection", "response-transformer",
+  ];
+}
 
 // Customer chat (their format)
 compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
@@ -103,6 +144,9 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
       team, app: sourceApp, model: "", promptLength: message.length,
       inputTokens: 0, outputTokens: 0, costUsd: 0, latencyMs: 0,
       status: "blocked", blockReason: piiResult.piiFound.join(","),
+      decisionLayer: "express", kongRoute: "/api/customer-chat",
+      kongProcessed: "unknown", llmCalled: false,
+      llmPathMode: "direct-provider", policyApplied: `app:${sourceApp}`,
     });
 
     res.status(403).json({
@@ -168,6 +212,12 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
     inputTokens, outputTokens, costUsd: cost, latencyMs,
     status: wasMasked ? "masked" : "passed",
     blockReason: wasMasked ? piiResult.maskedTypes.join(",") : "",
+    decisionLayer: "llm", kongRoute: "/api/customer-chat",
+    kongProcessed: "unknown", llmCalled: true,
+    llmPathMode: "direct-provider",
+    dataSource: detected?.name ?? "",
+    piiMaskedTypes: wasMasked ? piiResult.maskedTypes.join(",") : "",
+    policyApplied: `app:${sourceApp}`,
   });
 
   res.json({

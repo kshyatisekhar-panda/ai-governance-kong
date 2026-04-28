@@ -45,6 +45,8 @@ interface RenderUtils {
   renderError: (targetEl: HTMLElement | null, err: unknown) => void;
   setText: (el: HTMLElement | null, value: unknown) => void;
   governancePanelHtml: (g: unknown) => string;
+  lifecyclePanelHtml: (input: { log: Record<string, unknown>; lifecycle?: Record<string, unknown> }) => string;
+  traceTimelineHtml: (input: { log: Record<string, unknown>; lifecycle?: Record<string, unknown> }) => string;
 }
 
 interface NavigationModule {
