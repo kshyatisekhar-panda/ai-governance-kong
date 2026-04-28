@@ -7,6 +7,8 @@
 
   const NAV_ITEMS: NavItem[] = [
     { key: 'overview', label: 'Overview', icon: 'dashboard' },
+    { key: 'prompt-shield-soc', label: 'Prompt Shield SOC', icon: 'shield' },
+    { key: 'kong-backend-terminal', label: 'Kong Backend Terminal', icon: 'terminal' },
     { key: 'governance-audit', label: 'Governance Audit', icon: 'gavel' },
     { key: 'app-policies', label: 'App Policies', icon: 'policy' },
     { key: 'gateway-flow', label: 'Gateway Flow', icon: 'account_tree' },
@@ -72,7 +74,7 @@
       <nav class="app-sidebar__nav" aria-label="Main navigation">
         ${NAV_ITEMS.map(
           (item) => `
-          <a class="app-sidebar__link" data-key="${item.key}" href="${window.navigation.linkTo(item.key)}"${item.key === currentKey ? ' aria-current="page"' : ''}>
+          <a class="app-sidebar__link" data-key="${item.key}" href="${(window as any).appNav.linkTo(item.key)}"${item.key === currentKey ? ' aria-current="page"' : ''}>
             <span class="material-symbols-outlined">${item.icon}</span>
             <span>${item.label}</span>
           </a>

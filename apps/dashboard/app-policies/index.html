@@ -113,6 +113,97 @@ tailwind.config = {
             <td class="px-4 py-3 text-on-surface-variant">Handles cross-origin requests so browser apps (Chat, Product Explorer) can call the gateway.</td>
             <td class="px-4 py-3"><span class="rule-badge rule-allow">All origins</span></td>
           </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium text-red-700">prompt-shield <span class="rule-badge rule-block ml-1">Custom Plugin</span></td>
+            <td class="px-4 py-3 text-on-surface-variant">Kong-native AI prompt inspection. Runs in the <code class="bg-surface-container px-1 rounded text-xs">access</code> phase — before the request reaches Express or any LLM. Blocks sensitive content and logs all decisions asynchronously.</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">Active on ai-chat</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-h2 mb-2">Kong Prompt Shield — Blocked Patterns</h2>
+    <p class="text-body-md text-on-surface-variant mb-4 max-w-2xl">
+      The Prompt Shield Lua plugin scans the raw request body in Kong's <code class="bg-surface-container px-1 rounded text-xs">access</code> phase.
+      If a pattern matches, Kong returns <code class="bg-surface-container px-1 rounded text-xs">403</code> immediately —
+      the Express gateway and LLM are never reached.
+    </p>
+    <div class="overflow-x-auto rounded-xl border border-outline-variant">
+      <table class="w-full text-body-md">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Pattern</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Block Reason</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Example</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Action</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/50">
+          <tr>
+            <td class="px-4 py-3 font-medium">Credit card numbers</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_SENSITIVE_IDENTIFIER</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">4111-1111-1111-1111</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">US Social Security Numbers</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_SENSITIVE_IDENTIFIER</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">123-45-6789</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Swedish personnummer</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_SENSITIVE_IDENTIFIER</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">19900101-1234</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Raw API keys</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_SENSITIVE_IDENTIFIER</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">sk-abc123…</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Prompt injection</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_PROMPT_INJECTION</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">"ignore previous instructions"</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 font-medium">Bulk data export</td>
+            <td class="px-4 py-3 text-on-surface-variant font-mono text-xs">BLOCKED_BULK_EXPORT</td>
+            <td class="px-4 py-3 text-on-surface-variant text-xs">"give me all customer emails"</td>
+            <td class="px-4 py-3"><span class="rule-badge rule-block">403 · LLM not called</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <h2 class="text-h2 mb-2">Kong PDK Datapoints Observed</h2>
+    <p class="text-body-md text-on-surface-variant mb-4 max-w-2xl">
+      The Prompt Shield plugin uses these Kong PDK calls to inspect and log every AI request.
+    </p>
+    <div class="overflow-x-auto rounded-xl border border-outline-variant">
+      <table class="w-full text-body-md">
+        <thead class="bg-surface-container-low">
+          <tr>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">PDK Call</th>
+            <th class="text-left px-4 py-3 text-label-sm text-on-surface-variant uppercase tracking-wider">Used For</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-outline-variant/50">
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.request.get_raw_body()</td><td class="px-4 py-3 text-on-surface-variant">Reads full prompt body for pattern scanning</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.request.get_method()</td><td class="px-4 py-3 text-on-surface-variant">Audit log context (POST)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.request.get_path()</td><td class="px-4 py-3 text-on-surface-variant">Audit log context (/ai/chat)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.client.get_ip()</td><td class="px-4 py-3 text-on-surface-variant">Requester IP for SOC event log</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.client.get_consumer()</td><td class="px-4 py-3 text-on-surface-variant">Identifies the authorized team (e.g. industrial-technique)</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.router.get_route()</td><td class="px-4 py-3 text-on-surface-variant">Route name attached to every audit event</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">kong.response.exit(403, …)</td><td class="px-4 py-3 text-on-surface-variant">Short-circuits the request — upstream never reached</td></tr>
+          <tr><td class="px-4 py-3 font-mono text-xs">ngx.timer.at(0, fn)</td><td class="px-4 py-3 text-on-surface-variant">Async log dispatch — zero latency impact on allowed requests</td></tr>
         </tbody>
       </table>
     </div>
@@ -148,7 +239,7 @@ tailwind.config = {
 <script src="../shared/dist/navigation.js"></script>
 <script>
 (function () {
-  window.navigation.bindSideNav('app-policies');
+  window.appNav.bindSideNav('app-policies');
 
   const BASE = window.APP_CONFIG.API_BASE_URL;
 

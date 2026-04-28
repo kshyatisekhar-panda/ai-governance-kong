@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Kong Backend Terminal</title>
+    <link rel="stylesheet" href="../shared/app.css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        .terminal { font-family: 'Fira Code', monospace; background-color: #0d1117; color: #c9d1d9; }
+        .t-dim { color: #8b949e; }
+        .t-green { color: #3fb950; }
+        .t-red { color: #f85149; }
+        .t-blue { color: #58a6ff; }
+        .t-purple { color: #d2a8ff; }
+        .t-yellow { color: #e3b341; }
+    </style>
+</head>
+<body class="bg-gray-100 flex h-screen overflow-hidden font-sans">
+
+<nav id="side-nav" class="fixed h-screen left-0 w-64 border-r border-slate-200 bg-slate-50 hidden md:flex flex-col py-4 px-3 space-y-1 overflow-y-auto z-40"></nav>
+
+<div class="flex-1 flex flex-col md:ml-64 bg-gray-100 min-h-screen w-full">
+    <header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-30 bg-white border-b border-slate-200">
+        <div class="text-lg font-bold tracking-tight text-slate-900">Kong Backend Terminal</div>
+    </header>
+
+    <main class="flex-1 p-6 flex flex-col h-full">
+        <div class="mb-4 flex justify-between items-center">
+            <p class="text-gray-600 flex items-center">
+                Visual Request Trace - Watch Kong & Express in action. 
+                <span id="live-badge" class="ml-3 px-2 py-0.5 bg-green-100 text-green-800 text-xs font-bold rounded-full animate-pulse">LIVE POLLING</span>
+            </p>
+            <div class="flex space-x-2">
+                <button class="px-3 py-1 bg-white border rounded text-sm hover:bg-gray-50" onclick="isLive=true; term.innerHTML=`<div class='t-dim'>Waiting for live chat events...</div>`; document.getElementById('live-badge').classList.remove('hidden');">Listen Live</button>
+                <button class="trace-btn px-3 py-1 bg-white border rounded text-sm hover:bg-gray-50" data-trace="safe" onclick="document.getElementById('live-badge').classList.add('hidden')">Replay Safe</button>
+                <button class="trace-btn px-3 py-1 bg-white border rounded text-sm hover:bg-gray-50" data-trace="cc" onclick="document.getElementById('live-badge').classList.add('hidden')">Replay Blocked (CC)</button>
+            </div>
+        </div>
+
+        <div class="flex-1 terminal rounded-lg p-6 overflow-y-auto shadow-2xl border border-gray-800" id="terminal-out">
+            <div class="t-dim">Waiting for trace execution...</div>
+        </div>
+    </main>
+</div>
+
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/api-client.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+    const term = document.getElementById('terminal-out');
+    
+    function log(msg, delay) {
+        return new Promise(resolve => {
+            setTimeout(() => {
+                const div = document.createElement('div');
+                div.innerHTML = msg;
+                div.className = "mb-2";
+                term.appendChild(div);
+                term.scrollTop = term.scrollHeight;
+                resolve();
+            }, delay);
+        });
+    }
+
+    async function runTrace(type) {
+        term.innerHTML = '';
+        const now = new Date().toISOString().split('T')[1].slice(0,-1);
+        
+        await log(`<span class="t-dim">[${now}]</span> <span class="t-blue font-bold">REQUEST RECEIVED</span>
+  client → Kong Gateway
+  method: POST
+  path: /api/chat`, 200);
+
+        await log(`<br><span class="t-dim">[${now}]</span> <span class="t-purple font-bold">KONG LAYER</span>
+  route matched: ai-chat
+  service: governance-gateway
+  plugins:
+    key-auth: <span class="t-green">PASSED</span>
+    rate-limiting: <span class="t-green">PASSED</span>`, 600);
+
+        if (type === 'cc') {
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-red font-bold">KONG PROMPT SHIELD</span>
+  raw body inspected: yes
+  sensitive pattern: <span class="t-red">CREDIT_CARD</span>
+  decision: <span class="t-red">BLOCKED</span>
+  action: kong.response.exit(403)
+  forwarded to Express: <span class="t-red">no</span>
+  LLM called: <span class="t-red">no</span>`, 800);
+  
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-yellow font-bold">AUDIT</span>
+  kong event written: yes via POST /admin/kong-events`, 300);
+
+        } else {
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-blue font-bold">KONG PROMPT SHIELD</span>
+  raw body inspected: yes
+  sensitive pattern: none
+  decision: <span class="t-green">ALLOWED</span>
+  action: forward to Express`, 800);
+
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-blue font-bold">EXPRESS GOVERNANCE APP</span>
+  auth context resolved: customer-service
+  PII scan: no sensitive PII
+  budget status: <span class="t-green">OK</span>
+  model router: small model
+  decision: <span class="t-green">ALLOWED</span>`, 600);
+
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-blue font-bold">LLM PROVIDER</span>
+  provider: OpenRouter / Cerebras
+  model: openai/gpt-4o-mini
+  LLM called: <span class="t-green">yes</span>
+  tokens: ~150`, 800);
+
+            await log(`<br><span class="t-dim">[${now}]</span> <span class="t-yellow font-bold">AUDIT</span>
+  audit row written: yes
+  dashboard event: available`, 300);
+        }
+    }
+
+    document.querySelectorAll('.trace-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            isLive = false;
+            runTrace(btn.dataset.trace);
+        });
+    });
+
+    // Live polling mechanism
+    let lastEventId = null;
+    let isLive = true;
+
+    async function pollLiveEvents() {
+        if (!isLive) return;
+        try {
+            const res = await window.api.fetch('/admin/soc-events');
+            if (res && res.events && res.events.length > 0) {
+                const latest = res.events[0];
+                if (latest.eventId !== lastEventId) {
+                    // New event found!
+                    if (lastEventId !== null) {
+                        // Only trace if it's not the very first load
+                        runLiveTrace(latest);
+                    }
+                    lastEventId = latest.eventId;
+                }
+            }
+        } catch (e) {
+            console.error("Polling error", e);
+        }
+        setTimeout(pollLiveEvents, 2000);
+    }
+
+    async function runLiveTrace(ev) {
+        term.innerHTML = '';
+        const tstamp = new Date(ev.timestamp).toISOString().split('T')[1].slice(0,-1);
+        
+        await log(`<span class="t-dim">[${tstamp}]</span> <span class="t-blue font-bold">REQUEST RECEIVED</span>
+  client → Kong Gateway
+  method: ${ev.method}
+  path: ${ev.path}`, 100);
+
+        await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-purple font-bold">KONG LAYER</span>
+  route matched: ${ev.routeName || 'unknown'}
+  consumer: ${ev.consumer || 'unknown'}
+  plugins:
+    key-auth: <span class="t-green">PASSED</span>
+    rate-limiting: <span class="t-green">PASSED</span>`, 300);
+
+        if (ev.decision === 'BLOCKED') {
+            await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-red font-bold">KONG PROMPT SHIELD</span>
+  raw body inspected: yes
+  sensitive pattern: <span class="t-red">${ev.blockReason}</span>
+  decision: <span class="t-red">BLOCKED</span>
+  action: kong.response.exit(403)
+  forwarded to Express: <span class="t-red">no</span>
+  LLM called: <span class="t-red">no</span>`, 400);
+        } else {
+            await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-blue font-bold">KONG PROMPT SHIELD</span>
+  raw body inspected: yes
+  sensitive pattern: none
+  decision: <span class="t-green">ALLOWED</span>
+  action: forward to Express`, 400);
+
+            await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-blue font-bold">EXPRESS GOVERNANCE APP</span>
+  auth context resolved: ${ev.consumer}
+  PII scan: evaluated
+  budget status: <span class="t-green">OK</span>
+  model router: ${ev.model}
+  decision: <span class="t-green">EVALUATED</span>`, 300);
+
+            if (ev.llmCalled) {
+                await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-blue font-bold">LLM PROVIDER</span>
+  provider: OpenRouter / Cerebras
+  model: ${ev.model}
+  LLM called: <span class="t-green">yes</span>`, 400);
+            }
+        }
+        
+        await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-yellow font-bold">AUDIT</span>
+  soc event written: yes
+  dashboard event: available`, 200);
+    }
+
+    // Start polling
+    pollLiveEvents();
+</script>
+<script>window.PAGE_INFO={key:'kong-backend-terminal',title:'Kong Backend Terminal'};</script>
+<script src="../shared/dist/layout.js"></script>
+</body>
+</html>
