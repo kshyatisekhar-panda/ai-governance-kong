@@ -21,24 +21,26 @@
     return Math.round(Number(n)) + ' ms';
   }
 
+  // SQLite's datetime('now') returns "YYYY-MM-DD HH:MM:SS" with no timezone
+  // marker, but the value is UTC. Browsers parse that ambiguously (often as
+  // local time), which would skip the UTC->local conversion. Add a T and Z
+  // so new Date() parses it as UTC and toLocaleString converts to local.
+  function parseTs(iso: unknown): Date | null {
+    if (!iso) return null;
+    let s = String(iso).trim();
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(s)) s = s.replace(' ', 'T') + 'Z';
+    const d = new Date(s);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }
+
   function fmtTimestamp(iso: unknown): string {
-    if (!iso) return '\u2014';
-    try {
-      const d = new Date(iso as string);
-      return d.toLocaleString();
-    } catch {
-      return String(iso);
-    }
+    const d = parseTs(iso);
+    return d ? d.toLocaleString() : (iso ? String(iso) : '\u2014');
   }
 
   function fmtTime(iso: unknown): string {
-    if (!iso) return '\u2014';
-    try {
-      const d = new Date(iso as string);
-      return d.toLocaleTimeString();
-    } catch {
-      return String(iso);
-    }
+    const d = parseTs(iso);
+    return d ? d.toLocaleTimeString() : (iso ? String(iso) : '\u2014');
   }
 
   function decisionBadgeClass(decision: unknown): string {

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Inbox | Atlas Copco Case Management</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <main class="main">
+      <h1>Case Inbox</h1>
+      <p class="subtitle">All service cases. Click a row to open detail, re-run AI triage, or draft a reply.</p>
+
+      <div class="card">
+        <div class="row-3">
+          <div class="field">
+            <label>Status</label>
+            <select id="f-status">
+              <option value="">All statuses</option>
+              <option>New</option>
+              <option>In Progress</option>
+              <option>Pending Customer</option>
+              <option>Resolved</option>
+              <option>Closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Priority</label>
+            <select id="f-priority">
+              <option value="">All priorities</option>
+              <option>Low</option>
+              <option>Medium</option>
+              <option>High</option>
+              <option>Critical</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>AI Triage</label>
+            <select id="f-triage">
+              <option value="">All</option>
+              <option>Pending</option>
+              <option>Completed</option>
+              <option>Failed</option>
+              <option>Skipped</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Search (case number, customer, company, product, description)</label>
+          <input type="text" id="f-search" placeholder="e.g. AC-1001, Nordic Mining, GA 75">
+        </div>
+        <div class="btn-row" style="justify-content:flex-end">
+          <button class="btn btn-secondary" id="reset-btn">Reset</button>
+          <button class="btn" id="apply-btn">Apply filters</button>
+        </div>
+      </div>
+
+      <div id="messages"></div>
+      <div id="list-card" class="card">
+        <div class="btn-row" style="justify-content:space-between;margin-bottom:12px">
+          <h2 style="margin:0">Cases <span class="muted" id="count"></span></h2>
+          <a class="btn" href="create-case.html">+ New case</a>
+        </div>
+        <div id="list">
+          <div class="empty">Loading…</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    cm.mountSidebar('inbox');
+
+    const list = document.getElementById('list');
+    const count = document.getElementById('count');
+    const messages = document.getElementById('messages');
+
+    function fmtTs(s) {
+      if (!s) return '';
+      const d = new Date(s.replace(' ', 'T') + 'Z');
+      if (Number.isNaN(d.getTime())) return s;
+      return d.toLocaleString();
+    }
+
+    async function load() {
+      messages.innerHTML = '';
+      list.innerHTML = '<div class="empty">Loading…</div>';
+      const params = new URLSearchParams();
+      const status = document.getElementById('f-status').value;
+      const priority = document.getElementById('f-priority').value;
+      const triage = document.getElementById('f-triage').value;
+      const search = document.getElementById('f-search').value.trim();
+      if (status) params.set('status', status);
+      if (priority) params.set('priority', priority);
+      if (triage) params.set('aiTriageStatus', triage);
+      if (search) params.set('search', search);
+      params.set('limit', '100');
+
+      try {
+        const resp = await cm.request('/api/service-cases?' + params.toString());
+        renderList(resp.data);
+      } catch (err) {
+        list.innerHTML = '';
+        messages.innerHTML = '<div class="error-msg">' + cm.escapeHtml(err.message || 'Failed to load') + '</div>';
+      }
+    }
+
+    function renderList(data) {
+      const cases = data.cases || [];
+      count.textContent = '· ' + (data.total || 0) + ' total';
+      if (cases.length === 0) {
+        list.innerHTML = '<div class="empty">No cases match the current filters.<br><a href="create-case.html" style="color:#1e3a8a;font-weight:600">Create the first one</a>.</div>';
+        return;
+      }
+      const rows = cases.map(function (c) {
+        const href = 'case-detail.html?id=' + encodeURIComponent(c.id);
+        return '<tr class="row-link" data-href="' + href + '">' +
+          '<td><strong>' + cm.escapeHtml(c.caseNumber) + '</strong></td>' +
+          '<td>' + cm.escapeHtml(c.company) + '</td>' +
+          '<td>' + cm.escapeHtml(c.product) + '</td>' +
+          '<td>' + cm.escapeHtml(c.issueCategory) + '</td>' +
+          '<td>' + cm.priorityBadge(c.priority) + '</td>' +
+          '<td>' + cm.escapeHtml(c.status) + '</td>' +
+          '<td>' + cm.escapeHtml(c.aiTriageStatus) + '</td>' +
+          '<td class="muted">' + cm.escapeHtml(fmtTs(c.createdAt)) + '</td>' +
+          '</tr>';
+      }).join('');
+      list.innerHTML =
+        '<table>' +
+          '<thead><tr>' +
+            '<th>Case</th><th>Company</th><th>Product</th><th>Category</th>' +
+            '<th>Priority</th><th>Status</th><th>AI Triage</th><th>Created</th>' +
+          '</tr></thead>' +
+          '<tbody>' + rows + '</tbody>' +
+        '</table>';
+      list.querySelectorAll('tr.row-link').forEach(function (tr) {
+        tr.addEventListener('click', function () { location.href = tr.dataset.href; });
+      });
+    }
+
+    document.getElementById('apply-btn').addEventListener('click', load);
+    document.getElementById('reset-btn').addEventListener('click', function () {
+      ['f-status', 'f-priority', 'f-triage'].forEach(function (id) { document.getElementById(id).value = ''; });
+      document.getElementById('f-search').value = '';
+      load();
+    });
+    document.getElementById('f-search').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); load(); }
+    });
+
+    load();
+  </script>
+</body>
+</html>
