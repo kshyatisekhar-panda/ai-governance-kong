@@ -101,10 +101,10 @@
     try {
       await request('/health');
       const el = document.getElementById('gw-status');
-      if (el) el.innerHTML = 'Gateway: <span style="color:#00a86b">online</span>';
+      if (el) el.innerHTML = 'Gateway: <span style="color:#047857;font-weight:600">online</span>';
     } catch (e) {
       const el = document.getElementById('gw-status');
-      if (el) el.innerHTML = 'Gateway: <span style="color:#ff5252">offline</span>';
+      if (el) el.innerHTML = 'Gateway: <span style="color:#b91c1c;font-weight:600">offline</span>';
     }
   }
 

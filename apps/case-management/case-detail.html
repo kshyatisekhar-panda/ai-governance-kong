@@ -9,7 +9,7 @@
 <body>
   <div class="shell" id="shell">
     <main class="main">
-      <p style="margin-bottom:8px"><a href="inbox.html" style="color:#5a7aaa;font-size:12px;text-decoration:none">&larr; Back to inbox</a></p>
+      <p style="margin-bottom:8px"><a href="inbox.html" style="color:#64748b;font-size:12px;text-decoration:none">&larr; Back to inbox</a></p>
       <div id="header">
         <h1>Loading…</h1>
       </div>
@@ -98,9 +98,9 @@
             '<button class="btn" id="retriage-btn">Re-run triage</button>',
           '</h2>',
           (c.aiSummary
-            ? '<h3 style="margin-top:12px">Summary</h3><p style="font-size:13px;color:#c0c0c0;line-height:1.6">' + cm.escapeHtml(c.aiSummary) + '</p>'
+            ? '<h3 style="margin-top:12px">Summary</h3><p style="font-size:13px;color:#475569;line-height:1.6">' + cm.escapeHtml(c.aiSummary) + '</p>'
             : '<p class="muted">No summary yet. Click <em>Re-run triage</em> to generate one.</p>'),
-          (c.aiBusinessImpact ? '<h3 style="margin-top:12px">Business impact</h3><p style="font-size:13px;color:#c0c0c0">' + cm.escapeHtml(c.aiBusinessImpact) + '</p>' : ''),
+          (c.aiBusinessImpact ? '<h3 style="margin-top:12px">Business impact</h3><p style="font-size:13px;color:#475569">' + cm.escapeHtml(c.aiBusinessImpact) + '</p>' : ''),
         '</div>',
 
         '<div class="card">',

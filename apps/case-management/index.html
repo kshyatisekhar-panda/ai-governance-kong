@@ -42,7 +42,7 @@
 
       <h2 style="margin-top:32px">How it works</h2>
       <div class="card">
-        <ol style="padding-left:20px;line-height:1.8;font-size:13px;color:#c0c0c0">
+        <ol style="padding-left:20px;line-height:1.8;font-size:13px;color:#475569">
           <li>Customer or agent submits input via one of the modules above.</li>
           <li>Request hits <span class="kbd">Kong</span> on port 8000 — key-auth, rate-limit, and (for chat) <span class="kbd">ai-prompt-guard</span> regex deny patterns fire here.</li>
           <li>Kong forwards to the <span class="kbd">governance gateway</span> (Express). PII is scanned per app policy: email/phone masked, SSN/credit card/personnummer blocked.</li>

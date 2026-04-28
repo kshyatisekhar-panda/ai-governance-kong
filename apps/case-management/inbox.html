@@ -111,7 +111,7 @@
       const cases = data.cases || [];
       count.textContent = '· ' + (data.total || 0) + ' total';
       if (cases.length === 0) {
-        list.innerHTML = '<div class="empty">No cases match the current filters.<br><a href="create-case.html" style="color:#64ffda">Create the first one</a>.</div>';
+        list.innerHTML = '<div class="empty">No cases match the current filters.<br><a href="create-case.html" style="color:#1e3a8a;font-weight:600">Create the first one</a>.</div>';
         return;
       }
       const rows = cases.map(function (c) {
