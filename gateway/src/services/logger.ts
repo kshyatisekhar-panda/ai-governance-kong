@@ -1,7 +1,7 @@
 import Database from "better-sqlite3";
 import { config } from "../config.js";
 import { seedDatabase } from "./seed.js";
-import type { RequestLogEntry } from "../types.js";
+import type { RequestLogEntry, SocEvent } from "../types.js";
 
 const db = new Database(config.sqlitePath);
 
@@ -18,8 +18,7 @@ db.exec(`
     cost_usd REAL DEFAULT 0,
     latency_ms INTEGER DEFAULT 0,
     status TEXT,
-    block_reason TEXT DEFAULT '',
-    endpoint TEXT DEFAULT '/ai/chat'
+    block_reason TEXT DEFAULT ''
   );
 
   CREATE TABLE IF NOT EXISTS service_cases (
@@ -49,13 +48,24 @@ db.exec(`
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
   );
-`);
 
-// Migration: add endpoint column to existing DBs
-const cols = db.prepare("PRAGMA table_info(request_logs)").all() as { name: string }[];
-if (!cols.some((c) => c.name === "endpoint")) {
-  db.exec("ALTER TABLE request_logs ADD COLUMN endpoint TEXT DEFAULT '/ai/chat'");
-}
+  CREATE TABLE IF NOT EXISTS soc_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT UNIQUE,
+    timestamp TEXT,
+    layer TEXT,
+    decision TEXT,
+    block_reason TEXT,
+    method TEXT,
+    path TEXT,
+    client_ip TEXT,
+    consumer TEXT,
+    route_name TEXT,
+    model TEXT,
+    llm_called INTEGER,
+    datapoints_json TEXT
+  );
+`);
 
 seedDatabase(db);
 
@@ -64,8 +74,8 @@ export { db };
 const insertStmt = db.prepare(`
   INSERT INTO request_logs
     (team, app, model, prompt_length, input_tokens, output_tokens,
-     cost_usd, latency_ms, status, block_reason, endpoint)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     cost_usd, latency_ms, status, block_reason)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 export async function logRequest(entry: RequestLogEntry): Promise<void> {
@@ -81,11 +91,62 @@ export async function logRequest(entry: RequestLogEntry): Promise<void> {
       entry.latencyMs,
       entry.status,
       entry.blockReason,
-      entry.endpoint ?? "/ai/chat",
     );
   } catch (error) {
     console.error("[logger] Failed to write log:", error);
   }
+}
+
+const insertSocEventStmt = db.prepare(`
+  INSERT INTO soc_events
+    (event_id, timestamp, layer, decision, block_reason, method, path, client_ip, consumer, route_name, model, llm_called, datapoints_json)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`);
+
+export async function logSocEvent(event: SocEvent): Promise<void> {
+  try {
+    insertSocEventStmt.run(
+      event.eventId,
+      event.timestamp,
+      event.layer,
+      event.decision,
+      event.blockReason,
+      event.method,
+      event.path,
+      event.clientIp,
+      event.consumer,
+      event.routeName,
+      event.model,
+      event.llmCalled ? 1 : 0,
+      JSON.stringify(event.datapoints)
+    );
+  } catch (error) {
+    console.error("[logger] Failed to write soc event:", error);
+  }
+}
+
+export async function getSocEvents(limit = 100): Promise<SocEvent[]> {
+  const rows = db.prepare("SELECT * FROM soc_events ORDER BY timestamp DESC LIMIT ?").all(limit) as any[];
+  return rows.map((r) => ({
+    eventId: r.event_id,
+    timestamp: r.timestamp,
+    layer: r.layer,
+    decision: r.decision,
+    blockReason: r.block_reason,
+    method: r.method,
+    path: r.path,
+    clientIp: r.client_ip,
+    consumer: r.consumer,
+    routeName: r.route_name,
+    model: r.model,
+    llmCalled: r.llm_called === 1,
+    datapoints: JSON.parse(r.datapoints_json || "{}")
+  }));
+}
+
+export async function clearAllLogs(): Promise<void> {
+  db.exec("DELETE FROM request_logs");
+  db.exec("DELETE FROM soc_events");
 }
 
 export async function getRecentLogs(limit = 100) {
