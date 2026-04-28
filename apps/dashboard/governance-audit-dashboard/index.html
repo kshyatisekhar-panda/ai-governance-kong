@@ -542,6 +542,9 @@
   refreshBtn.addEventListener('click', refreshAll);
 
   refreshAll();
+
+  // Auto-refresh every 5 seconds
+  setInterval(refreshAll, 5000);
 })();
 </script>
 <script>window.PAGE_INFO={key:'governance-audit',title:'Governance Audit'};</script>

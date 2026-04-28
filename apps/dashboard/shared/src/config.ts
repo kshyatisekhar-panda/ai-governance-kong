@@ -17,10 +17,10 @@
   function defaultApiBase(): string {
     const loc = typeof window !== 'undefined' ? window.location : null;
     if (!loc || loc.protocol === 'file:' || !loc.hostname) {
-      return 'http://localhost:8000';
+      return 'http://localhost:8001';
     }
     if (['localhost', '127.0.0.1', '0.0.0.0'].includes(loc.hostname)) {
-      return 'http://localhost:8000';
+      return 'http://localhost:8001';
     }
     return '';
   }

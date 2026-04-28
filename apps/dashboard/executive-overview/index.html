@@ -427,42 +427,47 @@
     return String(n);
   };
 
-  Promise.allSettled([
-    window.api.getHealth(),
-    window.api.getGovernanceStats(),
-    window.api.getServiceCases({ limit: 1 }),
-  ]).then(([health, stats, cases]) => {
-    if (health.status === 'fulfilled') {
-      set('m-status', 'Gateway: Online');
-    } else {
-      set('m-status', 'Gateway: Offline');
-    }
-
-    if (stats.status === 'fulfilled') {
-      const s = stats.value;
-      set('m-total', fmtBig(s.totalRequests));
-      set('m-allowed', fmtBig(s.allowedRequests));
-      const yieldPct = s.totalRequests > 0 ? Math.round((s.allowedRequests / s.totalRequests) * 100) : 0;
-      set('m-allowed-pct', yieldPct + '% yield');
-      set('m-masked', fmtBig(s.maskedRequests));
-      set('m-blocked', fmtBig(s.blockedRequests));
-      set('m-cost', fmtCurrency(s.costToday));
-      set('m-latency', fmtMs(s.averageLatencyMs));
-      set('m-pii', fmtBig(s.piiEvents));
-      if (s.totalRequests === 0) {
-        const m = document.getElementById('m-status');
-        if (m) m.textContent = 'No governance logs yet. Try Customer Chat or Create Case.';
+  function loadOverview() {
+    Promise.allSettled([
+      window.api.getHealth(),
+      window.api.getGovernanceStats(),
+      window.api.getServiceCases({ limit: 1 }),
+    ]).then(([health, stats, cases]) => {
+      if (health.status === 'fulfilled') {
+        set('m-status', 'Gateway: Online');
+      } else {
+        set('m-status', 'Gateway: Offline');
       }
-    } else {
-      ['m-total', 'm-allowed', 'm-masked', 'm-blocked', 'm-cost', 'm-latency', 'm-pii'].forEach((id) => set(id, '—'));
-    }
 
-    if (cases.status === 'fulfilled') {
-      set('m-cases', fmtBig(cases.value.total ?? 0));
-    } else {
-      set('m-cases', '—');
-    }
-  });
+      if (stats.status === 'fulfilled') {
+        const s = stats.value;
+        set('m-total', fmtBig(s.totalRequests));
+        set('m-allowed', fmtBig(s.allowedRequests));
+        const yieldPct = s.totalRequests > 0 ? Math.round((s.allowedRequests / s.totalRequests) * 100) : 0;
+        set('m-allowed-pct', yieldPct + '% yield');
+        set('m-masked', fmtBig(s.maskedRequests));
+        set('m-blocked', fmtBig(s.blockedRequests));
+        set('m-cost', fmtCurrency(s.costToday));
+        set('m-latency', fmtMs(s.averageLatencyMs));
+        set('m-pii', fmtBig(s.piiEvents));
+        if (s.totalRequests === 0) {
+          const m = document.getElementById('m-status');
+          if (m) m.textContent = 'No governance logs yet. Try Customer Chat or Create Case.';
+        }
+      } else {
+        ['m-total', 'm-allowed', 'm-masked', 'm-blocked', 'm-cost', 'm-latency', 'm-pii'].forEach((id) => set(id, '—'));
+      }
+
+      if (cases.status === 'fulfilled') {
+        set('m-cases', fmtBig(cases.value.total ?? 0));
+      } else {
+        set('m-cases', '—');
+      }
+    });
+  }
+
+  loadOverview();
+  setInterval(loadOverview, 5000);
 })();
 </script>
 <script>window.PAGE_INFO={key:'overview',title:'Overview'};</script>

@@ -2,8 +2,8 @@ import { config } from "../config.js";
 import type { ChatMessage, LLMResponse, ModelTier } from "../types.js";
 
 const MODEL_MAP: Record<ModelTier, string> = {
-  small: "google/gemma-4-31b-it:free",
-  large: "nvidia/nemotron-3-super-120b-a12b:free",
+  small: "meta-llama/llama-3.1-8b-instruct",
+  large: "meta-llama/llama-3.1-70b-instruct",
 };
 
 export async function forwardToLLM(
