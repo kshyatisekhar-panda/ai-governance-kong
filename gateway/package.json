@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "start": "tsx src/index.ts",
-    "setup-konnect": "tsx src/setup-konnect.ts"
+    "setup-konnect": "tsx src/setup-konnect.ts",
+    "load-gen": "npx tsx ../scripts/load-generator.ts"
   },
   "dependencies": {
     "better-sqlite3": "^11.6.0",

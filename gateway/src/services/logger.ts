@@ -8,7 +8,7 @@ const db = new Database(config.sqlitePath);
 db.exec(`
   CREATE TABLE IF NOT EXISTS request_logs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT DEFAULT (datetime('now')),
+    timestamp TEXT DEFAULT (datetime('now', 'localtime')),
     team TEXT,
     app TEXT,
     model TEXT DEFAULT '',
@@ -138,7 +138,7 @@ export async function getTodayStatsByTeam() {
         COALESCE(SUM(input_tokens + output_tokens), 0) AS total_tokens,
         MAX(timestamp) AS last_request
       FROM request_logs
-      WHERE date(timestamp) = date('now')
+      WHERE date(timestamp) = date('now', 'localtime')
       GROUP BY team, app`,
     )
     .all();
@@ -166,7 +166,8 @@ export async function getMaskedCount() {
 }
 
 export async function getDecisionsOverTime() {
-  return db
+  // Try hourly buckets for last 24h first
+  const hourly = db
     .prepare(
       `SELECT
         strftime('%Y-%m-%d %H:00', timestamp) AS hour,
@@ -174,7 +175,23 @@ export async function getDecisionsOverTime() {
         SUM(CASE WHEN status = 'masked' THEN 1 ELSE 0 END) AS masked,
         SUM(CASE WHEN status = 'blocked' THEN 1 ELSE 0 END) AS blocked
       FROM request_logs
-      WHERE timestamp >= datetime('now', '-24 hours')
+      WHERE timestamp >= datetime('now', 'localtime', '-24 hours')
+      GROUP BY hour
+      ORDER BY hour`,
+    )
+    .all();
+
+  if (hourly.length > 0) return hourly;
+
+  // Fallback: group by day for all data
+  return db
+    .prepare(
+      `SELECT
+        strftime('%Y-%m-%d', timestamp) AS hour,
+        SUM(CASE WHEN status = 'passed' THEN 1 ELSE 0 END) AS allowed,
+        SUM(CASE WHEN status = 'masked' THEN 1 ELSE 0 END) AS masked,
+        SUM(CASE WHEN status = 'blocked' THEN 1 ELSE 0 END) AS blocked
+      FROM request_logs
       GROUP BY hour
       ORDER BY hour`,
     )

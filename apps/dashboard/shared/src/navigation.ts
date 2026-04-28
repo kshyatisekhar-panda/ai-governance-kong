@@ -5,6 +5,7 @@
     'app-policies': 'app-policies/',
     'product-data': 'product-service-data-explorer/',
     'gateway-flow': 'gateway-flow-architecture/',
+    'team-comparison': 'team-comparison/',
   };
 
   function linkTo(key: string, params?: Record<string, string>): string {
@@ -29,6 +30,7 @@
     'product data': 'product-data',
     'gateway flow': 'gateway-flow',
     'gateway flow architecture': 'gateway-flow',
+    'team comparison': 'team-comparison',
     settings: 'app-policies',
     support: null,
   };

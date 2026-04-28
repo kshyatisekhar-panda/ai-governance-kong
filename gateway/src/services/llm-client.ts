@@ -2,8 +2,8 @@ import { config } from "../config.js";
 import type { ChatMessage, LLMResponse, ModelTier } from "../types.js";
 
 const MODEL_MAP: Record<ModelTier, string> = {
-  small: "llama3.1-8b",
-  large: "qwen-3-235b-a22b-instruct-2507",
+  small: "meta-llama/llama-3.1-8b-instruct",
+  large: "meta-llama/llama-3.1-70b-instruct",
 };
 
 export async function forwardToLLM(

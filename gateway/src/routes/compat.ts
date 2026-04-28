@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import { scanAndProcess } from "../plugins/pii-blocker.js";
 import { calculateCost, checkBudget, recordSpend } from "../plugins/cost-tracker.js";
 import { classifyPrompt } from "../plugins/smart-router.js";
+import { getAppPolicy } from "../plugins/app-policy.js";
 import { detectAPI } from "../plugins/api-detector.js";
 import { forwardToLLM } from "../services/llm-client.js";
 import {
@@ -96,7 +97,8 @@ compatRouter.get("/governance/logs", async (req, res) => {
 compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
   const { message, team = "engineering", sourceApp = "customer-chat" } = req.body;
 
-  const piiResult = scanAndProcess(message);
+  const policy = getAppPolicy(sourceApp);
+  const piiResult = scanAndProcess(message, policy.pii);
 
   if (piiResult.decision === "blocked") {
     await logRequest({
@@ -124,9 +126,34 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
     return;
   }
 
+  // Prompt length check
+  if (message.length > policy.model.maxPromptLength) {
+    await logRequest({
+      team, app: sourceApp, model: "", promptLength: message.length,
+      inputTokens: 0, outputTokens: 0, costUsd: 0, latencyMs: 0,
+      status: "blocked", blockReason: "prompt_too_long",
+    });
+    res.status(403).json({
+      reply: null,
+      governance: {
+        requestId: `req-${Date.now()}`,
+        decision: "BLOCKED",
+        blockReason: `Prompt too long for ${sourceApp}. Max ${policy.model.maxPromptLength} chars, got ${message.length}.`,
+        model: null,
+        estimatedCostUsd: 0,
+        latencyMs: 0,
+      },
+    });
+    return;
+  }
+
   const safeText = piiResult.safeText;
   const wasMasked = piiResult.decision === "masked";
-  const model: ModelTier = classifyPrompt(safeText);
+  let model: ModelTier = classifyPrompt(safeText);
+
+  // Enforce model access per policy
+  if (model === "large" && !policy.model.allowLarge) model = "small";
+  if (model === "small" && !policy.model.allowSmall) model = "large";
 
   const detected = detectAPI(safeText);
   let messages: ChatMessage[] = [{ role: "user", content: safeText }];

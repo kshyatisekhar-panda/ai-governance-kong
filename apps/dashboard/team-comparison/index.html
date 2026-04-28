@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<link rel="stylesheet" href="../shared/app.css"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Team Comparison - AI Governance</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      "colors": {
+        "surface-container": "#efedf1",
+        "secondary": "#515f74",
+        "inverse-primary": "#aec7f6",
+        "inverse-on-surface": "#f1f0f4",
+        "on-background": "#1a1b1e",
+        "on-primary": "#ffffff",
+        "on-error": "#ffffff",
+        "inverse-surface": "#2f3033",
+        "surface-container-low": "#f4f3f7",
+        "on-surface-variant": "#44474e",
+        "on-tertiary": "#ffffff",
+        "surface-container-high": "#e9e7eb",
+        "on-error-container": "#93000a",
+        "error-container": "#ffdad6",
+        "on-primary-container": "#708ab5",
+        "surface": "#faf9fd",
+        "surface-container-lowest": "#ffffff",
+        "surface-dim": "#dad9dd",
+        "background": "#faf9fd",
+        "on-secondary-container": "#57657a",
+        "on-secondary": "#ffffff",
+        "tertiary-container": "#cda800",
+        "surface-variant": "#e3e2e6",
+        "error": "#ba1a1a",
+        "primary": "#000a1e",
+        "surface-container-highest": "#e3e2e6",
+        "primary-container": "#002147",
+        "secondary-container": "#d5e3fc",
+        "primary-fixed": "#d6e3ff",
+        "surface-bright": "#faf9fd",
+        "on-surface": "#1a1b1e",
+        "surface-tint": "#465f88",
+        "outline-variant": "#c4c6cf",
+        "outline": "#74777f",
+        "tertiary": "#725c00",
+        "secondary-fixed": "#d5e3fc"
+      },
+      "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
+      "spacing": { "gutter": "16px", "margin": "24px", "base": "4px", "panel-width": "320px" },
+      "fontFamily": { "h2": ["Inter"], "label-sm": ["Inter"], "h1": ["Inter"], "display": ["Inter"], "data-tabular": ["Inter"], "caption": ["Inter"], "body-md": ["Inter"], "body-lg": ["Inter"] },
+      "fontSize": {
+        "h2": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+        "label-sm": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "600" }],
+        "h1": ["24px", { "lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+        "display": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+        "data-tabular": ["13px", { "lineHeight": "1.4", "fontWeight": "500" }],
+        "caption": ["11px", { "lineHeight": "1.4", "fontWeight": "400" }],
+        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+        "body-lg": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+      }
+    },
+  }
+}
+</script>
+<style>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.loading-dot { animation: pulse-dot 1.2s ease-in-out infinite; }
+.decision-allowed { background: #dcfce7; color: #166534; border-color: #86efac; }
+.decision-masked { background: #fef9c3; color: #854d0e; border-color: #fde047; }
+.decision-blocked { background: #fecaca; color: #991b1b; border-color: #fca5a5; }
+.decision-error { background: #f3f4f6; color: #6b7280; border-color: #d1d5db; }
+</style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen w-full overflow-hidden">
+<!-- SideNavBar -->
+<aside class="fixed h-screen left-0 w-64 border-r border-slate-200 bg-slate-50 hidden md:flex flex-col py-4 px-3 space-y-1 overflow-y-auto z-40 font-inter text-[13px] font-medium text-slate-900">
+<div class="px-3 mb-6 mt-2">
+<h1 class="text-xl font-black text-slate-900 tracking-tight">CRM Service Governance</h1>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">dashboard</span>Overview
+</a>
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">gavel</span>Governance Audit
+</a>
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">policy</span>App Policies
+</a>
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">inventory_2</span>Product Data
+</a>
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">account_tree</span>Gateway Flow
+</a>
+<a class="flex items-center px-3 py-2 bg-slate-200 text-slate-900 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">compare_arrows</span>Team Comparison
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-slate-200 space-y-1">
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">settings</span>Settings
+</a>
+<a class="flex items-center px-3 py-2 text-slate-600 hover:bg-slate-100 rounded-md" href="#">
+  <span class="material-symbols-outlined mr-3 text-[20px]">help</span>Support
+</a>
+</div>
+</aside>
+
+<!-- Main Content -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-64 bg-background">
+<header class="flex justify-between items-center h-14 px-6 w-full sticky top-0 z-50 bg-white border-b border-slate-200 text-slate-900 font-inter text-sm antialiased">
+<div class="flex items-center space-x-4">
+  <span class="text-lg font-bold tracking-tight">Team Comparison</span>
+  <div class="h-4 w-px bg-slate-200"></div>
+  <span class="text-xs font-medium text-on-surface-variant">Same prompt, different governance rules</span>
+</div>
+</header>
+
+<main class="flex-1 overflow-y-auto p-margin">
+<!-- Intro -->
+<section class="mb-6 max-w-4xl">
+  <h2 class="font-h1 text-h1 text-on-surface mb-2">Governance Policy Comparison</h2>
+  <p class="font-body-md text-body-md text-on-surface-variant">
+    Send the same prompt to all 4 Atlas Copco divisions simultaneously. Each team has different PII rules, model access, and budget limits &mdash; see how the gateway enforces them.
+  </p>
+</section>
+
+<!-- Prompt Input -->
+<section class="mb-6 bg-surface border border-outline-variant rounded-lg p-6">
+  <label class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block mb-3">Enter a prompt</label>
+  <textarea id="prompt-input" rows="3" class="w-full border border-outline-variant rounded p-3 font-body-md text-body-md text-on-surface bg-surface-container-lowest resize-none focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary" placeholder="Type a prompt to test across all teams..."></textarea>
+
+  <!-- Example prompts -->
+  <div class="mt-4 flex flex-wrap gap-2">
+    <span class="font-label-sm text-label-sm text-on-surface-variant mr-2 self-center">Try:</span>
+    <button class="example-btn px-3 py-1.5 text-xs font-medium bg-secondary-container text-on-secondary-container rounded-full hover:opacity-80 transition-opacity" data-prompt="What's the maintenance schedule for GA 37+ VSD?">
+      Clean prompt
+    </button>
+    <button class="example-btn px-3 py-1.5 text-xs font-medium bg-secondary-container text-on-secondary-container rounded-full hover:opacity-80 transition-opacity" data-prompt="Send details to john.doe@atlascopco.com and call 555-123-4567">
+      PII (email + phone)
+    </button>
+    <button class="example-btn px-3 py-1.5 text-xs font-medium bg-secondary-container text-on-secondary-container rounded-full hover:opacity-80 transition-opacity" data-prompt="My SSN is 123-45-6789, check my warranty">
+      Sensitive PII (SSN)
+    </button>
+    <button class="example-btn px-3 py-1.5 text-xs font-medium bg-secondary-container text-on-secondary-container rounded-full hover:opacity-80 transition-opacity" data-prompt="Analyze and compare the performance trends of all compressor models across regions and recommend optimization strategies for Q3 2026. Consider seasonal demand patterns, inventory levels at each warehouse, competitive pricing in Europe versus Asia, and the impact of energy efficiency regulations on product selection. Provide a detailed breakdown by business area.">
+      Long complex prompt
+    </button>
+  </div>
+
+  <!-- Send button -->
+  <div class="mt-4 flex items-center gap-4">
+    <button id="send-btn" class="inline-flex items-center px-5 py-2.5 bg-primary text-on-primary font-medium text-sm rounded hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed">
+      <span class="material-symbols-outlined text-[18px] mr-2">send</span>
+      Send to All Teams
+    </button>
+    <span id="send-status" class="font-caption text-caption text-on-surface-variant"></span>
+  </div>
+</section>
+
+<!-- Team Policy Summary -->
+<section class="mb-6 grid grid-cols-1 md:grid-cols-4 gap-3">
+  <div class="bg-surface border border-outline-variant rounded p-3">
+    <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">Compressor Technique</div>
+    <div class="font-caption text-caption text-on-surface-variant space-y-0.5">
+      <div>App: Service Assistant</div>
+      <div>PII: Block sensitive, <strong>mask</strong> emails/phones</div>
+      <div>Models: Small + Large</div>
+      <div>Max prompt: 5,000 chars</div>
+    </div>
+  </div>
+  <div class="bg-surface border border-outline-variant rounded p-3">
+    <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">Vacuum Technique</div>
+    <div class="font-caption text-caption text-on-surface-variant space-y-0.5">
+      <div>App: Product Explorer</div>
+      <div>PII: Block sensitive, <strong>mask</strong> emails/phones</div>
+      <div>Models: Small + Large</div>
+      <div>Max prompt: 2,000 chars</div>
+    </div>
+  </div>
+  <div class="bg-surface border border-outline-variant rounded p-3">
+    <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">Industrial Technique</div>
+    <div class="font-caption text-caption text-on-surface-variant space-y-0.5">
+      <div>App: Atlas Chat</div>
+      <div>PII: <strong>Strict block ALL</strong>, no masking</div>
+      <div>Models: Small only</div>
+      <div>Max prompt: 500 chars</div>
+    </div>
+  </div>
+  <div class="bg-surface border border-outline-variant rounded p-3">
+    <div class="font-label-sm text-label-sm text-primary uppercase tracking-wider mb-1">Power Technique</div>
+    <div class="font-caption text-caption text-on-surface-variant space-y-0.5">
+      <div>App: Sales Copilot</div>
+      <div>PII: <strong>Strict block ALL</strong>, no masking</div>
+      <div>Models: Small only</div>
+      <div>Max prompt: 1,000 chars</div>
+    </div>
+  </div>
+</section>
+
+<!-- Results Grid -->
+<section id="results-section" class="hidden">
+  <h3 class="font-h2 text-h2 text-on-surface mb-4">Results</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="results-grid">
+    <!-- Cards injected by JS -->
+  </div>
+</section>
+</main>
+</div>
+
+<script src="../shared/dist/config.js"></script>
+<script src="../shared/dist/navigation.js"></script>
+<script>
+(function() {
+  window.navigation.bindSideNav('team-comparison');
+
+  const TEAMS = [
+    { team: 'Compressor Technique', app: 'Service Assistant' },
+    { team: 'Vacuum Technique', app: 'Product Explorer' },
+    { team: 'Industrial Technique', app: 'Atlas Chat' },
+    { team: 'Power Technique', app: 'Sales Copilot' },
+  ];
+
+  const BASE = window.APP_CONFIG ? window.APP_CONFIG.API_BASE_URL : '';
+
+  const promptInput = document.getElementById('prompt-input');
+  const sendBtn = document.getElementById('send-btn');
+  const sendStatus = document.getElementById('send-status');
+  const resultsSection = document.getElementById('results-section');
+  const resultsGrid = document.getElementById('results-grid');
+
+  // Example prompt buttons
+  document.querySelectorAll('.example-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      promptInput.value = btn.dataset.prompt;
+      promptInput.focus();
+    });
+  });
+
+  function decisionClass(d) {
+    if (d === 'ALLOWED') return 'decision-allowed';
+    if (d === 'MASKED') return 'decision-masked';
+    if (d === 'BLOCKED') return 'decision-blocked';
+    return 'decision-error';
+  }
+
+  function decisionIcon(d) {
+    if (d === 'ALLOWED') return 'check_circle';
+    if (d === 'MASKED') return 'visibility_off';
+    if (d === 'BLOCKED') return 'block';
+    return 'error';
+  }
+
+  function buildCard(teamInfo, loading) {
+    const id = teamInfo.team.replace(/\s+/g, '-').toLowerCase();
+    return `
+      <div id="card-${id}" class="bg-surface border border-outline-variant rounded-lg overflow-hidden">
+        <div class="px-4 py-3 bg-surface-container border-b border-outline-variant flex justify-between items-center">
+          <div>
+            <span class="font-h2 text-h2 text-on-surface">${teamInfo.team}</span>
+            <span class="font-caption text-caption text-on-surface-variant ml-2">${teamInfo.app}</span>
+          </div>
+          <div id="badge-${id}">
+            ${loading ? '<span class="loading-dot inline-block w-2 h-2 rounded-full bg-outline mr-1"></span><span class="loading-dot inline-block w-2 h-2 rounded-full bg-outline mr-1" style="animation-delay:0.2s"></span><span class="loading-dot inline-block w-2 h-2 rounded-full bg-outline" style="animation-delay:0.4s"></span>' : ''}
+          </div>
+        </div>
+        <div id="body-${id}" class="p-4">
+          ${loading ? '<div class="text-center py-8 text-on-surface-variant font-body-md">Sending request...</div>' : ''}
+        </div>
+      </div>`;
+  }
+
+  function renderResult(teamInfo, data, error) {
+    const id = teamInfo.team.replace(/\s+/g, '-').toLowerCase();
+    const badge = document.getElementById('badge-' + id);
+    const body = document.getElementById('body-' + id);
+    if (!badge || !body) return;
+
+    if (error) {
+      badge.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full decision-error">
+        <span class="material-symbols-outlined text-[14px] mr-1">error</span>ERROR
+      </span>`;
+      body.innerHTML = `<div class="text-error font-body-md">${error}</div>`;
+      return;
+    }
+
+    const gov = data.governance || {};
+    const decision = gov.decision || (data.reply ? 'ALLOWED' : 'BLOCKED');
+
+    badge.innerHTML = `<span class="inline-flex items-center px-2.5 py-1 text-xs font-semibold rounded-full ${decisionClass(decision)}">
+      <span class="material-symbols-outlined text-[14px] mr-1">${decisionIcon(decision)}</span>${decision}
+    </span>`;
+
+    let details = '';
+
+    // Metadata row
+    const meta = [];
+    if (gov.model) meta.push(`<span class="inline-flex items-center px-2 py-0.5 bg-surface-container rounded text-xs font-medium text-on-surface-variant"><span class="material-symbols-outlined text-[12px] mr-1">smart_toy</span>${gov.model}</span>`);
+    if (gov.estimatedCostUsd !== undefined) meta.push(`<span class="inline-flex items-center px-2 py-0.5 bg-surface-container rounded text-xs font-medium text-on-surface-variant"><span class="material-symbols-outlined text-[12px] mr-1">payments</span>$${gov.estimatedCostUsd.toFixed(4)}</span>`);
+    if (gov.latencyMs !== undefined) meta.push(`<span class="inline-flex items-center px-2 py-0.5 bg-surface-container rounded text-xs font-medium text-on-surface-variant"><span class="material-symbols-outlined text-[12px] mr-1">speed</span>${gov.latencyMs}ms</span>`);
+    if (gov.dataSource) meta.push(`<span class="inline-flex items-center px-2 py-0.5 bg-surface-container rounded text-xs font-medium text-on-surface-variant"><span class="material-symbols-outlined text-[12px] mr-1">database</span>${gov.dataSource}</span>`);
+
+    if (meta.length) {
+      details += `<div class="flex flex-wrap gap-2 mb-3">${meta.join('')}</div>`;
+    }
+
+    // PII info
+    if (decision === 'MASKED' && gov.piiTypes && gov.piiTypes.length) {
+      details += `<div class="mb-3 p-2 bg-yellow-50 border border-yellow-200 rounded text-xs text-yellow-800">
+        <strong>PII Masked:</strong> ${gov.piiTypes.join(', ')} &mdash; content was redacted before sending to LLM
+      </div>`;
+    }
+    if (decision === 'BLOCKED') {
+      const reason = gov.blockReason || (gov.piiTypes && gov.piiTypes.length ? 'PII detected: ' + gov.piiTypes.join(', ') : 'Policy violation');
+      details += `<div class="mb-3 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-800">
+        <strong>Blocked:</strong> ${reason}
+      </div>`;
+    }
+
+    // Response
+    if (data.reply) {
+      details += `<div class="bg-surface-container-low border border-outline-variant rounded p-3 max-h-48 overflow-y-auto">
+        <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider block mb-1">AI Response</span>
+        <div class="font-body-md text-body-md text-on-surface whitespace-pre-wrap">${escapeHtml(data.reply)}</div>
+      </div>`;
+    }
+
+    body.innerHTML = details || '<div class="text-on-surface-variant font-body-md">No additional details</div>';
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function sendToTeam(teamInfo, prompt) {
+    try {
+      const res = await fetch(BASE + '/api/customer-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: prompt,
+          team: teamInfo.team,
+          sourceApp: teamInfo.app,
+        }),
+      });
+      const data = await res.json();
+      return { data, error: null };
+    } catch (err) {
+      return { data: null, error: err.message || 'Network error' };
+    }
+  }
+
+  sendBtn.addEventListener('click', async () => {
+    const prompt = promptInput.value.trim();
+    if (!prompt) {
+      promptInput.focus();
+      return;
+    }
+
+    // Show loading state
+    sendBtn.disabled = true;
+    sendStatus.textContent = 'Sending to all 4 teams...';
+    resultsSection.classList.remove('hidden');
+    resultsGrid.innerHTML = TEAMS.map(t => buildCard(t, true)).join('');
+
+    // Fire all 4 in parallel
+    const promises = TEAMS.map(t => sendToTeam(t, prompt));
+    const results = await Promise.allSettled(promises);
+
+    // Render results
+    results.forEach((r, i) => {
+      if (r.status === 'fulfilled') {
+        renderResult(TEAMS[i], r.value.data, r.value.error);
+      } else {
+        renderResult(TEAMS[i], null, r.reason?.message || 'Request failed');
+      }
+    });
+
+    sendBtn.disabled = false;
+    sendStatus.textContent = 'Done! Check the Governance Audit page to see these logged.';
+  });
+})();
+</script>
+<script>window.PAGE_INFO={key:'team-comparison',title:'Team Comparison'};</script>
+<script src="../shared/dist/layout.js"></script>
+</body></html>
