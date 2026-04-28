@@ -49,7 +49,7 @@
       const label = visibleLabel(a);
       const key = LABEL_TO_KEY[label];
 
-      if (['customer chat', 'create case', 'case inbox', 'case detail'].includes(label)) {
+      if (['customer chat', 'create case', 'case inbox', 'case detail', 'product data'].includes(label)) {
         toRemove.push(a);
         return;
       }

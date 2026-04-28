@@ -9,7 +9,6 @@
     { key: 'overview', label: 'Overview', icon: 'dashboard' },
     { key: 'governance-audit', label: 'Governance Audit', icon: 'gavel' },
     { key: 'app-policies', label: 'App Policies', icon: 'policy' },
-    { key: 'product-data', label: 'Product Data', icon: 'inventory_2' },
     { key: 'gateway-flow', label: 'Gateway Flow', icon: 'account_tree' },
   ];
 

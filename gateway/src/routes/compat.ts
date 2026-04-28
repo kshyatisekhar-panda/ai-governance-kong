@@ -5,7 +5,7 @@ import { calculateCost, checkBudget, recordSpend } from "../plugins/cost-tracker
 import { classifyPrompt } from "../plugins/smart-router.js";
 import { getAppPolicy } from "../plugins/app-policy.js";
 import { detectAPI } from "../plugins/api-detector.js";
-import { forwardToLLM } from "../services/llm-client.js";
+import { forwardToLLM, resolveModelName } from "../services/llm-client.js";
 import {
   logRequest,
   getRecentLogs,
@@ -77,7 +77,7 @@ compatRouter.get("/governance/logs", async (req, res) => {
       policy: "AI_GOVERNANCE",
       blockReason: l.block_reason || null,
       model: l.model,
-      modelRouteReason: l.model === "large" ? "complex prompt" : "simple prompt",
+      modelRouteReason: /70b|opus|claude|gpt-4|qwen.*235/i.test(l.model || "") ? "complex prompt" : "simple prompt",
       piiDetected: l.block_reason ? true : false,
       piiTypes: l.block_reason ? l.block_reason.split(",") : [],
       piiAction: l.status === "masked" ? "REDACT" : l.status === "blocked" ? "BLOCK" : "NONE",
@@ -186,13 +186,14 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
   const start = Date.now();
   const result = await forwardToLLM(messages, model);
   const latencyMs = Date.now() - start;
+  const modelName = resolveModelName(model);
 
   const { prompt_tokens: inputTokens, completion_tokens: outputTokens } = result.usage;
   const cost = calculateCost(model, inputTokens, outputTokens);
   recordSpend(team, cost);
 
   await logRequest({
-    team, app: sourceApp, model, promptLength: message.length,
+    team, app: sourceApp, model: modelName, promptLength: message.length,
     inputTokens, outputTokens, costUsd: cost, latencyMs,
     status: wasMasked ? "masked" : "passed",
     blockReason: wasMasked ? piiResult.maskedTypes.join(",") : "",
@@ -207,7 +208,7 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
       piiTypes: piiResult.maskedTypes,
       piiAction: wasMasked ? "REDACT" : "NONE",
       sensitivePiiDetected: false,
-      model,
+      model: modelName,
       modelRouteReason: model === "large" ? "complex prompt" : "simple prompt",
       estimatedCostUsd: cost,
       budgetStatus: "BUDGET_OK",
