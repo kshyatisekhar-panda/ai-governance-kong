@@ -2,8 +2,8 @@ import { config } from "../config.js";
 import type { ChatMessage, LLMResponse, ModelTier } from "../types.js";
 
 const MODEL_MAP: Record<ModelTier, string> = {
-  small: "meta-llama/llama-3.1-8b-instruct",
-  large: "anthropic/claude-sonnet-4",
+  small: "meta-llama/llama-3.1-8b-instruct:free",
+  large: "meta-llama/llama-3.3-70b-instruct:free",
 };
 
 export async function forwardToLLM(
