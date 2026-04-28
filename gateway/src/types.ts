@@ -40,6 +40,7 @@ export interface RequestLogEntry {
   latencyMs: number;
   status: RequestStatus;
   blockReason: string;
+  endpoint?: string;
 }
 
 export interface LLMUsage {

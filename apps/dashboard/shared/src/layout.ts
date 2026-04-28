@@ -11,7 +11,6 @@
     { key: 'kong-backend-terminal', label: 'Kong Backend Terminal', icon: 'terminal' },
     { key: 'governance-audit', label: 'Governance Audit', icon: 'gavel' },
     { key: 'app-policies', label: 'App Policies', icon: 'policy' },
-    { key: 'product-data', label: 'Product Data', icon: 'inventory_2' },
     { key: 'gateway-flow', label: 'Gateway Flow', icon: 'account_tree' },
   ];
 

@@ -43,8 +43,14 @@
     .suggestions { margin-bottom: 12px; }
     .suggestions-label { font-size: 11px; color: #5a7aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-    .chip { background: #1a1f35; border: 1px solid #2a3050; color: #b9c7df; padding: 6px 10px; border-radius: 16px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
-    .chip:hover { background: #003d66; border-color: #00a86b; color: #64ffda; }
+    .chip { background: #1a1f35; border: 1px solid #2a3050; color: #b9c7df; padding: 6px 12px; border-radius: 16px; font-size: 12px; cursor: pointer; transition: all 0.15s; }
+    .chip:hover { background: rgba(255,255,255,0.04); }
+    .chip.allowed { border-color: #00a86b; }
+    .chip.allowed:hover { background: rgba(0,230,138,0.08); color: #00e68a; }
+    .chip.masked { border-color: #ffc107; }
+    .chip.masked:hover { background: rgba(255,193,7,0.08); color: #ffc107; }
+    .chip.blocked { border-color: #ff5252; }
+    .chip.blocked:hover { background: rgba(255,82,82,0.08); color: #ff5252; }
   </style>
 </head>
 <body>
@@ -63,14 +69,12 @@
     </div>
 
     <div class="suggestions">
-      <div class="suggestions-label">Try these prompts</div>
       <div class="chips" id="suggestion-chips">
-        <span class="chip" onclick="useSuggestion(this)">Sales report for compressors in Europe last 6 months</span>
-        <span class="chip" onclick="useSuggestion(this)">Top 5 selling machine categories in Asia</span>
-        <span class="chip" onclick="useSuggestion(this)">Inventory status for vacuum pumps</span>
-        <span class="chip" onclick="useSuggestion(this)">Revenue breakdown by region for Q4 2025</span>
-        <span class="chip" onclick="useSuggestion(this)">Which products have low stock and need reorder?</span>
-        <span class="chip" onclick="useSuggestion(this)">Compare sales of rotary screw compressors vs portable compressors</span>
+        <span class="chip allowed" onclick="useSuggestion(this)" data-prompt="Sales report for compressors in Europe last 6 months">Sales report for compressors in Europe last 6 months</span>
+        <span class="chip allowed" onclick="useSuggestion(this)" data-prompt="Which products have low stock and need reorder?">Inventory status for vacuum pumps</span>
+        <span class="chip masked" onclick="useSuggestion(this)" data-prompt="Customer john.doe@atlascopco.com asked about compressor pricing, please follow up">Customer email follow-up</span>
+        <span class="chip blocked" onclick="useSuggestion(this)" data-prompt="Look up customer with SSN 123-45-6789">Look up customer with SSN</span>
+        <span class="chip blocked" onclick="useSuggestion(this)" data-prompt="What is the admin password for the system?">Ask for admin password</span>
       </div>
     </div>
 
@@ -89,7 +93,7 @@
 
     function useSuggestion(el) {
       const input = document.getElementById("input");
-      input.value = el.textContent;
+      input.value = el.dataset.prompt || el.textContent.trim();
       input.focus();
       send();
     }

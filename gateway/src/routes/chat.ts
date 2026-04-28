@@ -5,7 +5,7 @@ import { calculateCost, checkBudget, recordSpend } from "../plugins/cost-tracker
 import { classifyPrompt } from "../plugins/smart-router.js";
 import { detectAPI } from "../plugins/api-detector.js";
 import { getAppPolicy } from "../plugins/app-policy.js";
-import { forwardToLLM } from "../services/llm-client.js";
+import { forwardToLLM, resolveModelName } from "../services/llm-client.js";
 import { logRequest } from "../services/logger.js";
 import { authMiddleware } from "../middleware/auth.js";
 import type { ChatMessage, ModelTier, RequestLogEntry } from "../types.js";
@@ -29,6 +29,7 @@ function buildLogEntry(
     costUsd: 0,
     latencyMs: 0,
     blockReason: "",
+    endpoint: "/ai/chat",
     ...overrides,
   };
 }
@@ -142,6 +143,7 @@ async function handleChat(req: Request, res: Response): Promise<void> {
   // Forward to LLM
   const result = await forwardToLLM(enrichedMessages, model);
   const latencyMs = Date.now() - start;
+  const modelName = resolveModelName(model);
 
   // Plugin 6: Cost Tracking
   const { prompt_tokens: inputTokens, completion_tokens: outputTokens } = result.usage;
@@ -151,7 +153,7 @@ async function handleChat(req: Request, res: Response): Promise<void> {
   // Plugin 7: Audit Logger
   await logRequest(
     buildLogEntry({
-      team, app, model, promptLength: promptText.length,
+      team, app, model: modelName, promptLength: promptText.length,
       inputTokens, outputTokens, costUsd: cost, latencyMs,
       status: wasMasked ? "masked" : "passed",
       blockReason: wasMasked ? piiResult.maskedTypes.join(",") : "",
@@ -163,7 +165,7 @@ async function handleChat(req: Request, res: Response): Promise<void> {
     gateway: {
       team,
       app,
-      model_routed: model,
+      model_routed: modelName,
       cost_usd: cost,
       latency_ms: latencyMs,
       data_source: dataSource,

@@ -1,4 +1,4 @@
-import { Router } from "express";
+import express, { Router } from "express";
 import { getAllBudgets } from "../plugins/cost-tracker.js";
 import { getAllPolicies } from "../plugins/app-policy.js";
 import {
