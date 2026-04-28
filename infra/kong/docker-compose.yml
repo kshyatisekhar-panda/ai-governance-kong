@@ -1,0 +1,16 @@
+version: '3.9'
+services:
+  kong-gateway:
+    image: kong/kong-gateway:3.9
+    container_name: kong-gateway
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/kong/kong.yml
+      - KONG_PROXY_LISTEN=0.0.0.0:8000
+      - KONG_PLUGINS=bundled,prompt-shield
+      - KONG_LUA_PACKAGE_PATH=/kong-plugins/?.lua;/kong-plugins/?/init.lua;;
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/kong
+      - ./plugins:/kong-plugins

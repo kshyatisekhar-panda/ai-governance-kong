@@ -67,6 +67,24 @@ db.exec(`
   );
 `);
 
+  CREATE TABLE IF NOT EXISTS soc_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT UNIQUE,
+    timestamp TEXT,
+    layer TEXT,
+    decision TEXT,
+    block_reason TEXT,
+    method TEXT,
+    path TEXT,
+    client_ip TEXT,
+    consumer TEXT,
+    route_name TEXT,
+    model TEXT,
+    llm_called INTEGER,
+    datapoints_json TEXT
+  );
+`);
+
 seedDatabase(db);
 
 export { db };
