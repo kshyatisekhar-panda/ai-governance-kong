@@ -18,8 +18,7 @@ db.exec(`
     cost_usd REAL DEFAULT 0,
     latency_ms INTEGER DEFAULT 0,
     status TEXT,
-    block_reason TEXT DEFAULT '',
-    endpoint TEXT DEFAULT '/ai/chat'
+    block_reason TEXT DEFAULT ''
   );
 
   CREATE TABLE IF NOT EXISTS service_cases (
@@ -68,11 +67,23 @@ db.exec(`
   );
 `);
 
-// Migration: add endpoint column to existing DBs
-const cols = db.prepare("PRAGMA table_info(request_logs)").all() as { name: string }[];
-if (!cols.some((c) => c.name === "endpoint")) {
-  db.exec("ALTER TABLE request_logs ADD COLUMN endpoint TEXT DEFAULT '/ai/chat'");
-}
+  CREATE TABLE IF NOT EXISTS soc_events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id TEXT UNIQUE,
+    timestamp TEXT,
+    layer TEXT,
+    decision TEXT,
+    block_reason TEXT,
+    method TEXT,
+    path TEXT,
+    client_ip TEXT,
+    consumer TEXT,
+    route_name TEXT,
+    model TEXT,
+    llm_called INTEGER,
+    datapoints_json TEXT
+  );
+`);
 
 seedDatabase(db);
 
@@ -81,8 +92,8 @@ export { db };
 const insertStmt = db.prepare(`
   INSERT INTO request_logs
     (team, app, model, prompt_length, input_tokens, output_tokens,
-     cost_usd, latency_ms, status, block_reason, endpoint)
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+     cost_usd, latency_ms, status, block_reason)
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 `);
 
 export async function logRequest(entry: RequestLogEntry): Promise<void> {
@@ -98,7 +109,6 @@ export async function logRequest(entry: RequestLogEntry): Promise<void> {
       entry.latencyMs,
       entry.status,
       entry.blockReason,
-      entry.endpoint ?? "/ai/chat",
     );
   } catch (error) {
     console.error("[logger] Failed to write log:", error);
