@@ -104,6 +104,17 @@ plugins:
           - "X-Governance-Version: 1.0"
           - "X-Governance-Policy: enforced"
 
+  # HTTP Log: ship every Kong request to the gateway for audit logging.
+  # Lets us see Kong-level events (auth failures, rate limits, ai-prompt-guard
+  # blocks) in the same audit dashboard as gateway-level events.
+  - name: http-log
+    config:
+      http_endpoint: http://host.docker.internal:8001/admin/kong-log
+      method: POST
+      timeout: 1000
+      keepalive: 1000
+      flush_timeout: 2
+
   # ---------------------------------------------------------------------------
   # Kong AI Gateway plugins (Enterprise, runs without license in free mode)
   # ---------------------------------------------------------------------------
