@@ -19,7 +19,7 @@ db.exec(`
     latency_ms INTEGER DEFAULT 0,
     status TEXT,
     block_reason TEXT DEFAULT ''
-  );
+  );;
 
   CREATE TABLE IF NOT EXISTS service_cases (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,7 +47,7 @@ db.exec(`
     ai_business_impact TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now'))
-  );
+  );;
 
   CREATE TABLE IF NOT EXISTS soc_events (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,7 +64,7 @@ db.exec(`
     model TEXT,
     llm_called INTEGER,
     datapoints_json TEXT
-  );
+  );;
 `);
 
   CREATE TABLE IF NOT EXISTS soc_events (
