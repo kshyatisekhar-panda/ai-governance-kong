@@ -20,8 +20,10 @@ export async function forwardToLLM(
     headers["Authorization"] = `Bearer ${config.llmApiKey}`;
   }
 
+  const url = `${config.llmBaseUrl}/v1/chat/completions`;
+  console.log(`[llm-client] POST ${url} (key prefix: ${config.llmApiKey.slice(0, 12)}...)`);
   const response = await fetch(
-    `${config.llmBaseUrl}/v1/chat/completions`,
+    url,
     {
       method: "POST",
       headers,
