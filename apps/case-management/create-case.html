@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Case | Atlas Copco Case Management</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <main class="main">
+      <h1>Create New Service Case</h1>
+      <p class="subtitle">Structured customer data is accepted into CRM. Only redacted, safe context is forwarded to the LLM for AI triage.</p>
+
+      <div id="messages"></div>
+
+      <form id="case-form">
+        <div class="card">
+          <h2>Customer Information</h2>
+          <div class="row">
+            <div class="field">
+              <label>Customer Name</label>
+              <input type="text" name="customerName" value="Lars Johansson" required>
+            </div>
+            <div class="field">
+              <label>Company</label>
+              <input type="text" name="company" value="Nordic Mining AB" required>
+            </div>
+            <div class="field">
+              <label>Email</label>
+              <input type="email" name="email" value="lars.johansson@example.se" required>
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input type="tel" name="phone" value="+46 70 123 45 67" required>
+            </div>
+            <div class="field">
+              <label>Country</label>
+              <input type="text" name="country" value="Sweden" required>
+            </div>
+            <div class="field">
+              <label>Region</label>
+              <select name="region" required>
+                <option>Nordics</option>
+                <option>Germany</option>
+                <option>France</option>
+                <option>Benelux</option>
+                <option>UK</option>
+                <option>Turkey</option>
+                <option>North America</option>
+                <option>APAC</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Equipment &amp; Issue</h2>
+          <div class="row">
+            <div class="field">
+              <label>Product</label>
+              <select name="product" required>
+                <option>GA 75 VSD+ Compressor</option>
+                <option>ZT 90 Oil-Free Air Compressor</option>
+                <option>QAS 250 Generator</option>
+                <option>E-Air H250 VSD</option>
+                <option>PowerROC T35 Drill Rig</option>
+                <option>PAS 150 Pump</option>
+                <option>SmartLink Monitoring Module</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Serial Number</label>
+              <input type="text" name="serialNumber" value="AC-GA75-993812">
+            </div>
+            <div class="field">
+              <label>Issue Category</label>
+              <select name="issueCategory" required>
+                <option>Machine downtime</option>
+                <option>Overheating</option>
+                <option>Pressure Drop</option>
+                <option>Abnormal Noise</option>
+                <option>Routine Maintenance</option>
+                <option>Spare parts</option>
+                <option>Warranty claim</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Urgency</label>
+              <select name="urgency" required>
+                <option>Low</option>
+                <option>Medium</option>
+                <option selected>High</option>
+                <option>Critical</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Preferred Contact Channel</label>
+              <select name="preferredContactChannel" required>
+                <option>Phone</option>
+                <option>Email</option>
+                <option>Portal</option>
+              </select>
+            </div>
+            <div class="field"></div>
+          </div>
+          <div class="field">
+            <label>Issue Description</label>
+            <textarea name="issueDescription" required>Our compressor stopped twice this morning. We have production downtime.</textarea>
+            <p class="muted" style="margin-top:6px">Avoid including national IDs (SSN, personnummer) or payment-card numbers — those are blocked at the gateway.</p>
+          </div>
+        </div>
+
+        <div class="btn-row" style="justify-content:flex-end;margin-top:8px">
+          <button type="button" class="btn btn-secondary" id="reset-btn">Reset</button>
+          <button type="submit" class="btn" id="submit-btn">Submit Case &rarr;</button>
+        </div>
+      </form>
+
+      <div id="result"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    cm.mountSidebar('create-case');
+
+    const form = document.getElementById('case-form');
+    const submitBtn = document.getElementById('submit-btn');
+    const messages = document.getElementById('messages');
+    const result = document.getElementById('result');
+
+    document.getElementById('reset-btn').addEventListener('click', function () {
+      form.reset();
+      messages.innerHTML = '';
+      result.innerHTML = '';
+    });
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      messages.innerHTML = '';
+      result.innerHTML = '';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting through Kong…';
+
+      const fd = new FormData(form);
+      const payload = {};
+      fd.forEach(function (v, k) { payload[k] = String(v); });
+      payload.sourceChannel = 'case-form';
+
+      try {
+        const resp = await cm.request('/api/service-cases', { method: 'POST', body: payload });
+        renderResult(resp.data, resp.kong);
+      } catch (err) {
+        messages.innerHTML = '<div class="error-msg">' + cm.escapeHtml(err.message || 'Request failed') + '</div>';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = 'Submit Case &rarr;';
+      }
+    });
+
+    function renderResult(data, kong) {
+      const c = data.case || {};
+      const t = data.triage || {};
+      const g = data.governance || {};
+      const safeContext = data.safeContext || '';
+      const detailHref = 'case-detail.html?id=' + encodeURIComponent(c.id);
+
+      messages.innerHTML = '<div class="success-msg">Case <strong>' + cm.escapeHtml(c.caseNumber) + '</strong> created. ' +
+        (data.warning ? cm.escapeHtml(data.warning) : 'AI triage completed.') + '</div>';
+
+      const rawJson = JSON.stringify({
+        customerName: c.customerName,
+        email: c.customerEmail,
+        phone: c.customerPhone,
+        company: c.company,
+        product: c.product,
+        serialNumber: c.serialNumber,
+        issueDescription: c.issueDescription,
+      }, null, 2);
+
+      result.innerHTML = [
+        '<div class="card">',
+          '<div class="btn-row" style="justify-content:space-between;margin-bottom:12px">',
+            '<h2 style="margin:0">Case ' + cm.escapeHtml(c.caseNumber) + '</h2>',
+            '<div class="btn-row">',
+              cm.priorityBadge(c.priority),
+              cm.decisionBadge(g.decision),
+            '</div>',
+          '</div>',
+          '<div class="row-3">',
+            '<div class="gov-item"><div class="k">Status</div><div class="v">' + cm.escapeHtml(c.status) + '</div></div>',
+            '<div class="gov-item"><div class="k">Assigned team</div><div class="v">' + cm.escapeHtml(c.assignedTeam) + '</div></div>',
+            '<div class="gov-item"><div class="k">AI triage</div><div class="v">' + cm.escapeHtml(c.aiTriageStatus) + '</div></div>',
+          '</div>',
+          (t.summary ? '<h3 style="margin-top:16px">AI Summary</h3><p style="font-size:13px;color:#c0c0c0;line-height:1.6">' + cm.escapeHtml(t.summary) + '</p>' : ''),
+          (t.suggestedReply ? '<h3 style="margin-top:16px">Suggested Reply</h3><pre>' + cm.escapeHtml(t.suggestedReply) + '</pre>' : ''),
+        '</div>',
+
+        '<div class="split">',
+          '<div class="card raw"><h3><span class="dot"></span>Raw CRM Record</h3>',
+            '<p class="muted">Stored in <span class="kbd">service_cases</span>. Never sent raw to the LLM.</p>',
+            '<pre>' + cm.escapeHtml(rawJson) + '</pre>',
+          '</div>',
+          '<div class="card safe"><h3><span class="dot"></span>Safe LLM Context</h3>',
+            '<p class="muted">This is the redacted prompt the AI saw.</p>',
+            '<pre>' + cm.escapeHtml(safeContext) + '</pre>',
+          '</div>',
+        '</div>',
+
+        '<div class="card">',
+          '<h3>Governance</h3>',
+          cm.governancePanel(g),
+          (kong ? '<p class="muted" style="margin-top:8px">Kong: ' + cm.escapeHtml(kong.via || 'direct') +
+            ' · proxy ' + cm.escapeHtml(kong.latency || 'n/a') + 'ms' +
+            ' · rate ' + cm.escapeHtml(kong.rateRemaining || 'n/a') + '/' + cm.escapeHtml(kong.rateLimit || 'n/a') + '</p>' : ''),
+        '</div>',
+
+        '<div class="btn-row">',
+          '<a class="btn" href="' + detailHref + '">Open Case Detail</a>',
+          '<a class="btn btn-secondary" href="inbox.html">Open Inbox</a>',
+          '<a class="btn btn-secondary" href="create-case.html">Create Another</a>',
+        '</div>',
+      ].join('');
+
+      result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>

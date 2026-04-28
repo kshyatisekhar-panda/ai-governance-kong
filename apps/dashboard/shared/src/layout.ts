@@ -7,9 +7,6 @@
 
   const NAV_ITEMS: NavItem[] = [
     { key: 'overview', label: 'Overview', icon: 'dashboard' },
-    { key: 'customer-chat', label: 'Customer Chat', icon: 'chat' },
-    { key: 'create-case', label: 'Create Case', icon: 'add_circle' },
-    { key: 'case-inbox', label: 'Case Inbox', icon: 'inbox' },
     { key: 'governance-audit', label: 'Governance Audit', icon: 'gavel' },
     { key: 'app-policies', label: 'App Policies', icon: 'policy' },
     { key: 'product-data', label: 'Product Data', icon: 'inventory_2' },

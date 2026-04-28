@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Detail | Atlas Copco Case Management</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="shell" id="shell">
+    <main class="main">
+      <p style="margin-bottom:8px"><a href="inbox.html" style="color:#5a7aaa;font-size:12px;text-decoration:none">&larr; Back to inbox</a></p>
+      <div id="header">
+        <h1>Loading…</h1>
+      </div>
+      <div id="messages"></div>
+      <div id="content"></div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    cm.mountSidebar('inbox');
+
+    const id = new URLSearchParams(location.search).get('id');
+    const header = document.getElementById('header');
+    const content = document.getElementById('content');
+    const messages = document.getElementById('messages');
+    let current = null;
+
+    function fmtTs(s) {
+      if (!s) return '';
+      const d = new Date(s.replace(' ', 'T') + 'Z');
+      if (Number.isNaN(d.getTime())) return s;
+      return d.toLocaleString();
+    }
+
+    if (!id) {
+      header.innerHTML = '<h1>Missing case id</h1><p class="subtitle">Use ?id=&lt;case id&gt; in the URL.</p>';
+    } else {
+      load();
+    }
+
+    async function load() {
+      messages.innerHTML = '';
+      try {
+        const resp = await cm.request('/api/service-cases/' + encodeURIComponent(id));
+        current = resp.data;
+        render(resp.data);
+      } catch (err) {
+        header.innerHTML = '<h1>Could not load case</h1>';
+        messages.innerHTML = '<div class="error-msg">' + cm.escapeHtml(err.message || 'Request failed') + '</div>';
+      }
+    }
+
+    function render(data) {
+      const c = data.case || {};
+      const safeContext = data.safeContext || '';
+
+      header.innerHTML =
+        '<div class="btn-row" style="justify-content:space-between;flex-wrap:wrap;gap:12px">' +
+          '<div>' +
+            '<h1>Case ' + cm.escapeHtml(c.caseNumber) + '</h1>' +
+            '<p class="subtitle">' + cm.escapeHtml(c.company) + ' · ' + cm.escapeHtml(c.region) + ' · ' + cm.escapeHtml(c.product) + '</p>' +
+          '</div>' +
+          '<div class="btn-row">' +
+            cm.priorityBadge(c.priority) +
+            '<span class="badge ' + (c.aiTriageStatus === 'Completed' ? 'allowed' : c.aiTriageStatus === 'Failed' ? 'blocked' : 'masked') + '">AI: ' + cm.escapeHtml(c.aiTriageStatus) + '</span>' +
+          '</div>' +
+        '</div>';
+
+      const rawJson = JSON.stringify({
+        customerName: c.customerName,
+        email: c.customerEmail,
+        phone: c.customerPhone,
+        company: c.company,
+        country: c.country,
+        product: c.product,
+        serialNumber: c.serialNumber,
+        issueCategory: c.issueCategory,
+        urgency: c.urgency,
+        preferredContactChannel: c.preferredContactChannel,
+        issueDescription: c.issueDescription,
+      }, null, 2);
+
+      content.innerHTML = [
+        '<div class="card">',
+          '<div class="row-3">',
+            '<div class="gov-item"><div class="k">Status</div><div class="v">' + cm.escapeHtml(c.status) + '</div></div>',
+            '<div class="gov-item"><div class="k">Assigned team</div><div class="v">' + cm.escapeHtml(c.assignedTeam) + '</div></div>',
+            '<div class="gov-item"><div class="k">Created</div><div class="v">' + cm.escapeHtml(fmtTs(c.createdAt)) + '</div></div>',
+          '</div>',
+        '</div>',
+
+        '<div class="card">',
+          '<h2 style="display:flex;justify-content:space-between;align-items:center">',
+            '<span>AI Triage</span>',
+            '<button class="btn" id="retriage-btn">Re-run triage</button>',
+          '</h2>',
+          (c.aiSummary
+            ? '<h3 style="margin-top:12px">Summary</h3><p style="font-size:13px;color:#c0c0c0;line-height:1.6">' + cm.escapeHtml(c.aiSummary) + '</p>'
+            : '<p class="muted">No summary yet. Click <em>Re-run triage</em> to generate one.</p>'),
+          (c.aiBusinessImpact ? '<h3 style="margin-top:12px">Business impact</h3><p style="font-size:13px;color:#c0c0c0">' + cm.escapeHtml(c.aiBusinessImpact) + '</p>' : ''),
+        '</div>',
+
+        '<div class="card">',
+          '<h2 style="display:flex;justify-content:space-between;align-items:center">',
+            '<span>Suggested Reply</span>',
+            '<button class="btn" id="draft-btn">Draft new reply</button>',
+          '</h2>',
+          (c.aiSuggestedReply
+            ? '<pre>' + cm.escapeHtml(c.aiSuggestedReply) + '</pre>'
+            : '<p class="muted">No draft yet. Click <em>Draft new reply</em> to generate one through the gateway.</p>'),
+        '</div>',
+
+        '<div class="split">',
+          '<div class="card raw"><h3><span class="dot"></span>Raw CRM Record</h3>',
+            '<p class="muted">Stored in <span class="kbd">service_cases</span>. Not sent raw to the LLM.</p>',
+            '<pre>' + cm.escapeHtml(rawJson) + '</pre>',
+          '</div>',
+          '<div class="card safe"><h3><span class="dot"></span>Safe LLM Context</h3>',
+            '<p class="muted">Redacted prompt the AI sees on triage / reply.</p>',
+            '<pre>' + cm.escapeHtml(safeContext) + '</pre>',
+          '</div>',
+        '</div>',
+      ].join('');
+
+      document.getElementById('retriage-btn').addEventListener('click', async function (ev) {
+        ev.target.disabled = true;
+        ev.target.textContent = 'Running through Kong…';
+        messages.innerHTML = '';
+        try {
+          const resp = await cm.request('/api/service-cases/' + encodeURIComponent(id) + '/triage', { method: 'POST' });
+          messages.innerHTML = '<div class="success-msg">Triage refreshed. ' + cm.escapeHtml(resp.data.warning || '') + '</div>' +
+            '<div class="card"><h3>Governance for this triage</h3>' + cm.governancePanel(resp.data.governance) + '</div>';
+          render({ case: resp.data.case, safeContext: resp.data.safeContext });
+        } catch (err) {
+          messages.innerHTML = '<div class="error-msg">' + cm.escapeHtml(err.message || 'Triage failed') + '</div>';
+        } finally {
+          ev.target.disabled = false;
+          ev.target.textContent = 'Re-run triage';
+        }
+      });
+
+      document.getElementById('draft-btn').addEventListener('click', async function (ev) {
+        ev.target.disabled = true;
+        ev.target.textContent = 'Drafting through Kong…';
+        messages.innerHTML = '';
+        try {
+          const resp = await cm.request('/api/service-cases/' + encodeURIComponent(id) + '/draft-reply', { method: 'POST' });
+          messages.innerHTML = '<div class="success-msg">New reply drafted.</div>' +
+            '<div class="card"><h3>Governance for this draft</h3>' + cm.governancePanel(resp.data.governance) + '</div>';
+          await load();
+        } catch (err) {
+          messages.innerHTML = '<div class="error-msg">' + cm.escapeHtml(err.message || 'Draft failed') + '</div>';
+        } finally {
+          ev.target.disabled = false;
+          ev.target.textContent = 'Draft new reply';
+        }
+      });
+    }
+  </script>
+</body>
+</html>

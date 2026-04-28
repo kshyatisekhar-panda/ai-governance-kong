@@ -266,27 +266,4 @@ compatRouter.post("/products/ask", async (req: Request, res: Response) => {
   }
 });
 
-// Service cases (basic stub)
-const serviceCases: any[] = [];
-
-compatRouter.get("/service-cases", (_req, res) => {
-  res.json(serviceCases);
-});
-
-compatRouter.post("/service-cases", (req, res) => {
-  const newCase = {
-    id: `case-${Date.now()}`,
-    ...req.body,
-    status: "open",
-    priority: "medium",
-    createdAt: new Date().toISOString(),
-  };
-  serviceCases.push(newCase);
-  res.json({ case: newCase, triage: null });
-});
-
-compatRouter.get("/service-cases/:id", (req, res) => {
-  const found = serviceCases.find((c) => c.id === req.params.id);
-  if (!found) return res.status(404).json({ error: "Case not found" });
-  res.json(found);
-});
+// Service cases are handled by routes/service-cases.ts (mounted at /api/service-cases)

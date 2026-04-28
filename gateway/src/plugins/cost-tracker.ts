@@ -16,6 +16,7 @@ const TEAM_BUDGETS: Readonly<Record<string, number>> = {
   "Vacuum Technique": 200.0,
   "Power Technique": 100.0,
   "Industrial Technique": 120.0,
+  "Customer Service": 200.0,
 };
 
 const PRECISION = 1_000_000;

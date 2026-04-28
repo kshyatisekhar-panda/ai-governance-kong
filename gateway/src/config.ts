@@ -38,4 +38,5 @@ export const API_KEYS: Record<string, ClientIdentity> = {
   "mkt-key-2024": { team: "Power Technique", app: "Sales Copilot" },
   "chat-key-2024": { team: "Industrial Technique", app: "Atlas Chat" },
   "scheduler-key-2024": { team: "Vacuum Technique", app: "Report Scheduler" },
+  "case-key-2024": { team: "Customer Service", app: "Case Management" },
 };

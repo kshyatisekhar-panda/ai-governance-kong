@@ -8,6 +8,7 @@ import { chatRouter } from "./routes/chat.js";
 import { adminRouter } from "./routes/admin.js";
 import { businessRouter } from "./routes/business.js";
 import { compatRouter } from "./routes/compat.js";
+import { serviceCasesRouter } from "./routes/service-cases.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/ai/chat", chatRouter);
 app.use("/admin", adminRouter);
+app.use("/api/service-cases", serviceCasesRouter);
 app.use("/api", businessRouter);
 app.use("/api", compatRouter);
 

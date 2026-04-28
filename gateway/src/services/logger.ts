@@ -19,7 +19,35 @@ db.exec(`
     latency_ms INTEGER DEFAULT 0,
     status TEXT,
     block_reason TEXT DEFAULT ''
-  )
+  );
+
+  CREATE TABLE IF NOT EXISTS service_cases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    case_number TEXT UNIQUE NOT NULL,
+    source_channel TEXT DEFAULT 'Service Case Form',
+    customer_name TEXT NOT NULL,
+    customer_email TEXT NOT NULL,
+    customer_phone TEXT NOT NULL,
+    company TEXT NOT NULL,
+    country TEXT NOT NULL,
+    region TEXT NOT NULL,
+    product TEXT NOT NULL,
+    serial_number TEXT,
+    issue_category TEXT NOT NULL,
+    urgency TEXT NOT NULL,
+    preferred_contact_channel TEXT NOT NULL,
+    issue_description TEXT NOT NULL,
+    status TEXT DEFAULT 'New',
+    priority TEXT DEFAULT 'Medium',
+    assigned_team TEXT DEFAULT 'Customer Service',
+    ai_triage_status TEXT DEFAULT 'Pending',
+    ai_summary TEXT,
+    ai_suggested_reply TEXT,
+    ai_route_to TEXT,
+    ai_business_impact TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  );
 `);
 
 seedDatabase(db);
