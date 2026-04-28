@@ -29,6 +29,7 @@ function buildLogEntry(
     costUsd: 0,
     latencyMs: 0,
     blockReason: "",
+    endpoint: "/ai/chat",
     ...overrides,
   };
 }

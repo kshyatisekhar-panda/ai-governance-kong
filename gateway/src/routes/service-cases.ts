@@ -167,6 +167,7 @@ async function runTriage(c: ServiceCase, team: string, app: string): Promise<Tri
       latencyMs: Date.now() - start,
       status: "blocked",
       blockReason: ctx.blockedTypes.join(",") || "pii_blocked",
+      endpoint: "/api/service-cases/triage",
     });
     return {
       triage,
@@ -194,6 +195,7 @@ async function runTriage(c: ServiceCase, team: string, app: string): Promise<Tri
       inputTokens: 0, outputTokens: 0, costUsd: 0,
       latencyMs: Date.now() - start,
       status: "blocked", blockReason: "budget_exceeded",
+      endpoint: "/api/service-cases/triage",
     });
     return {
       triage,
@@ -248,6 +250,7 @@ async function runTriage(c: ServiceCase, team: string, app: string): Promise<Tri
     inputTokens, outputTokens, costUsd: cost, latencyMs,
     status,
     blockReason: wasMasked ? ctx.maskedTypes.join(",") : "",
+    endpoint: "/api/service-cases/triage",
   });
 
   return {
@@ -394,6 +397,7 @@ serviceCasesRouter.post("/:id/draft-reply", async (req: Request, res: Response) 
       inputTokens, outputTokens, costUsd: cost, latencyMs,
       status,
       blockReason: wasMasked ? ctx.maskedTypes.join(",") : "",
+      endpoint: "/api/service-cases/draft-reply",
     });
 
     res.json({

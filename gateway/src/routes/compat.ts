@@ -72,7 +72,7 @@ compatRouter.get("/governance/logs", async (req, res) => {
       timestamp: l.timestamp,
       sourceApp: l.app,
       team: l.team,
-      endpoint: "/ai/chat",
+      endpoint: l.endpoint || "/ai/chat",
       decision: l.status === "blocked" ? "BLOCKED" : l.status === "masked" ? "MASKED" : "ALLOWED",
       policy: "AI_GOVERNANCE",
       blockReason: l.block_reason || null,
@@ -106,6 +106,7 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
       team, app: sourceApp, model: "", promptLength: message.length,
       inputTokens: 0, outputTokens: 0, costUsd: 0, latencyMs: 0,
       status: "blocked", blockReason: piiResult.piiFound.join(","),
+      endpoint: "/api/customer-chat",
     });
 
     res.status(403).json({
@@ -133,6 +134,7 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
       team, app: sourceApp, model: "", promptLength: message.length,
       inputTokens: 0, outputTokens: 0, costUsd: 0, latencyMs: 0,
       status: "blocked", blockReason: "prompt_too_long",
+      endpoint: "/api/customer-chat",
     });
     res.status(403).json({
       reply: null,
@@ -197,6 +199,7 @@ compatRouter.post("/customer-chat", async (req: Request, res: Response) => {
     inputTokens, outputTokens, costUsd: cost, latencyMs,
     status: wasMasked ? "masked" : "passed",
     blockReason: wasMasked ? piiResult.maskedTypes.join(",") : "",
+    endpoint: "/api/customer-chat",
   });
 
   res.json({
