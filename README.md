@@ -1,5 +1,9 @@
 # Enterprise AI Gateway and Governance | Proof of Concept
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg)](https://www.typescriptlang.org/)
+[![Kong](https://img.shields.io/badge/Kong-3.9-purple.svg)](https://konghq.com/)
+
 **Atlas Copco** hackathon challenge, organized by **2Hero**, powered by **Kong**.
 
 ![Hackathon Brief](docs/hackathon-brief.webp)
