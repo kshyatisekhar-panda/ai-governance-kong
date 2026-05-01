@@ -1,0 +1,51 @@
+# Dependencies (will be reinstalled in the container)
+**/node_modules/
+**/.npm/
+
+# Local environment files (must come from Railway env vars)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build output (rebuilt in container)
+**/dist/
+**/build/
+**/.next/
+
+# SQLite databases (created fresh in container)
+*.db
+*.db-journal
+
+# Editor and OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Git metadata (we don't need it in the image)
+.git/
+.gitignore
+.gitattributes
+
+# Tooling configs not needed at runtime
+.claude/
+.eslintcache
+
+# Documentation that doesn't affect the build
+docs/
+*.md
+!README.md
+
+# CI configs
+.github/
+.gitlab-ci.yml
+
+# Tests
+**/*.test.ts
+**/*.test.js
+**/*.spec.ts
+**/*.spec.js
+**/__tests__/
+
+# Kong license (loaded at runtime, not baked into image)
+infra/kong/license.json
