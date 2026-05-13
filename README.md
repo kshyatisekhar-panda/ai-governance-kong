@@ -100,8 +100,8 @@ cd ../apps && npm install
 Create `gateway/.env` with your LLM API key:
 
 ```
-LLM_BASE_URL=https://api.cerebras.ai
-LLM_API_KEY=your_cerebras_key_here
+LLM_GOVERNANCE_API_URL=https://api.cerebras.ai
+LLM_GOVERNANCE_API_KEY=your_cerebras_key_here
 ```
 
 **4. Start the governance gateway**

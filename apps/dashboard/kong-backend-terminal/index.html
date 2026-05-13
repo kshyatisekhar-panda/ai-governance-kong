@@ -107,8 +107,8 @@
   decision: <span class="t-green">ALLOWED</span>`, 600);
 
             await log(`<br><span class="t-dim">[${now}]</span> <span class="t-blue font-bold">LLM PROVIDER</span>
-  provider: OpenRouter / Cerebras
-  model: openai/gpt-4o-mini
+  provider: Cerebras
+  model: llama3.1-8b
   LLM called: <span class="t-green">yes</span>
   tokens: ~150`, 800);
 
@@ -190,7 +190,7 @@
 
             if (ev.llmCalled) {
                 await log(`<br><span class="t-dim">[${tstamp}]</span> <span class="t-blue font-bold">LLM PROVIDER</span>
-  provider: OpenRouter / Cerebras
+  provider: Cerebras
   model: ${ev.model}
   LLM called: <span class="t-green">yes</span>`, 400);
             }

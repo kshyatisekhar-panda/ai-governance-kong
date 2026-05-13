@@ -104,8 +104,8 @@ if (!cols.some((c) => c.name === "your_new_column")) {
 
 Production deploys go to Railway via the root `Dockerfile`. The gateway serves both the API and static dashboard from a single container. Railway env vars to set:
 
-- `OPENROUTER_BASE_URL` (e.g. `https://openrouter.ai/api`)
-- `OPENROUTER_API_KEY`
+- `LLM_GOVERNANCE_API_URL` (e.g. `https://api.cerebras.ai`)
+- `LLM_GOVERNANCE_API_KEY`
 - `PORT` is injected automatically by Railway
 
 Push to `master` and Railway redeploys automatically. Watch the deploy logs from the Railway dashboard.

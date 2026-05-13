@@ -2,8 +2,8 @@ import { config } from "../config.js";
 import type { ChatMessage, LLMResponse, ModelTier } from "../types.js";
 
 const MODEL_MAP: Record<ModelTier, string> = {
-  small: "anthropic/claude-haiku-4-5",
-  large: "anthropic/claude-sonnet-4-5",
+  small: "llama3.1-8b",
+  large: "qwen-3-235b-a22b-instruct-2507",
 };
 
 export function resolveModelName(tier: ModelTier): string {
@@ -16,8 +16,6 @@ export async function forwardToLLM(
 ): Promise<LLMResponse> {
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
-    "HTTP-Referer": "https://ai-governance-kong-production.up.railway.app",
-    "X-Title": "AI Governance Gateway",
   };
 
   if (config.llmApiKey) {

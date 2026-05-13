@@ -51,7 +51,7 @@ curl -s -X POST http://localhost:8000/ai/chat \
 
 ## Configuration
 
-- `gateway/.env` (copy from [.env.example](.env.example)) provides `LLM_BASE_URL` and `LLM_API_KEY`. The `.env` loader is hand-rolled in [gateway/src/config.ts](gateway/src/config.ts); there is no `dotenv` dependency.
+- `gateway/.env` (copy from [.env.example](.env.example)) provides `LLM_GOVERNANCE_API_URL` and `LLM_GOVERNANCE_API_KEY`. The `.env` loader is hand-rolled in [gateway/src/config.ts](gateway/src/config.ts); there is no `dotenv` dependency.
 - `PORT` (default 8001) and `SQLITE_PATH` (default `./ai_gateway.db`, relative to wherever the gateway is started) are also read from env.
 - API keys, team mappings, model pricing, and team budgets are **hardcoded** — not env-driven:
   - Keys → team/app: `API_KEYS` in [gateway/src/config.ts](gateway/src/config.ts#L35)
@@ -77,7 +77,7 @@ Browser :3000 ─► Kong :8000 ─► Express :8001 ─► Cerebras LLM
 4. `checkBudget(team)` — month-to-date spend computed from `request_logs` (no in-memory state; `recordSpend` is intentionally a no-op, see [gateway/src/plugins/cost-tracker.ts](gateway/src/plugins/cost-tracker.ts#L63-L67))
 5. `classifyPrompt` selects `small` or `large`, then policy clamps it (`allowSmall`/`allowLarge`) ([gateway/src/plugins/smart-router.ts](gateway/src/plugins/smart-router.ts))
 6. `detectAPI` keyword-matches sales/machines/inventory and prepends a `system` message containing JSON business data ([gateway/src/plugins/api-detector.ts](gateway/src/plugins/api-detector.ts))
-7. `forwardToLLM` (OpenAI-compatible POST to `${LLM_BASE_URL}/v1/chat/completions`)
+7. `forwardToLLM` (OpenAI-compatible POST to `${LLM_GOVERNANCE_API_URL}/v1/chat/completions`)
 8. `calculateCost` + `logRequest` (audit row in SQLite)
 
 The response includes a `gateway` metadata block — every dashboard page and the chat UI rely on it.

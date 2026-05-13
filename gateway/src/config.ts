@@ -27,8 +27,8 @@ for (const envPath of candidates) {
 
 export const config = {
   port: parseInt(process.env.PORT || "8001", 10),
-  llmBaseUrl: process.env.OPENROUTER_BASE_URL || process.env.LLM_BASE_URL || "https://openrouter.ai/api",
-  llmApiKey: process.env.OPENROUTER_API_KEY || process.env.LLM_API_KEY || "",
+  llmBaseUrl: process.env.LLM_GOVERNANCE_API_URL || "https://api.cerebras.ai",
+  llmApiKey: process.env.LLM_GOVERNANCE_API_KEY || "",
   sqlitePath: process.env.SQLITE_PATH || "./ai_gateway.db",
 } as const;
 
