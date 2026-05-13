@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Governance Gateway · Atlas Copco Hackathon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0B0F1A;
+    --surface:   #131A2B;
+    --surface-2: #1C2740;
+    --border:    rgba(255,255,255,0.08);
+    --border-hi: rgba(6,182,212,0.32);
+    --text:      #E5E7EB;
+    --text-dim:  rgba(229,231,235,0.62);
+    --text-mute: rgba(229,231,235,0.38);
+    --cyan:      #06B6D4;
+    --cyan-lt:   #67E8F9;
+    --violet:    #A78BFA;
+    --violet-lt: #C4B5FD;
+    --green:     #10B981;
+    --amber:     #F59E0B;
+    --red:       #EF4444;
+    --nav-h:     56px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 56px 56px;
+    background-attachment: fixed;
+  }
+
+  ::selection { background: rgba(6,182,212,0.32); color: #fff; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    height: var(--nav-h);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2rem;
+    background: rgba(11,15,26,0.78);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 0.7rem; }
+  .nav-dot {
+    width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: var(--green); box-shadow: 0 0 12px var(--green);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 12px var(--green); }
+    50% { opacity: 0.4; box-shadow: 0 0 4px var(--green); }
+  }
+  .nav-logo {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700; font-size: 0.95rem; letter-spacing: -0.01em;
+  }
+  .nav-logo span { color: var(--cyan); }
+  .nav-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.64rem; letter-spacing: 0.08em;
+    color: var(--text-mute); margin-left: 0.4rem;
+  }
+  .nav-links { display: flex; gap: 1.4rem; list-style: none; }
+  .nav-links a {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.04em;
+    text-decoration: none; color: var(--text-dim);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--cyan); }
+  .nav-status {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.05em;
+    color: var(--cyan);
+    padding: 0.3rem 0.7rem;
+    border: 1px solid rgba(6,182,212,0.32);
+    border-radius: 2px;
+    background: rgba(6,182,212,0.06);
+  }
+  .nav-status #counter { color: var(--text); font-weight: 600; }
+
+  /* SLIDE BASE: every section is one viewport-bound slide */
+  section {
+    height: 100vh; min-height: 100vh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    padding: calc(var(--nav-h) + 1.5rem) 2.4rem 2rem;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .container { max-width: 1180px; margin: 0 auto; width: 100%; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.04em;
+    color: var(--cyan); margin-bottom: 0.7rem;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .section-tag::before { content: '//'; color: var(--text-mute); }
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+    font-weight: 600; line-height: 1.1; letter-spacing: -0.02em;
+    margin-bottom: 0.7rem;
+  }
+  .section-title em {
+    font-style: normal; color: var(--cyan); position: relative;
+  }
+  .section-title em::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: -3px;
+    height: 2px; background: linear-gradient(90deg, var(--cyan), transparent);
+  }
+  .section-sub {
+    font-size: 0.92rem; line-height: 1.55; color: var(--text-dim);
+    max-width: 700px;
+  }
+  .section-header { margin-bottom: 1.8rem; }
+
+  /* FADE */
+  .fade-up {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.55s ease, transform 0.55s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .d1 { transition-delay: 0.06s; }
+  .d2 { transition-delay: 0.12s; }
+  .d3 { transition-delay: 0.18s; }
+
+  /* DECISION PILLS */
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.6rem; border-radius: 2px;
+  }
+  .pill::before {
+    content: ''; width: 0.35rem; height: 0.35rem; border-radius: 50%;
+  }
+  .pill.allow { color: var(--green); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); }
+  .pill.allow::before { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .pill.mask  { color: var(--amber); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); }
+  .pill.mask::before { background: var(--amber); box-shadow: 0 0 6px var(--amber); }
+  .pill.block { color: var(--red); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); }
+  .pill.block::before { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .pill.live  { color: var(--cyan); background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3); }
+  .pill.live::before { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); }
+
+  /* CHALLENGE (slide 1) */
+  .challenge { padding-top: var(--nav-h); }
+  .challenge::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 75% 30%, rgba(239,68,68,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 25% 85%, rgba(6,182,212,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .challenge-inner {
+    position: relative; z-index: 1;
+    max-width: 1180px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1fr 1.05fr; gap: 3rem;
+    align-items: center;
+  }
+  .challenge-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.1em;
+    color: var(--red); text-transform: uppercase;
+    padding: 0.36rem 0.85rem;
+    border: 1px solid rgba(239,68,68,0.32);
+    border-radius: 2px;
+    background: rgba(239,68,68,0.06);
+    margin-bottom: 1.4rem;
+  }
+  .challenge-eyebrow::before { content: '//'; color: var(--text-mute); }
+  .challenge-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.9rem, 3.6vw, 2.9rem);
+    font-weight: 600; line-height: 1.08; letter-spacing: -0.025em;
+    margin-bottom: 1.1rem;
+  }
+  .challenge-heading em { font-style: normal; color: var(--red); }
+  .challenge-caption {
+    font-size: 0.98rem; line-height: 1.6;
+    color: var(--text-dim);
+    margin-bottom: 1.6rem;
+    max-width: 540px;
+  }
+  .challenge-meta {
+    display: flex; flex-wrap: wrap; gap: 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--text-mute);
+  }
+  .challenge-meta span { color: var(--text-dim); }
+  .challenge-meta strong { color: var(--text); font-weight: 500; }
+  .challenge-image-wrap {
+    display: flex; justify-content: center; align-items: center;
+  }
+  .challenge-image {
+    max-width: 100%; max-height: 70vh;
+    width: auto; height: auto; object-fit: contain;
+    border-radius: 8px;
+    border: 1px solid var(--border-hi);
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 60px rgba(239,68,68,0.06);
+  }
+
+  /* HERO */
+  .hero { padding-top: var(--nav-h); }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 75% 25%, rgba(6,182,212,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 25% 85%, rgba(167,139,250,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; width: 100%;
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 3.5rem; align-items: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; letter-spacing: 0.1em;
+    color: var(--cyan); margin-bottom: 1.6rem;
+    padding: 0.36rem 0.85rem;
+    border: 1px solid rgba(6,182,212,0.32);
+    border-radius: 2px;
+    background: rgba(6,182,212,0.05);
+  }
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.2rem, 4.6vw, 3.8rem);
+    font-weight: 600; line-height: 1.02; letter-spacing: -0.025em;
+    margin-bottom: 1.3rem;
+  }
+  .hero h1 .accent { color: var(--cyan); }
+  .hero h1 .accent-2 { color: var(--violet); }
+  .hero-tagline {
+    font-size: 1.05rem; line-height: 1.6;
+    color: var(--text-dim); max-width: 520px; margin-bottom: 1.7rem;
+  }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 1.1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--text-mute);
+  }
+  .hero-meta span { color: var(--text-dim); }
+  .hero-meta strong { color: var(--text); font-weight: 500; }
+
+  .terminal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.4),
+                0 0 0 1px rgba(6,182,212,0.08),
+                0 0 80px rgba(6,182,212,0.06);
+  }
+  .term-bar {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.6rem 0.9rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 0.65rem; height: 0.65rem; border-radius: 50%; }
+  .term-dot.r { background: rgba(239,68,68,0.7); }
+  .term-dot.y { background: rgba(245,158,11,0.7); }
+  .term-dot.g { background: rgba(16,185,129,0.7); }
+  .term-title {
+    margin-left: 0.7rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--text-mute);
+  }
+  .term-body {
+    padding: 1.1rem 1.2rem 1.3rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; line-height: 1.75; color: var(--text-dim);
+  }
+  .term-line { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .term-prompt { color: var(--cyan); flex-shrink: 0; }
+  .term-cmd { color: var(--text); }
+  .term-out { color: var(--text-dim); padding-left: 1.4rem; }
+  .term-key { color: var(--violet-lt); }
+  .term-val { color: var(--cyan-lt); }
+  .term-cursor {
+    display: inline-block; width: 0.5rem; height: 1em;
+    background: var(--cyan); vertical-align: text-bottom;
+    margin-left: 0.2rem;
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* OPERATOR */
+  .operator-grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 2.5rem; align-items: stretch; }
+  .operator-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.6rem 1.8rem; position: relative;
+  }
+  .operator-card::before {
+    content: ''; position: absolute; top: -1px; left: -1px; right: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    border-radius: 6px 6px 0 0;
+  }
+  .op-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.1em; color: var(--violet-lt);
+    margin-bottom: 0.9rem;
+  }
+  .op-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem; font-weight: 600; letter-spacing: -0.01em;
+    margin-bottom: 0.3rem;
+  }
+  .op-title { font-size: 0.82rem; color: var(--text-dim); margin-bottom: 1.1rem; }
+  .op-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 1.2rem; }
+  .op-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.03em;
+    padding: 0.22rem 0.6rem;
+    background: rgba(167,139,250,0.1);
+    color: var(--violet-lt);
+    border: 1px solid rgba(167,139,250,0.22);
+    border-radius: 2px;
+  }
+  .op-quote {
+    font-size: 0.85rem; line-height: 1.55; color: var(--text-dim);
+    font-style: italic;
+    padding-left: 0.9rem; border-left: 2px solid var(--cyan);
+  }
+  .outcome-list { display: flex; flex-direction: column; gap: 0.55rem; }
+  .outcome {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    padding: 0.7rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .outcome:hover { border-color: var(--border-hi); transform: translateX(2px); }
+  .outcome-idx {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem; color: var(--cyan);
+    flex-shrink: 0; padding-top: 0.1rem;
+  }
+  .outcome-text strong {
+    display: block; font-weight: 500; color: var(--text);
+    margin-bottom: 0.1rem; font-size: 0.88rem;
+  }
+  .outcome-text span { font-size: 0.78rem; color: var(--text-dim); line-height: 1.5; }
+
+  /* WHY */
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4rem; }
+  .why-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.8rem 2rem; position: relative; overflow: hidden;
+  }
+  .why-card.risk { border-left: 3px solid var(--red); }
+  .why-card.cost { border-left: 3px solid var(--amber); }
+  .why-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.1em; margin-bottom: 0.7rem;
+  }
+  .why-card.risk .why-card-label { color: var(--red); }
+  .why-card.cost .why-card-label { color: var(--amber); }
+  .why-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.3rem; font-weight: 600; line-height: 1.2; letter-spacing: -0.01em;
+    margin-bottom: 1rem;
+  }
+  .why-card ul { list-style: none; display: flex; flex-direction: column; gap: 0.55rem; }
+  .why-card li {
+    font-size: 0.85rem; line-height: 1.5; color: var(--text-dim);
+    display: flex; gap: 0.6rem;
+  }
+  .why-card li::before {
+    content: '▸'; color: var(--cyan); flex-shrink: 0;
+    font-size: 0.8rem; line-height: 1.45;
+  }
+  .why-card.risk li::before { color: var(--red); }
+  .why-card.cost li::before { color: var(--amber); }
+  .why-stat {
+    margin-top: 1.2rem; padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.6rem; font-weight: 600; letter-spacing: -0.02em;
+  }
+  .why-card.risk .why-stat { color: var(--red); }
+  .why-card.cost .why-stat { color: var(--amber); }
+  .why-stat-sub {
+    display: block; margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.06em;
+    color: var(--text-mute); font-weight: 400;
+  }
+
+  /* QUERIES */
+  .q-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; }
+  .q-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1.1rem 1.2rem;
+    transition: border-color 0.2s, transform 0.2s, background 0.2s;
+    position: relative;
+  }
+  .q-card:hover { border-color: var(--border-hi); background: var(--surface-2); }
+  .q-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em;
+    color: var(--violet); margin-bottom: 0.5rem;
+  }
+  .q-text {
+    font-size: 0.88rem; line-height: 1.45; color: var(--text);
+    margin-bottom: 0.6rem;
+  }
+  .q-cap {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--cyan-lt);
+    display: flex; align-items: center; gap: 0.4rem;
+    line-height: 1.4;
+  }
+  .q-cap::before { content: '→'; color: var(--cyan); flex-shrink: 0; }
+
+  /* CAPABILITIES */
+  .cap-grid {
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    gap: 1px; background: var(--border); border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+  }
+  .cap-card {
+    background: var(--surface); padding: 1.3rem 1.1rem;
+    display: flex; flex-direction: column;
+    transition: background 0.2s;
+  }
+  .cap-card:hover { background: var(--surface-2); }
+  .cap-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; color: var(--text-mute); margin-bottom: 0.5rem;
+  }
+  .cap-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem; font-weight: 600; margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+  .cap-desc {
+    font-size: 0.78rem; line-height: 1.5; color: var(--text-dim);
+    flex: 1; margin-bottom: 0.9rem;
+  }
+
+  .pipeline {
+    margin-top: 1.4rem; padding: 1.3rem 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+  .pipe-row {
+    display: flex; align-items: center; gap: 0;
+    flex-wrap: nowrap; justify-content: center;
+  }
+  .pipe-node {
+    flex-shrink: 0; text-align: center;
+    padding: 0.7rem 1rem;
+    border-radius: 4px;
+    min-width: 120px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .pipe-node.app { background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.3); color: var(--violet-lt); }
+  .pipe-node.kong { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.36); color: var(--cyan-lt); }
+  .pipe-node.express { background: rgba(6,182,212,0.2); border: 1px solid var(--cyan); color: var(--text); box-shadow: 0 0 20px rgba(6,182,212,0.18); }
+  .pipe-node.llm { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3); color: var(--amber); }
+  .pipe-node.audit { background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); color: var(--green); }
+  .pipe-label { font-size: 0.74rem; font-weight: 500; margin-bottom: 0.2rem; }
+  .pipe-sub { font-size: 0.6rem; color: var(--text-mute); letter-spacing: 0.04em; }
+  .pipe-arrow {
+    flex-shrink: 0; padding: 0 0.6rem;
+    color: var(--text-mute); font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+  }
+
+  /* ASSUMPTIONS */
+  .assump-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; }
+  .assump-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 1.1rem 1.3rem;
+  }
+  .assump-id {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.06em; color: var(--cyan);
+    margin-bottom: 0.5rem;
+  }
+  .assump-card h4 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.92rem; font-weight: 600; margin-bottom: 0.35rem;
+    color: var(--text); line-height: 1.25;
+  }
+  .assump-card p { font-size: 0.78rem; line-height: 1.5; color: var(--text-dim); }
+  .assump-risk {
+    margin-top: 1.2rem;
+    background: rgba(239,68,68,0.06);
+    border: 1px solid rgba(239,68,68,0.25);
+    border-left: 3px solid var(--red);
+    border-radius: 4px;
+    padding: 1rem 1.3rem;
+  }
+  .assump-risk-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.1em; color: var(--red);
+    margin-bottom: 0.4rem;
+  }
+  .assump-risk p { font-size: 0.84rem; line-height: 1.55; color: var(--text-dim); }
+  .assump-risk strong { color: var(--text); font-weight: 500; }
+
+  /* SCENARIOS TABLE */
+  .scenario-table {
+    width: 100%; border-collapse: collapse;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; overflow: hidden;
+  }
+  .scenario-table th {
+    text-align: left;
+    padding: 0.8rem 1.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.1em;
+    color: var(--cyan); font-weight: 500;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-hi);
+  }
+  .scenario-table td {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.84rem; line-height: 1.45;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  .scenario-table tr:last-child td { border-bottom: none; }
+  .scenario-table .prompt { color: var(--text); font-style: italic; }
+  .scenario-table code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--violet-lt);
+    background: rgba(167,139,250,0.08);
+    padding: 0.1rem 0.35rem;
+    border-radius: 2px;
+  }
+  .layer-callout {
+    margin-top: 1.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--cyan);
+    border-radius: 4px;
+    padding: 1rem 1.3rem;
+  }
+  .layer-callout-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.1em; color: var(--cyan);
+    margin-bottom: 0.4rem;
+  }
+  .layer-callout p {
+    font-size: 0.82rem; line-height: 1.55; color: var(--text-dim);
+    margin-bottom: 0.45rem;
+  }
+  .layer-callout p:last-child { margin-bottom: 0; }
+
+  /* CLOSING */
+  .closing-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: 1.8rem; align-items: start; }
+  .closing-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.1em;
+    margin-bottom: 0.9rem;
+  }
+  .closing-label.built { color: var(--cyan); }
+  .closing-label.next  { color: var(--violet); }
+  .built-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .built-list li {
+    display: flex; gap: 0.9rem; align-items: flex-start;
+    padding: 0.6rem 0.9rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+  }
+  .built-list .check {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--green); flex-shrink: 0; font-weight: 600;
+    font-size: 0.78rem;
+  }
+  .built-list strong { display: block; color: var(--text); font-weight: 500; margin-bottom: 0.15rem; font-size: 0.86rem; }
+  .built-list span { font-size: 0.78rem; color: var(--text-dim); line-height: 1.45; }
+
+  .next-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.4rem 1.6rem;
+    position: relative; overflow: hidden;
+  }
+  .next-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--violet), var(--cyan));
+  }
+  .next-card h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem; font-weight: 600; letter-spacing: -0.01em;
+    margin-bottom: 0.7rem; line-height: 1.2;
+  }
+  .next-card > p {
+    font-size: 0.85rem; line-height: 1.55; color: var(--text-dim);
+    margin-bottom: 0.9rem;
+  }
+  .next-list { list-style: none; display: flex; flex-direction: column; gap: 0.4rem; }
+  .next-list li {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.76rem; color: var(--text-dim);
+    display: flex; gap: 0.6rem;
+  }
+  .next-list li::before { content: '+'; color: var(--violet); flex-shrink: 0; font-weight: 600; }
+  .next-tagline {
+    margin-top: 1rem; padding-top: 0.8rem;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em;
+    color: var(--violet-lt);
+  }
+  .next-tagline span {
+    display: block; margin-top: 0.2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.68rem; color: var(--text-mute);
+    font-weight: 400;
+  }
+
+  .closing-cta {
+    margin-top: 1.2rem;
+    text-align: center;
+    padding: 1.2rem 1.4rem;
+    background: linear-gradient(180deg, var(--surface), var(--surface-2));
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    position: relative; overflow: hidden;
+  }
+  .closing-cta::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+  }
+  .closing-cta h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.2rem; font-weight: 600; letter-spacing: -0.015em;
+    margin-bottom: 0.4rem;
+  }
+  .closing-cta p {
+    font-size: 0.88rem; line-height: 1.55; color: var(--text-dim);
+    max-width: 540px; margin: 0 auto;
+  }
+
+  /* SLIDE DOTS (right rail) */
+  .dots {
+    position: fixed; right: 1.2rem; top: 50%; transform: translateY(-50%);
+    z-index: 90;
+    display: flex; flex-direction: column; gap: 0.65rem;
+  }
+  .dots a {
+    width: 0.55rem; height: 0.55rem; border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    transition: background 0.2s, transform 0.2s;
+    display: block;
+  }
+  .dots a:hover { background: var(--cyan); transform: scale(1.3); }
+  .dots a.active {
+    background: var(--cyan);
+    box-shadow: 0 0 10px var(--cyan);
+  }
+
+  /* HINTS */
+  .scroll-hint {
+    position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.66rem; letter-spacing: 0.12em;
+    color: var(--text-mute);
+    display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+  }
+  .scroll-hint .line {
+    width: 1px; height: 1.8rem;
+    background: linear-gradient(180deg, transparent, var(--cyan));
+    animation: drop 1.8s ease-in-out infinite;
+  }
+  @keyframes drop { 0%, 100% { opacity: 1; transform: scaleY(1); } 50% { opacity: 0.35; transform: scaleY(0.5); } }
+
+  /* RESPONSIVE */
+  @media (max-width: 980px) {
+    nav { padding: 0 0.9rem; }
+    .nav-links { display: none; }
+    section { padding: calc(var(--nav-h) + 0.8rem) 1rem 1rem; }
+    .hero-inner, .challenge-inner, .operator-grid, .why-grid, .closing-grid { grid-template-columns: 1fr; gap: 1.2rem; }
+    .challenge-image { max-height: 38vh; }
+    .q-grid { grid-template-columns: 1fr 1fr; }
+    .cap-grid, .assump-grid { grid-template-columns: 1fr 1fr; }
+    .pipe-row { flex-direction: column; gap: 0.4rem; }
+    .pipe-arrow { transform: rotate(90deg); padding: 0.2rem 0; }
+    .dots { display: none; }
+  }
+
+  @media (max-height: 700px) {
+    .section-title { font-size: clamp(1.4rem, 2.6vw, 1.8rem); }
+    .section-sub { display: none; }
+    .section-header { margin-bottom: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <div class="nav-dot"></div>
+    <div>
+      <span class="nav-logo">AI Governance <span>// Kong</span></span>
+      <span class="nav-sub">v0.7.0</span>
+    </div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#challenge">challenge</a></li>
+    <li><a href="#operator">operator</a></li>
+    <li><a href="#why">threat_model</a></li>
+    <li><a href="#queries">queries</a></li>
+    <li><a href="#control">control_layers</a></li>
+    <li><a href="#assumptions">assumptions</a></li>
+    <li><a href="#scenarios">scenarios</a></li>
+    <li><a href="#closing">roadmap</a></li>
+  </ul>
+  <div class="nav-status">slide <span id="counter">01</span>/08</div>
+</nav>
+
+<!-- SLIDE DOTS -->
+<div class="dots" id="dots">
+  <a href="#challenge" data-i="1"></a>
+  <a href="#operator" data-i="2"></a>
+  <a href="#why" data-i="3"></a>
+  <a href="#queries" data-i="4"></a>
+  <a href="#control" data-i="5"></a>
+  <a href="#assumptions" data-i="6"></a>
+  <a href="#scenarios" data-i="7"></a>
+  <a href="#closing" data-i="8"></a>
+</div>
+
+<!-- 1. CHALLENGE -->
+<section id="challenge" class="challenge">
+  <div class="challenge-inner">
+    <div>
+      <div class="challenge-eyebrow">the_challenge</div>
+      <h1 class="challenge-heading">Atlas Copco's <em>APIs</em> power everything.<br>Nobody can see <em>who's calling what</em>.</h1>
+      <p class="challenge-caption">AI chatbots, internal dashboards, customer-facing websites, mobile apps, scheduled jobs. All of them consume the same business APIs. The brief asks for a centralized AI gateway that intercepts every request and gives the enterprise one place to see what is spent, who is sending what, and what gets blocked.</p>
+      <div class="challenge-meta">
+        <div><span>challenge</span> <strong>Atlas Copco</strong></div>
+        <div><span>organized by</span> <strong>2Hero</strong></div>
+        <div><span>powered by</span> <strong>Kong</strong></div>
+      </div>
+    </div>
+    <div class="challenge-image-wrap">
+      <img src="docs/hackathon-brief.webp" alt="Atlas Copco AI Governance challenge brief" class="challenge-image">
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="line"></div>scroll</div>
+</section>
+
+<!-- 2. OPERATOR -->
+<section id="operator">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">02_operator_profile</div>
+      <h2 class="section-title">Who runs this, and what they're <em>actually trying to do</em></h2>
+      <p class="section-sub">The governance lead is not building AI features. They're the reason the rest of the company can ship them without an incident.</p>
+    </div>
+    <div class="operator-grid">
+      <div class="operator-card fade-up">
+        <div class="op-role">role · enterprise api platform</div>
+        <div class="op-name">The API Platform Manager</div>
+        <div class="op-title">Owns the APIs every team builds on. Whether the consumer is a chatbot, a dashboard, or a scheduled job, this is where the audit ends up.</div>
+        <div class="op-tags">
+          <span class="op-tag">api_governance</span>
+          <span class="op-tag">consumer_visibility</span>
+          <span class="op-tag">cost_attribution</span>
+          <span class="op-tag">compliance</span>
+          <span class="op-tag">ai_safety</span>
+        </div>
+        <div class="op-quote">"Teams are wrapping our product APIs in AI features. I can't tell which calls came from a chatbot, a website, or a cron job. And I can't tell if any of them just leaked customer data."</div>
+      </div>
+      <div class="fade-up d1">
+        <div class="op-role" style="margin-bottom:0.9rem;">outcomes we deliver</div>
+        <ul class="outcome-list">
+          <li class="outcome"><div class="outcome-idx">01</div><div class="outcome-text"><strong>Every consumer, accounted for</strong><span>AI app, dashboard, website, or mobile, every caller logged with team and intent.</span></div></li>
+          <li class="outcome"><div class="outcome-idx">02</div><div class="outcome-text"><strong>PII never leaves the perimeter</strong><span>Sensitive fields blocked, low risk fields masked in place.</span></div></li>
+          <li class="outcome"><div class="outcome-idx">03</div><div class="outcome-text"><strong>Per-consumer budgets, enforced before the spend</strong><span>Monthly caps per team or app, checked on the way in.</span></div></li>
+          <li class="outcome"><div class="outcome-idx">04</div><div class="outcome-text"><strong>One audit trail across every consumer type</strong><span>AI traffic and API traffic land in the same SQLite stream.</span></div></li>
+          <li class="outcome"><div class="outcome-idx">05</div><div class="outcome-text"><strong>Confidence to onboard the next consumer team</strong><span>When the perimeter is real, the platform team stops being the bottleneck.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. WHY -->
+<section id="why">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">03_threat_model</div>
+      <h2 class="section-title">Two reasons enterprises can't afford to leave this <em>unsolved</em></h2>
+      <p class="section-sub">Risk and cost. Different timescales, both invisible until the bill arrives.</p>
+    </div>
+    <div class="why-grid">
+      <div class="why-card risk fade-up">
+        <div class="why-card-label">[ risk vector · 01 ]</div>
+        <h3>Risk compounds quietly, one prompt at a time</h3>
+        <ul>
+          <li>A PII leak doesn't announce itself, it shows up in a regulator's letter.</li>
+          <li>Without a chokepoint, the fastest path is also the least safe one.</li>
+          <li>The EU AI Act puts documented audit trails on the "must have" list.</li>
+          <li>"Don't do it" is not a strategy. A gateway is.</li>
+        </ul>
+        <div class="why-stat">One chokepoint<span class="why-stat-sub">auditable_ai_traffic by default</span></div>
+      </div>
+      <div class="why-card cost fade-up d1">
+        <div class="why-card-label">[ cost vector · 02 ]</div>
+        <h3>Cost grows faster than visibility</h3>
+        <ul>
+          <li>Every team gets their own keys, their own provider, their own invoice.</li>
+          <li>Budget conversations happen monthly, after the spend, not before.</li>
+          <li>PMs ship features assuming the cheapest model. The picks are usually wrong.</li>
+          <li>Smart routing alone often halves cost without users noticing.</li>
+        </ul>
+        <div class="why-stat">Per-team caps<span class="why-stat-sub">vs. surprise_invoices</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. QUERIES -->
+<section id="queries">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">04_operator_queries</div>
+      <h2 class="section-title">The questions a governance lead asks <em>every day</em></h2>
+      <p class="section-sub">Each one is a single query against the audit log. No separate tool, no separate vendor.</p>
+    </div>
+    <div class="q-grid">
+      <div class="q-card fade-up"><div class="q-id">query.01</div><div class="q-text">Which teams are calling AI right now, and what are they asking?</div><div class="q-cap">live audit, keyed on team + app</div></div>
+      <div class="q-card fade-up d1"><div class="q-id">query.02</div><div class="q-text">Did anyone just send sensitive data to the LLM?</div><div class="q-cap">pii blocked or masked pre-forward</div></div>
+      <div class="q-card fade-up d2"><div class="q-id">query.03</div><div class="q-text">How much has each team spent this month, against what budget?</div><div class="q-cap">per-team tally from the audit log</div></div>
+      <div class="q-card fade-up"><div class="q-id">query.04</div><div class="q-text">Show me every blocked request, and why it was blocked.</div><div class="q-cap">filterable by pii_type, budget, keyword</div></div>
+      <div class="q-card fade-up d1"><div class="q-id">query.05</div><div class="q-text">Did Kong block this, or did Express mask it?</div><div class="q-cap">attributed in response headers</div></div>
+      <div class="q-card fade-up d2"><div class="q-id">query.06</div><div class="q-text">Which apps are approaching their budget cap?</div><div class="q-cap">per-app policy with live spend</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5. CONTROL LAYERS -->
+<section id="control">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">05_control_layers</div>
+      <h2 class="section-title">Five layers. One request at a <em>time</em>.</h2>
+      <p class="section-sub">The pipeline runs the same way every call. Order matters and the order does not change.</p>
+    </div>
+    <div class="cap-grid fade-up">
+      <div class="cap-card">
+        <div class="cap-num">layer.01</div>
+        <div class="cap-name">PII Protection</div>
+        <div class="cap-desc">SSN, credit card, personnummer block. Email, phone, IP redacted in place.</div>
+        <span class="pill block">enforced</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">layer.02</div>
+        <div class="cap-name">Budget Enforcement</div>
+        <div class="cap-desc">Per-team monthly caps. Spend computed live from the audit log.</div>
+        <span class="pill mask">throttled</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">layer.03</div>
+        <div class="cap-name">Smart Routing</div>
+        <div class="cap-desc">Simple prompts → small model. Complex prompts → large model.</div>
+        <span class="pill live">optimised</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">layer.04</div>
+        <div class="cap-name">Unified Audit</div>
+        <div class="cap-desc">Every Kong and Express decision in one SQLite stream.</div>
+        <span class="pill allow">recorded</span>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">layer.05</div>
+        <div class="cap-name">Prompt Shield SOC</div>
+        <div class="cap-desc">Kong-native control point. Blocks at the edge, emits SOC alerts.</div>
+        <span class="pill live">edge</span>
+      </div>
+    </div>
+    <div class="pipeline fade-up">
+      <div class="pipe-row">
+        <div class="pipe-node app"><div class="pipe-label">any app</div><div class="pipe-sub">x-api-key</div></div>
+        <div class="pipe-arrow">━━▶</div>
+        <div class="pipe-node kong"><div class="pipe-label">kong :8000</div><div class="pipe-sub">auth + shield</div></div>
+        <div class="pipe-arrow">━━▶</div>
+        <div class="pipe-node express"><div class="pipe-label">express :8001</div><div class="pipe-sub">pii · budget · route · audit</div></div>
+        <div class="pipe-arrow">━━▶</div>
+        <div class="pipe-node llm"><div class="pipe-label">cerebras</div><div class="pipe-sub">small / large</div></div>
+        <div class="pipe-arrow">━━▶</div>
+        <div class="pipe-node audit"><div class="pipe-label">response + audit</div><div class="pipe-sub">x-governance-* headers</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. ASSUMPTIONS -->
+<section id="assumptions">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">06_operating_assumptions</div>
+      <h2 class="section-title">What we're assuming to be true going <em>in</em></h2>
+      <p class="section-sub">If any of these turn out differently, we revisit scope before we revisit the design.</p>
+    </div>
+    <div class="assump-grid">
+      <div class="assump-card fade-up"><div class="assump-id">a.01</div><h4>Apps can be pointed at the gateway</h4><p>Each app's LLM client takes a base URL and an API key. We own the perimeter, not the SDK.</p></div>
+      <div class="assump-card fade-up d1"><div class="assump-id">a.02</div><h4>Keys map cleanly to teams</h4><p>One key per app, every key tagged with its team. Attribution is only as good as the mapping.</p></div>
+      <div class="assump-card fade-up d2"><div class="assump-id">a.03</div><h4>PII patterns are detectable in text</h4><p>Regex deny lists cover the high-confidence cases. Semantic detection is out of PoC scope.</p></div>
+      <div class="assump-card fade-up d3"><div class="assump-id">a.04</div><h4>Cost is roughly token-linear</h4><p>Per-1k token pricing is good enough for budget checks. Invoicing is a reconciliation problem.</p></div>
+      <div class="assump-card fade-up d1"><div class="assump-id">a.05</div><h4>Latency allows one inline hop</h4><p>Kong plus Express costs milliseconds. Millisecond-critical paths sit outside this perimeter.</p></div>
+      <div class="assump-card fade-up d2"><div class="assump-id">a.06</div><h4>SQLite is fine for the PoC</h4><p>Single-writer, file-backed. Production swaps in Postgres without touching the pipeline.</p></div>
+    </div>
+    <div class="assump-risk fade-up">
+      <div class="assump-risk-label">! biggest_risk</div>
+      <p><strong>Kong consumers and Express API_KEYS must stay in sync.</strong> Hardcoded in two places by design, but a rename in one without the other produces silent attribution gaps.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7. SCENARIOS -->
+<section id="scenarios">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">07_event_timeline</div>
+      <h2 class="section-title">What happens when a real request <em>hits the gateway</em></h2>
+      <p class="section-sub">Six prompts, six decisions, six audit rows. Each one ends differently.</p>
+    </div>
+    <div class="fade-up" style="overflow-x: auto;">
+      <table class="scenario-table">
+        <thead>
+          <tr><th>prompt</th><th>decision</th><th>where_decided</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="prompt">"What is Atlas Copco?"</td><td><span class="pill allow">allowed</span></td><td>express → small model, logged</td></tr>
+          <tr><td class="prompt">"My SSN is 123-45-6789"</td><td><span class="pill block">blocked</span></td><td>kong <code>ai-prompt-guard</code>, never reached express</td></tr>
+          <tr><td class="prompt">"Email me at john@company.com"</td><td><span class="pill mask">masked</span></td><td>express pii blocker, redacted in place</td></tr>
+          <tr><td class="prompt">"Sales report for last 6 months"</td><td><span class="pill allow">allowed</span></td><td>express api detector injects context, small model</td></tr>
+          <tr><td class="prompt">"Analyze quarterly revenue trends"</td><td><span class="pill allow">allowed</span></td><td>smart router → large model, cost tracked</td></tr>
+          <tr><td class="prompt">61st request in the same minute</td><td><span class="pill block">blocked</span></td><td>kong per-consumer rate limit, 429</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="layer-callout fade-up">
+      <div class="layer-callout-label">// why both layers</div>
+      <p>Kong stops what should never reach a backend. Sensitive prompts, oversized payloads, bot traffic, rate floods. Stopping at the edge saves cost and reduces blast radius.</p>
+      <p>Express owns what only the app knows. Per-team budget, per-app PII policy, model tier, business context, cost calculation. Both layers write to the same audit table.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8. CLOSING -->
+<section id="closing">
+  <div class="container">
+    <div class="section-header fade-up">
+      <div class="section-tag">08_roadmap</div>
+      <h2 class="section-title">What we built, and where it <em>goes next</em></h2>
+    </div>
+    <div class="closing-grid">
+      <div class="fade-up">
+        <div class="closing-label built">[ ✓ ] shipped_in_poc</div>
+        <ul class="built-list">
+          <li><span class="check">[✓]</span><div><strong>Two-layer gateway every AI call passes through</strong><span>Kong for infra decisions, Express for business ones, one audit log behind both.</span></div></li>
+          <li><span class="check">[✓]</span><div><strong>PII protection that fires before the LLM sees the prompt</strong><span>Block at Kong, mask at Express, never trust downstream to be careful.</span></div></li>
+          <li><span class="check">[✓]</span><div><strong>Per-team budgets that are real, not aspirational</strong><span>Spend computed live, the gateway refuses the next call when the cap is hit.</span></div></li>
+          <li><span class="check">[✓]</span><div><strong>Six dashboards from a single source of truth</strong><span>Overview, SOC, terminal, audit, app policies, gateway flow.</span></div></li>
+          <li><span class="check">[✓]</span><div><strong>End to end on a single Railway container</strong><span>Express serves the dashboards too. Perimeter and visibility ship together.</span></div></li>
+        </ul>
+      </div>
+      <div class="fade-up d2">
+        <div class="closing-label next">[ → ] next_logical_step</div>
+        <div class="next-card">
+          <h3>Policy as configuration,<br>edited live.</h3>
+          <p>Today, per-app policies live in TypeScript and ship with a deploy. The next step is lifting them into a config service the governance lead edits directly.</p>
+          <ul class="next-list">
+            <li>per-app PII strictness toggled from a dashboard</li>
+            <li>budget caps adjusted without redeploying</li>
+            <li>audit row records the policy version that decided</li>
+          </ul>
+          <div class="next-tagline">Policy at the speed of decisions<span>not at the speed of a release train</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="closing-cta fade-up">
+      <h3>We didn't build another LLM wrapper.</h3>
+      <p>We built the perimeter the enterprise needs before it can safely ship the next AI feature. Then the one after that.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Fade-up on entering view
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Track which slide is active
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  const navLinks = document.querySelectorAll('.nav-links a');
+  const dots = document.querySelectorAll('#dots a');
+  const counter = document.getElementById('counter');
+
+  function setActive(i) {
+    const id = sections[i].id;
+    navLinks.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + id));
+    dots.forEach(d => d.classList.toggle('active', d.getAttribute('href') === '#' + id));
+    counter.textContent = String(i + 1).padStart(2, '0');
+  }
+
+  const slideObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.intersectionRatio > 0.5) {
+        const i = sections.indexOf(e.target);
+        if (i >= 0) setActive(i);
+      }
+    });
+  }, { threshold: [0.5, 0.6, 0.7] });
+  sections.forEach(s => slideObserver.observe(s));
+
+  // Keyboard navigation: arrow keys, page up/down, space
+  function currentIndex() {
+    const y = window.scrollY + window.innerHeight / 2;
+    for (let i = 0; i < sections.length; i++) {
+      const r = sections[i].getBoundingClientRect();
+      const top = window.scrollY + r.top;
+      if (y >= top && y < top + r.height) return i;
+    }
+    return 0;
+  }
+  function goTo(i) {
+    i = Math.max(0, Math.min(sections.length - 1, i));
+    sections[i].scrollIntoView({ behavior: 'smooth' });
+  }
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowDown','PageDown',' '].includes(e.key)) { e.preventDefault(); goTo(currentIndex() + 1); }
+    if (['ArrowUp','PageUp'].includes(e.key)) { e.preventDefault(); goTo(currentIndex() - 1); }
+    if (e.key === 'Home') { e.preventDefault(); goTo(0); }
+    if (e.key === 'End')  { e.preventDefault(); goTo(sections.length - 1); }
+  });
+</script>
+</body>
+</html>
